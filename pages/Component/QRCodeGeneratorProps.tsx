@@ -7,7 +7,7 @@ export const generateQrCodeData = async (
   try {
     const serializedData = JSON.stringify(data);
     const qrCode = await QRCode.toDataURL(serializedData, {
-     width:128
+      width: 128,
     });
     return qrCode;
   } catch (error) {

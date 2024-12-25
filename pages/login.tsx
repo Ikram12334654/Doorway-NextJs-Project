@@ -6,16 +6,15 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import AuthNavbar from "../assets/authNavbar";
 import { DoorwayImages } from "../assets/style";
-import { authRoutes } from "../utils/routes";
 import applelogo from "../public/apple.png";
 import googleLogo from "../public/google.png";
-import linkedInlogo from "../public/linkedin (1).png";
-import { RootState } from "@/redux/store";
-import { requestFormReset } from "react-dom";
+import linkedInlogo from "../public/linkedin.png";
+import { authRoutes } from "../utils/routes";
+import { ErrorToastMessage, SuccessToastMessage } from "../utils/toast";
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -69,9 +68,10 @@ function Login() {
       setLoading(false);
 
       if (response) {
+        SuccessToastMessage({ message: response.message });
         dispatch(setAuthToken({ token: response.token }));
       } else if (error) {
-        // error popup
+        ErrorToastMessage({ message: error.message });
       }
     } catch (e) {
       setLoading(false);
@@ -149,8 +149,6 @@ function Login() {
                 )}
                 {showPasswordField && !loading && (
                   <div>
-                    {" "}
-                    {/* Wrap the password field and button in a div */}
                     <div className="mb-2">
                       <label
                         htmlFor="email"
@@ -226,7 +224,10 @@ function Login() {
                 {!showPasswordField && (
                   <div className="w-full flex flex-col item-center .justify-center mt-5 sm:text-sm">
                     <span className="flex justify-center">or</span>
-                    <button className="w-full p-2  mt-5 border border-black hover:bg-[#F5F5F5FF] flex flex-row items-center ">
+                    <button
+                      onClick={() => {}}
+                      className="w-full p-2  mt-5 border border-black hover:bg-[#F5F5F5FF] flex flex-row items-center "
+                    >
                       <Image
                         src={googleLogo}
                         alt="google logo"

@@ -1,13 +1,21 @@
+import { saveRegistration } from "@/redux/reducers/registration";
+import { RootState } from "@/redux/store";
 import { authRoutes } from "@/utils/routes";
 import Api from "@/utils/service";
+import { SuccessToastMessage } from "@/utils/toast";
 import { ErrorMessage, Field, Form, Formik } from "formik";
+import { stat } from "fs";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
-const RegisterPage: React.FC<{ onNextStep: () => void }> = ({ onNextStep }) => {
+const RegisterPage: React.FC = () => {
+  const state = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
+
   const initialValues = {
-    firstName: "",
-    lastName: "",
-    email: "",
+    firstName: state.registration.firstName || "",
+    lastName: state.registration.lastName || "",
+    email: state.registration.email || "",
     password: "",
     referral: "",
     terms: false,
@@ -39,7 +47,6 @@ const RegisterPage: React.FC<{ onNextStep: () => void }> = ({ onNextStep }) => {
 
   const handleSubmit = async ({ values }: { values: FormValues }) => {
     const { firstName, lastName, email, password, referral } = values;
-
     try {
       const { response, error } = await Api(authRoutes.register, "post", {
         payload: {
@@ -48,21 +55,26 @@ const RegisterPage: React.FC<{ onNextStep: () => void }> = ({ onNextStep }) => {
           email: email,
           password: password,
           aboutUs: referral,
-          accountType: "personal",
+          accountType: state.registration.type,
         },
       });
-
       if (response) {
-        console.log("responce--->", response);
+        SuccessToastMessage({ message: response.message });
+
+        dispatch(
+          saveRegistration({
+            steps: state.registration.steps + 1,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+          })
+        );
       } else if (error) {
-        console.log("error--->", error);
+        SuccessToastMessage({ message: error.message });
       }
     } catch (error) {}
-
-    // if (onNextStep) {
-    //   onNextStep();
-    // }
   };
+
   return (
     <div className="flex flex-col items-center">
       <div className="md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">

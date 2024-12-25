@@ -9,4 +9,9 @@ const PASS_VIEW = {
   ANDROID: "android",
 };
 
-export default { Environment, PASS_VIEW };
+const ACCOUNT_TYPE = {
+  PERSONAL: "personal",
+  ORGANIZATION: "organization",
+};
+
+export default { Environment, PASS_VIEW, ACCOUNT_TYPE };
