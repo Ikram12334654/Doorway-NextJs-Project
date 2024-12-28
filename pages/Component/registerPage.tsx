@@ -2,12 +2,18 @@ import { saveRegistration } from "@/redux/reducers/registration";
 import { RootState } from "@/redux/store";
 import { authRoutes } from "@/utils/routes";
 import Api from "@/utils/service";
-import { SuccessToastMessage } from "@/utils/toast";
+import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import { stat } from "fs";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
+import applelogo from "../../public/apple.png";
+import googleLogo from "../../public/google.png";
+import linkedInlogo from "../../public/linkedin.png";
+import SocialLoginButton from "./socialLoginButton";
+import { auth, googleProvider, signInWithPopup } from "../../firebase";
+import { browserPopupRedirectResolver } from "firebase/auth";
+
 const RegisterPage: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
@@ -55,11 +61,12 @@ const RegisterPage: React.FC = () => {
           email: email,
           password: password,
           aboutUs: referral,
-          accountType: state.registration.type,
+          accountType: state.registration.accountType,
         },
       });
+
       if (response) {
-        SuccessToastMessage({ message: response.message });
+        SuccessToastMessage({ message: response?.message });
 
         dispatch(
           saveRegistration({
@@ -70,7 +77,42 @@ const RegisterPage: React.FC = () => {
           })
         );
       } else if (error) {
-        SuccessToastMessage({ message: error.message });
+        ErrorToastMessage({ message: error?.message });
+      }
+    } catch (error) {}
+  };
+
+  const continueWithGoogle = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider, browserPopupRedirectResolver);
+      const token = await auth?.currentUser?.getIdToken();
+
+      const { response, error } = await Api(
+        authRoutes.registerWithGoogle,
+        "post",
+        {
+          payload: {
+            token: token,
+            accountType: state.registration.accountType,
+          },
+        }
+      );
+
+      const { email, displayName } = auth?.currentUser;
+
+      if (response) {
+        SuccessToastMessage({ message: response?.message });
+
+        dispatch(
+          saveRegistration({
+            steps: state.registration.steps + 1,
+            firstName: displayName?.split(" ")[0] || "",
+            lastName: displayName?.split(" ")[1] || "",
+            email: email || "",
+          })
+        );
+      } else if (error) {
+        ErrorToastMessage({ message: error?.message });
       }
     } catch (error) {}
   };
@@ -221,6 +263,33 @@ const RegisterPage: React.FC = () => {
               >
                 Next
               </button>
+              <div className="w-full flex flex-col item-center .justify-center mt-5 sm:text-sm">
+                <span className="flex justify-center">or</span>
+                <SocialLoginButton
+                  values={{
+                    logo: googleLogo,
+                    label: "Continue with Google",
+                    onClick: () => {
+                      continueWithGoogle();
+                    },
+                  }}
+                />
+                <SocialLoginButton
+                  values={{
+                    logo: applelogo,
+                    label: "Continue with Apple",
+                    onClick: () => {},
+                  }}
+                />
+                <SocialLoginButton
+                  values={{
+                    logo: linkedInlogo,
+                    label: "Continue with LinkedIn",
+                    onClick: () => {},
+                  }}
+                />
+                <div className="mt-5 " />
+              </div>
             </div>
           </Form>
         )}

@@ -1,6 +1,7 @@
 import LoadingSpinner from "@/assets/LoadingSpinner";
 import { setAuthToken } from "@/redux/reducers/auth";
 import Api from "@/utils/service";
+import { browserPopupRedirectResolver } from "firebase/auth";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,11 +11,13 @@ import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import AuthNavbar from "../assets/authNavbar";
 import { DoorwayImages } from "../assets/style";
+import { auth, googleProvider, signInWithPopup } from "../firebase";
 import applelogo from "../public/apple.png";
 import googleLogo from "../public/google.png";
 import linkedInlogo from "../public/linkedin.png";
 import { authRoutes } from "../utils/routes";
 import { ErrorToastMessage, SuccessToastMessage } from "../utils/toast";
+import SocialLoginButton from "./Component/socialLoginButton";
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -52,6 +55,29 @@ function Login() {
 
   const dispatch = useDispatch();
 
+  const loginWithGoogle = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider, browserPopupRedirectResolver);
+      const token = await auth?.currentUser?.getIdToken();
+
+      const { response, error } = await Api(
+        authRoutes.loginWithGoogle,
+        "post",
+        {
+          payload: {
+            token: token,
+          },
+        }
+      );
+
+      if (response) {
+        SuccessToastMessage({ message: response?.message });
+      } else if (error) {
+        ErrorToastMessage({ message: error?.message });
+      }
+    } catch (error) {}
+  };
+
   const handleSubmit = async ({ values }: { values: FormValues }) => {
     const { email, password } = values;
 
@@ -68,10 +94,10 @@ function Login() {
       setLoading(false);
 
       if (response) {
-        SuccessToastMessage({ message: response.message });
-        dispatch(setAuthToken({ token: response.token }));
+        SuccessToastMessage({ message: response?.message });
+        dispatch(setAuthToken({ token: response?.token }));
       } else if (error) {
-        ErrorToastMessage({ message: error.message });
+        ErrorToastMessage({ message: error?.message });
       }
     } catch (e) {
       setLoading(false);
@@ -80,12 +106,10 @@ function Login() {
 
   return (
     <div className="w-screen h-screen flex flex-row md:flex-col">
-      {/* Fix the Navbar */}
       <div className=" w-full z-10 hidden md:flex fixed mt-3">
         <AuthNavbar />
       </div>
 
-      {/* Main Layout */}
       <div className="h-screen w-1/2  flex justify-center items-center  md:hidden bg-themeColor">
         <Image
           src={DoorwayImages.logo}
@@ -224,33 +248,30 @@ function Login() {
                 {!showPasswordField && (
                   <div className="w-full flex flex-col item-center .justify-center mt-5 sm:text-sm">
                     <span className="flex justify-center">or</span>
-                    <button
-                      onClick={() => {}}
-                      className="w-full p-2  mt-5 border border-black hover:bg-[#F5F5F5FF] flex flex-row items-center "
-                    >
-                      <Image
-                        src={googleLogo}
-                        alt="google logo"
-                        className="h-[15px] w-auto mr-3 ml-10 sm:ml-1 sm:h-[11px] lg:ml-2 "
-                      />
-                      <span>Login with Google</span>
-                    </button>
-                    <button className="w-full p-2  mt-5 border border-black hover:bg-[#F5F5F5FF] flex flex-row items-center ">
-                      <Image
-                        src={applelogo}
-                        alt="google logo"
-                        className="h-[15px] w-auto mr-3  ml-10 sm:ml-1 sm:h-[11px] lg:ml-2"
-                      />
-                      <span>Login with Apple</span>
-                    </button>
-                    <button className="w-full p-2  mt-5 border border-black hover:bg-[#F5F5F5FF] flex flex-row items-center ">
-                      <Image
-                        src={linkedInlogo}
-                        alt="google logo"
-                        className="h-[15px] w-auto mr-3  ml-10 sm:ml-1 sm:h-[11px] lg:ml-2"
-                      />
-                      <span>Login with linkedIn</span>
-                    </button>
+
+                    <SocialLoginButton
+                      values={{
+                        logo: googleLogo,
+                        label: "Login with Google",
+                        onClick: () => {
+                          loginWithGoogle();
+                        },
+                      }}
+                    />
+                    <SocialLoginButton
+                      values={{
+                        logo: applelogo,
+                        label: "Login with Apple",
+                        onClick: () => {},
+                      }}
+                    />
+                    <SocialLoginButton
+                      values={{
+                        logo: linkedInlogo,
+                        label: "Login with LinkedIn",
+                        onClick: () => {},
+                      }}
+                    />
                   </div>
                 )}
               </Form>

@@ -16,10 +16,6 @@ function Register() {
 
   const [type, setType] = useState(state.registration.accountType || "");
 
-  useEffect(() => {
-    // dispatch(saveRegistration({ steps: 0, accountType: "" }));
-  }, []);
-
   return (
     <div className="w-screen h-screen flex flex-col">
       <div className="w-[80%] z-10 mt-3 ml-[10%] md:w-[90%] md:ml-[5%]">
