@@ -1,17 +1,17 @@
-import { saveCurrentUser } from "@/redux/reducers/registration";
-import { RootState } from "@/redux/store";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import PassPreview from "./passPreview";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { saveRegistration } from "@/redux/reducers/registration";
 const SetUpDoorway: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
   const [isValidURL, setIsValidURL] = useState(true);
   const [formData, setFormData] = useState({
-    jobTitle: state.user.jobTitle || "",
-    organizationName: state.user.organizationName || "",
-    organizationURL: state.user.organizationURL || "",
+    jobTitle: state.registration.jobTitle || "",
+    organizationName: state.registration.organizationName || "",
+    organizationURL: state.registration.organizationURL || "",
   });
 
   const isFormValid =
@@ -47,8 +47,8 @@ const SetUpDoorway: React.FC = () => {
     const { jobTitle, organizationName, organizationURL } = formData;
 
     dispatch(
-      saveCurrentUser({
-        steps: state.user.steps + 1,
+      saveRegistration({
+        steps: state.registration.steps + 1,
         jobTitle: jobTitle,
         organizationName: organizationName,
         organizationURL: organizationURL,
