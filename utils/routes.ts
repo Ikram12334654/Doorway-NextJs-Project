@@ -1,7 +1,6 @@
 export const authRoutes = {
   login: "/auth/login",
-  loginWithGoogle: "/auth/loginWithGoogle",
-  registerWithGoogle: "/auth/registerWithGoogle",
+  loginWithGoogle: "/auth/google",
   register: "/auth/signUp",
 };
 

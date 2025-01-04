@@ -3,31 +3,40 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface AuthState {
   token: string;
-  loggedIn: boolean;
+  loggedInFromAnyOtherLocation: boolean;
 }
 
 const initialState: AuthState = {
   token: "",
-  loggedIn: false,
+  loggedInFromAnyOtherLocation: false,
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setAuthToken: (state, action: PayloadAction<{ token: string }>) => {
+    saveAuthToken: (state, action: PayloadAction<{ token: string }>) => {
       const { token } = action.payload;
 
       state.token = token;
-      state.loggedIn = true;
+    },
+
+    setLoggedInFromAnyOtherLocation: (
+      state,
+      action: PayloadAction<{ loggedInFromAnyOtherLocation: boolean }>
+    ) => {
+      const { loggedInFromAnyOtherLocation } = action.payload;
+
+      state.loggedInFromAnyOtherLocation = loggedInFromAnyOtherLocation;
     },
     logout: (state) => {
       state.token = "";
-      state.loggedIn = false;
+      state.loggedInFromAnyOtherLocation = false;
     },
   },
 });
 
-export const { setAuthToken, logout } = authSlice.actions;
+export const { saveAuthToken, setLoggedInFromAnyOtherLocation, logout } =
+  authSlice.actions;
 
 export default authSlice.reducer;

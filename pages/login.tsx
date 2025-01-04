@@ -1,20 +1,22 @@
 import LoadingSpinner from "@/assets/LoadingSpinner";
-import { setAuthToken } from "@/redux/reducers/auth";
+import {
+  saveAuthToken,
+  setLoggedInFromAnyOtherLocation,
+} from "@/redux/reducers/auth";
 import Api from "@/utils/service";
-import { browserPopupRedirectResolver } from "firebase/auth";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import AuthNavbar from "../assets/authNavbar";
 import { DoorwayImages } from "../assets/style";
-import { auth, googleProvider, signInWithPopup } from "../firebase";
 import applelogo from "../public/apple.png";
 import googleLogo from "../public/google.png";
 import linkedInlogo from "../public/linkedin.png";
+import env from "../utils/config";
 import { authRoutes } from "../utils/routes";
 import { ErrorToastMessage, SuccessToastMessage } from "../utils/toast";
 import SocialLoginButton from "./Component/socialLoginButton";
@@ -23,6 +25,11 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [socialLoginState, setSocialLoginState] = useState({
+    google: false,
+    apple: false,
+    linkedIn: false,
+  });
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .email("Invalid email format")
@@ -56,26 +63,13 @@ function Login() {
   const dispatch = useDispatch();
 
   const loginWithGoogle = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider, browserPopupRedirectResolver);
-      const token = await auth?.currentUser?.getIdToken();
-
-      const { response, error } = await Api(
-        authRoutes.loginWithGoogle,
-        "post",
-        {
-          payload: {
-            token: token,
-          },
-        }
-      );
-
-      if (response) {
-        SuccessToastMessage({ message: response?.message });
-      } else if (error) {
-        ErrorToastMessage({ message: error?.message });
-      }
-    } catch (error) {}
+    setSocialLoginState((prevState) => ({
+      google: true,
+      apple: false,
+      linkedIn: false,
+    }));
+    const url = env.API_URL + authRoutes.loginWithGoogle;
+    window.location.href = url;
   };
 
   const handleSubmit = async ({ values }: { values: FormValues }) => {
@@ -95,7 +89,7 @@ function Login() {
 
       if (response) {
         SuccessToastMessage({ message: response?.message });
-        dispatch(setAuthToken({ token: response?.token }));
+        dispatch(saveAuthToken({ token: response?.token }));
       } else if (error) {
         ErrorToastMessage({ message: error?.message });
       }
@@ -214,11 +208,10 @@ function Login() {
                           className="text-red-500 text-sm"
                         />
 
-                        {/* Eye Button */}
                         <button
                           type="button"
                           onClick={togglePasswordVisibility}
-                          className="absolute pt-6 right-3 top-1/2 transform -translate-y-1/2 text-mde " // Center and make the button smaller
+                          className="absolute pt-6 right-3 top-1/2 transform -translate-y-1/2 text-mde"
                         >
                           {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
@@ -250,6 +243,7 @@ function Login() {
                     <span className="flex justify-center">or</span>
 
                     <SocialLoginButton
+                      loading={socialLoginState.google}
                       values={{
                         logo: googleLogo,
                         label: "Login with Google",
@@ -259,6 +253,7 @@ function Login() {
                       }}
                     />
                     <SocialLoginButton
+                      loading={socialLoginState.apple}
                       values={{
                         logo: applelogo,
                         label: "Login with Apple",
@@ -266,6 +261,7 @@ function Login() {
                       }}
                     />
                     <SocialLoginButton
+                      loading={socialLoginState.linkedIn}
                       values={{
                         logo: linkedInlogo,
                         label: "Login with LinkedIn",

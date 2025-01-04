@@ -1,8 +1,10 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
+import { stat } from "fs";
 
-export interface RegistrationState {
+export interface UserState {
   steps: number;
+  _id: string;
   accountType: string;
   passType: string;
   firstName: string;
@@ -14,8 +16,9 @@ export interface RegistrationState {
   backgroundColor: string;
 }
 
-const initialState: RegistrationState = {
+const initialState: UserState = {
   steps: 0,
+  _id: "",
   accountType: "",
   passType: "",
   firstName: "",
@@ -27,16 +30,14 @@ const initialState: RegistrationState = {
   backgroundColor: "",
 };
 
-export const registrationSlice = createSlice({
-  name: "registration",
+export const userSlice = createSlice({
+  name: "user",
   initialState,
   reducers: {
-    saveRegistration: (
-      state,
-      action: PayloadAction<Partial<RegistrationState>>
-    ) => {
+    saveCurrentUser: (state, action: PayloadAction<Partial<UserState>>) => {
       const {
         steps,
+        _id,
         accountType,
         passType,
         firstName,
@@ -49,6 +50,7 @@ export const registrationSlice = createSlice({
       } = action.payload;
 
       if (steps !== undefined) state.steps = steps;
+      if (_id !== undefined) state._id = _id;
       if (accountType !== undefined) state.accountType = accountType;
       if (passType !== undefined) state.passType = passType;
       if (firstName !== undefined) state.firstName = firstName;
@@ -62,8 +64,9 @@ export const registrationSlice = createSlice({
       if (backgroundColor !== undefined)
         state.backgroundColor = backgroundColor;
     },
-    clearRegistration: (state) => {
+    clearCurrentUser: (state) => {
       state.steps = 0;
+      state._id = "";
       state.accountType = "";
       state.passType = "";
       state.firstName = "";
@@ -76,7 +79,6 @@ export const registrationSlice = createSlice({
   },
 });
 
-export const { saveRegistration, clearRegistration } =
-  registrationSlice.actions;
+export const { saveCurrentUser, clearCurrentUser } = userSlice.actions;
 
-export default registrationSlice.reducer;
+export default userSlice.reducer;

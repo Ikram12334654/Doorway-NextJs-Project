@@ -1,4 +1,4 @@
-import { saveRegistration } from "@/redux/reducers/registration";
+import { saveCurrentUser } from "@/redux/reducers/registration";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import Image from "next/image";
@@ -53,25 +53,21 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
 
   const [qrCode, setQrCode] = useState<string>("");
   const [passType, setPassType] = useState(
-    state.registration.passType || enums.PASS_VIEW.APPLE
+    state.user.passType || enums.PASS_VIEW.APPLE
   );
 
   const data = {
     jobTitle:
-      values?.jobTitle?.toUpperCase() ||
-      state.registration.jobTitle ||
-      "DESIGNATION",
+      values?.jobTitle?.toUpperCase() || state.user.jobTitle || "DESIGNATION",
     organizationName:
-      values?.organizationName ||
-      state.registration.organizationName ||
-      "Doorway",
+      values?.organizationName || state.user.organizationName || "Doorway",
     organizationURL:
       values?.organizationURL ||
-      state.registration.organizationURL ||
+      state.user.organizationURL ||
       "https://doorway.io/",
     backgroundColor:
       values?.backgroundColor ||
-      state.registration.backgroundColor ||
+      state.user.backgroundColor ||
       "rgb(34, 36, 44)",
   };
 
@@ -157,9 +153,8 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                           className="text-mde font-extralight"
                           style={{ color: "rgb(255, 255, 255)" }}
                         >
-                          {state.registration.firstName +
-                            " " +
-                            state.registration.lastName || ""}
+                          {state.user.firstName + " " + state.user.lastName ||
+                            ""}
                         </p>
                       </div>
                     </div>
@@ -244,9 +239,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                           className="mt-[24px] text-lg leading-[40px] font-normal font-[700]"
                           style={{ color: "rgb(255, 255, 255)" }}
                         >
-                          {state.registration.firstName +
-                            " " +
-                            state.registration.lastName}
+                          {state.user.firstName + " " + state.user.lastName}
                         </p>
                         <p
                           className="mt-[16px] text-mde font-normal"
@@ -289,7 +282,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                 onClick={() => {
                   setPassType(enums.PASS_VIEW.APPLE);
                   dispatch(
-                    saveRegistration({ passType: enums.PASS_VIEW.APPLE })
+                    saveCurrentUser({ passType: enums.PASS_VIEW.APPLE })
                   );
                 }}
               >

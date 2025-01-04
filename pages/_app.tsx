@@ -4,6 +4,7 @@ import { persistor, store } from "@/redux/store";
 import type { AppProps } from "next/app";
 import { PersistGate } from "redux-persist/integration/react";
 import { Toaster } from "react-hot-toast";
+import Logout from "./Component/logoutModal";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -11,6 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <PersistGate loading={null} persistor={persistor}>
         <Component {...pageProps} />
         <Toaster />
+        <Logout />
       </PersistGate>
     </Provider>
   );
