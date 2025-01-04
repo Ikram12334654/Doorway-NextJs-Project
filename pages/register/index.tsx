@@ -1,44 +1,43 @@
 import AuthNavbar from "@/assets/authNavbar";
-import { saveRegistration } from "@/redux/reducers/registration";
+import { saveCurrentUser } from "@/redux/reducers/registration";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EditYourDesign from "../Component/EditYourDesign";
 import RegisterPage from "../Component/registerPage";
-import SetUpDoorway from "../Component/setUpDoorway";
 import SelectRequirements from "../Component/SelectRequirements";
-import router, { useRouter } from "next/router";
+import SetUpDoorway from "../Component/setUpDoorway";
 
 function Register() {
-
-
-
   const state = useSelector((state: RootState) => state);
 
   const dispatch = useDispatch();
 
-  const [type, setType] = useState(state.registration.accountType || "");
+  const [type, setType] = useState(state.user.accountType || "");
   const router = useRouter();
-  const [cancelParam, setCancelParam] = useState<boolean | undefined>(undefined);
+  const [cancelParam, setCancelParam] = useState<boolean | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     // Ensure the query parameters are loaded and not undefined
     if (router.isReady) {
       const { cancel } = router.query;
       // Convert cancel to a boolean (check if it's 'true' in the query)
-      setCancelParam(cancel === 'true');
+      setCancelParam(cancel === "true");
     }
   }, [router.isReady, router.query]);
-console.log("this is ",cancelParam)
+  console.log("this is ", cancelParam);
 
   return (
     <div className="w-screen h-screen flex flex-col">
       <div className="w-[80%] z-10 mt-3 ml-[10%] md:w-[90%] md:ml-[5%]">
         <AuthNavbar />
       </div>
-      {!state.registration.accountType && (
+      {!state.user.accountType && (
         <div>
           <div className="w-[60%] z-10 text-center flex flex-col items-center justify-center mx-auto md:w-[80%] mt-[5%]">
             <span className="min-lg:text-xl min-sm:text-md min-md:text-lg font-semibold">
@@ -113,7 +112,7 @@ console.log("this is ",cancelParam)
             <div className="w-[285px]">
               <div
                 className={` disabled:bg-gray-400 text-white cursor-pointer text-[15px] font-[500] heading-[14px] rounded-[5px] text-center ${
-                  state.registration.accountType === ""
+                  state.user.accountType === ""
                     ? "bg-gray-400 cursor-default"
                     : "bg-themeColor"
                 }`}
@@ -121,15 +120,15 @@ console.log("this is ",cancelParam)
                 <button
                   onClick={() => {
                     dispatch(
-                      saveRegistration({
-                        steps: state.registration.steps + 1,
+                      saveCurrentUser({
+                        steps: state.user.steps + 1,
                         accountType: type,
                       })
                     );
                   }}
                   disabled={type ? false : true}
                   className={`bg-themeColor w-[285px] disabled:bg-gray-400 text-white cursor-pointer text-[15px] font-[500] heading-[14px] rounded-[5px] py-[12px] min-md:py-[14px] text-center ${
-                    state.registration.accountType === ""
+                    state.user.accountType === ""
                       ? "bg-gray-400 cursor-default"
                       : "bg-themeColor"
                   }`}
@@ -142,8 +141,8 @@ console.log("this is ",cancelParam)
         </div>
       )}
 
-      {state.registration.accountType &&
-        state.registration.accountType === enums.ACCOUNT_TYPE.ORGANIZATION && (
+      {state.user.accountType &&
+        state.user.accountType === enums.ACCOUNT_TYPE.ORGANIZATION && (
           <div className="w-[75%] ml-auto mr-auto mt-10 ">
             <div className="hidden min-xl:flex justify-center">
               <div className="flex gap-[10px] items-center mb-[22px] xl:mb-[30px]">
@@ -156,27 +155,21 @@ console.log("this is ",cancelParam)
                 </div>
                 <div
                   className={`mr-[15px] ml-[5px] ${
-                    state.registration.steps >= 2
-                      ? "text-themeColor"
-                      : "text-[#BEBEBE]"
+                    state.user.steps >= 2 ? "text-themeColor" : "text-[#BEBEBE]"
                   } text-[13px] min-xl:text-[18px]  font-bold text-lg`}
                 >
                   <ArrowForwardIcon fontSize="inherit" />
                 </div>
                 <div
                   className={`${
-                    state.registration.steps >= 2
-                      ? "bg-themeColor"
-                      : "bg-[#BEBEBE]"
+                    state.user.steps >= 2 ? "bg-themeColor" : "bg-[#BEBEBE]"
                   } h-[17px] w-[17px] min-xl:h-[23px] min-xl:w-[23px] flex items-center justify-center rounded-full text-white text-[10px]`}
                 >
                   2
                 </div>
                 <div
                   className={`${
-                    state.registration.steps >= 2
-                      ? "text-themeColor"
-                      : "text-[#BEBEBE]"
+                    state.user.steps >= 2 ? "text-themeColor" : "text-[#BEBEBE]"
                   } text-[8px] min-xl:text-[18px]`}
                 >
                   {" "}
@@ -184,27 +177,21 @@ console.log("this is ",cancelParam)
                 </div>
                 <div
                   className={`mr-[15px] ml-[5px] ${
-                    state.registration.steps >= 3
-                      ? "text-themeColor"
-                      : "text-[#BEBEBE]"
+                    state.user.steps >= 3 ? "text-themeColor" : "text-[#BEBEBE]"
                   } text-[13px] min-xl:text-[18px]  font-bold text-lg`}
                 >
                   <ArrowForwardIcon fontSize="inherit" />
                 </div>
                 <div
                   className={`${
-                    state.registration.steps >= 3
-                      ? "bg-themeColor"
-                      : "bg-[#BEBEBE]"
+                    state.user.steps >= 3 ? "bg-themeColor" : "bg-[#BEBEBE]"
                   } h-[17px] w-[17px] min-xl:h-[23px] min-xl:w-[23px] flex items-center justify-center rounded-full text-white text-[10px]`}
                 >
                   3
                 </div>
                 <div
                   className={`${
-                    state.registration.steps >= 3
-                      ? "text-themeColor"
-                      : "text-[#BEBEBE]"
+                    state.user.steps >= 3 ? "text-themeColor" : "text-[#BEBEBE]"
                   } text-[8px] min-xl:text-[18px]`}
                 >
                   {" "}
@@ -212,27 +199,21 @@ console.log("this is ",cancelParam)
                 </div>
                 <div
                   className={`mr-[15px] ml-[5px] ${
-                    state.registration.steps >= 4
-                      ? "text-themeColor"
-                      : "text-[#BEBEBE]"
+                    state.user.steps >= 4 ? "text-themeColor" : "text-[#BEBEBE]"
                   } text-[13px] min-xl:text-[18px]  font-bold text-lg`}
                 >
                   <ArrowForwardIcon fontSize="inherit" />
                 </div>
                 <div
                   className={`${
-                    state.registration.steps >= 4
-                      ? "bg-themeColor"
-                      : "bg-[#BEBEBE]"
+                    state.user.steps >= 4 ? "bg-themeColor" : "bg-[#BEBEBE]"
                   } h-[17px] w-[17px] min-xl:h-[23px] min-xl:w-[23px] flex items-center justify-center rounded-full text-white text-[10px]`}
                 >
                   4
                 </div>
                 <div
                   className={`${
-                    state.registration.steps >= 4
-                      ? "text-themeColor"
-                      : "text-[#BEBEBE]"
+                    state.user.steps >= 4 ? "text-themeColor" : "text-[#BEBEBE]"
                   } text-[8px] min-xl:text-[18px]`}
                 >
                   {" "}
@@ -241,25 +222,24 @@ console.log("this is ",cancelParam)
               </div>
             </div>
 
-            {state.registration.steps === 1 && (
+            {state.user.steps === 1 && (
               <div className="w-[80%] h-max flex flex-col items-center justify-center m-auto">
                 <RegisterPage />
               </div>
             )}
-            {state.registration.steps === 2 && (
+            {state.user.steps === 2 && (
               <div className="w-[80%] h-max flex flex-col items-center justify-center m-auto">
                 <SetUpDoorway />
               </div>
             )}
-            {state.registration.steps === 3 && (
+            {state.user.steps === 3 && (
               <div className="w-[80%] h-max flex flex-col items-center justify-center m-auto">
                 <EditYourDesign />
               </div>
             )}
-            {state.registration.steps === 4 && (
+            {state.user.steps === 4 && (
               <div className="w-[80%] h-max flex flex-col items-center justify-center m-auto">
                 <SelectRequirements cancel={cancelParam} />
-                
               </div>
             )}
           </div>

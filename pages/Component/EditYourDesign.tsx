@@ -50,7 +50,7 @@ const EditYourDesign: React.FC = () => {
   const handleSetupDetails = () => {
     dispatch(
       saveRegistration({
-        steps: state.registration.steps + 1,
+        steps: state.user.steps + 1,
         backgroundColor: backgroundColor,
         stripeImage: stripImage,
         topLeftLogo: topLeftLogo,
