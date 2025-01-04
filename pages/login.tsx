@@ -1,13 +1,9 @@
 import LoadingSpinner from "@/assets/LoadingSpinner";
-import {
-  saveAuthToken,
-  setLoggedInFromAnyOtherLocation,
-} from "@/redux/reducers/auth";
 import Api from "@/utils/service";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
@@ -16,10 +12,12 @@ import { DoorwayImages } from "../assets/style";
 import applelogo from "../public/apple.png";
 import googleLogo from "../public/google.png";
 import linkedInlogo from "../public/linkedin.png";
-import env from "../utils/config";
 import { authRoutes } from "../utils/routes";
 import { ErrorToastMessage, SuccessToastMessage } from "../utils/toast";
 import SocialLoginButton from "./Component/socialLoginButton";
+
+import { saveAuthToken } from "@/redux/reducers/auth";
+import env from "../utils/config";
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [loading, setLoading] = useState(false);

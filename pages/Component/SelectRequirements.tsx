@@ -2,14 +2,12 @@ import { useRouter } from "next/router";
 import React from "react";
 
 interface SelectRequirementsProps {
-  cancel?: boolean;
+  cancel?: boolean; // Optional boolean parameter
 }
-
 const SelectRequirements: React.FC<SelectRequirementsProps> = ({ cancel }) => {
   const routes = useRouter();
-  const paymentRoute = (amount: number) => {
-    console.log(amount);
-  };
+  const paymentRoute = (amount: number) =>
+    routes.push(`/register/pay/${amount}`);
   return (
     <div className="flex flex-col items-center p-10">
       <div className="text-center max-w-[920px] mx-auto mb-[8px]">

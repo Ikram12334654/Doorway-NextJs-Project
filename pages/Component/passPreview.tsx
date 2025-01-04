@@ -24,7 +24,12 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
   const [passType, setPassType] = useState(
     state.user.passType || enums.PASS_VIEW.APPLE
   );
-
+  // const stateStripeImage = state.registration.stripeImage
+  //   ? URL.createObjectURL(state.registration.stripeImage)
+  //   : null;
+  // const statetopLeftImage = state.registration.topLeftLogo
+  //   ? URL.createObjectURL(state.registration.topLeftLogo)
+  //   : null;
   const data = {
     jobTitle:
       values?.jobTitle?.toUpperCase() || state.user.jobTitle || "DESIGNATION",
