@@ -1,16 +1,18 @@
-import { saveCurrentUser } from "@/redux/reducers/registration";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import Image from "next/image";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import QRImage from "../../public/QrImage.png";
+import { saveCurrentUser } from "@/redux/reducers/registration";
 
 interface formValues {
   jobTitle?: string;
   organizationName?: string;
   organizationURL?: string;
   backgroundColor?: string;
+  stripImage?: string;
+  topLogoImage?: string;
 }
 
 const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
@@ -55,7 +57,12 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
   const [passType, setPassType] = useState(
     state.user.passType || enums.PASS_VIEW.APPLE
   );
-
+  // const stateStripeImage = state.registration.stripeImage
+  //   ? URL.createObjectURL(state.registration.stripeImage)
+  //   : null;
+  // const statetopLeftImage = state.registration.topLeftLogo
+  //   ? URL.createObjectURL(state.registration.topLeftLogo)
+  //   : null;
   const data = {
     jobTitle:
       values?.jobTitle?.toUpperCase() || state.user.jobTitle || "DESIGNATION",
@@ -69,6 +76,8 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
       values?.backgroundColor ||
       state.user.backgroundColor ||
       "rgb(34, 36, 44)",
+    stripeImage: values?.stripImage,
+    topLeftImage: values?.topLogoImage,
   };
 
   return (
@@ -86,8 +95,8 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                 >
                   <div className="flex flex-col h-full justify-between pb-6">
                     <div className="mt-3 ml-3 w-1/6">
-                      <span className="block w-4 sm:w-5 mt-3 ml-3 w-1/6">
-                        {1 === 1 ? (
+                      <span className="block w-6  mt-3 ml-3 w-1/6">
+                        {data.topLeftImage === "" ? (
                           <svg
                             version="1.1"
                             id="Layer_1"
@@ -127,17 +136,25 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                           </svg>
                         ) : (
                           <img
-                            src={svgIcon}
-                            alt="Dynamic"
-                            className="w-full h-auto"
+                            src={data?.topLeftImage}
+                            alt="top Image"
+                            className="max-w-full h-auto m-auto"
                           />
                         )}
                       </span>
                     </div>
                     <div className="items-center justify-center overflow-hidden flex aspect-[1033/407] my-[15px]">
-                      <span className="flex items-center px-6 w-full block aspect-[3/1]">
+                      <span className="flex items-center w-full block aspect-[3/1]">
                         <div className="mx-auto w-max text-[2.5rem] border-white text-center">
-                          Doorway
+                          {data.stripeImage !== "" ? (
+                            <img
+                              src={data?.stripeImage}
+                              alt="top Image"
+                              className="max-w-full h-auto m-auto"
+                            />
+                          ) : (
+                            "Doorway"
+                          )}
                         </div>
                       </span>
                     </div>
@@ -184,8 +201,14 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                 >
                   <div className="flex flex-col h-full justify-between pb-6">
                     <div className="mt-3 ml-3 w-1/6">
-                      <span className="block w-4 sm:w-5 mt-3 ml-3 w-1/6">
-                        {1 === 1 ? (
+                      <span className="block w-6  mt-3 ml-3 w-1/6">
+                        {data.topLeftImage !== "" ? (
+                          <img
+                            src={data?.topLeftImage}
+                            alt="top Image"
+                            className="w-full h-auto m-auto"
+                          />
+                        ) : (
                           <svg
                             version="1.1"
                             id="Layer_1"
@@ -223,12 +246,6 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                               d="M297.3 231.6c20.2 0 36.6 16.4 36.6 36.6 0 20.2-16.4 36.6-36.6 36.6-20.2 0-36.6-16.4-36.6-36.6-.1-20.2 16.3-36.6 36.6-36.6z"
                             ></path>
                           </svg>
-                        ) : (
-                          <img
-                            src={svgIcon}
-                            alt="Dynamic"
-                            className="w-full h-auto"
-                          />
                         )}
                       </span>
                     </div>
@@ -261,13 +278,21 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                         />
                       )}
                     </div>
-                  </div>
-                  <div className="items-center justify-center overflow-hidden flex aspect-[1033/407] my-[15px]">
-                    <span className="flex items-center px-6 w-full block aspect-[3/1]">
-                      <div className="mx-auto w-max text-[2.5rem] border-white text-center">
-                        Doorway
-                      </div>
-                    </span>
+                    <div className="items-center justify-center overflow-hidden flex aspect-[1033/407] my-[15px]">
+                      <span className="flex items-center  w-full block aspect-[3/1]">
+                        <div className="mx-auto w-max text-[2.5rem] border-white text-center">
+                          {data.stripeImage === "" ? (
+                            "Doorway"
+                          ) : (
+                            <img
+                              src={data?.stripeImage}
+                              alt="top Image"
+                              className="max-w-full h-auto m-auto"
+                            />
+                          )}
+                        </div>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -297,7 +322,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                 onClick={() => {
                   setPassType(enums.PASS_VIEW.ANDROID);
                   dispatch(
-                    saveRegistration({
+                    saveCurrentUser({
                       passType: enums.PASS_VIEW.ANDROID,
                     })
                   );
