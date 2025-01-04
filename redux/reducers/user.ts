@@ -5,6 +5,7 @@ import { stat } from "fs";
 export interface UserState {
   steps: number;
   _id: string;
+  role: string;
   accountType: string;
   passType: string;
   firstName: string;
@@ -19,6 +20,7 @@ export interface UserState {
 const initialState: UserState = {
   steps: 0,
   _id: "",
+  role: "",
   accountType: "",
   passType: "",
   firstName: "",
@@ -38,6 +40,7 @@ export const userSlice = createSlice({
       const {
         steps,
         _id,
+        role,
         accountType,
         passType,
         firstName,
@@ -51,6 +54,7 @@ export const userSlice = createSlice({
 
       if (steps !== undefined) state.steps = steps;
       if (_id !== undefined) state._id = _id;
+      if (role !== undefined) state.role = role;
       if (accountType !== undefined) state.accountType = accountType;
       if (passType !== undefined) state.passType = passType;
       if (firstName !== undefined) state.firstName = firstName;
@@ -67,6 +71,7 @@ export const userSlice = createSlice({
     clearCurrentUser: (state) => {
       state.steps = 0;
       state._id = "";
+      state.role = "";
       state.accountType = "";
       state.passType = "";
       state.firstName = "";

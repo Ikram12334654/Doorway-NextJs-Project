@@ -1,10 +1,12 @@
-import { saveCurrentUser } from "@/redux/reducers/registration";
+import { saveAuthToken } from "@/redux/reducers/auth";
+import { saveCurrentUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import { authRoutes } from "@/utils/routes";
+import { decryptJSON } from "@/utils/security";
 import Api from "@/utils/service";
 import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import React from "react";
+import React, { use } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 
@@ -60,16 +62,14 @@ const RegisterPage: React.FC = () => {
       });
 
       if (response) {
-        SuccessToastMessage({ message: response?.message });
+        console.log(response.data);
 
-        dispatch(
-          saveCurrentUser({
-            steps: state.user.steps + 1,
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-          })
-        );
+        const decryptedJSON = await decryptJSON(response?.data);
+
+        const user = decryptedJSON?.user;
+
+        dispatch(saveCurrentUser(user));
+        dispatch(saveAuthToken({ token: response?.accessToken }));
       } else if (error) {
         ErrorToastMessage({ message: error?.message });
       }

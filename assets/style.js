@@ -1,6 +1,5 @@
+import logo from "../public/logo.png";
 
-import logo from '../public/logo.png'
-
-export const DoorwayImages={
-   logo
-}
+export const DoorwayImages = {
+  logo,
+};

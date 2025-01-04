@@ -1,8 +1,13 @@
-import { saveCurrentUser } from "@/redux/reducers/registration";
+import { saveCurrentUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
+import { authRoutes } from "@/utils/routes";
+import Api from "@/utils/service";
+import { ErrorToastMessage } from "@/utils/toast";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import enums from "../../utils/enums";
 import PassPreview from "./passPreview";
+import { decryptJSON } from "@/utils/security";
 const SetUpDoorway: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
@@ -43,19 +48,42 @@ const SetUpDoorway: React.FC = () => {
     }));
   };
 
-  const handleSetupDetails = () => {
+  const handleSetupDetails = async () => {
     const { jobTitle, organizationName, organizationURL } = formData;
 
-    dispatch(
-      saveCurrentUser({
-        steps: state.user.steps + 1,
-        jobTitle: jobTitle,
-        organizationName: organizationName,
-        organizationURL: organizationURL,
-      })
-    );
+    try {
+      const authToken = state.auth.token;
 
-    resetForm();
+      const { response, error } = await Api(
+        "/" + enums.ROLES[state.user.role] + authRoutes.setupAccount,
+        "post",
+        {
+          payload: {
+            jobTitle: jobTitle,
+            organizationName: organizationName,
+            organizationURL: organizationURL,
+          },
+        },
+        authToken
+      );
+
+      if (response) {
+        dispatch(
+          saveCurrentUser({
+            steps: state.user.steps + 1,
+            jobTitle: jobTitle,
+            organizationName: organizationName,
+            organizationURL: organizationURL,
+          })
+        );
+      } else if (error) {
+        ErrorToastMessage({ message: error?.message });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    // resetForm();
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -75,7 +103,6 @@ const SetUpDoorway: React.FC = () => {
       <div className="md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
         Set up your Doorway
       </div>
-
       <div className="min-md:block text-[16px] heading-[25px] min-md:mb-[38px] font-[400] text-center max-w-[287px] min-md:max-w-full">
         Edit your job title to start personalising your Doorway, confirm your
         URL is correct, and click next to see a sample design.

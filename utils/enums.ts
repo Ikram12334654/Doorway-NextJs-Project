@@ -14,4 +14,12 @@ const ACCOUNT_TYPE = {
   ORGANIZATION: "organization",
 };
 
-export default { Environment, PASS_VIEW, ACCOUNT_TYPE };
+const ROLES = {
+  0: "employee",
+  1: "user",
+  2: "organization",
+  3: "enterprise",
+  4: "superAdmin",
+};
+
+export default { Environment, PASS_VIEW, ACCOUNT_TYPE, ROLES };
