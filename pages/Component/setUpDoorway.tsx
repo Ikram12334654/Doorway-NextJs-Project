@@ -6,6 +6,7 @@ import { ErrorToastMessage } from "@/utils/toast";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import enums from "../../utils/enums";
+import Button from "./button";
 import PassPreview from "./passPreview";
 import { decryptJSON } from "@/utils/security";
 const SetUpDoorway: React.FC = () => {
@@ -13,10 +14,11 @@ const SetUpDoorway: React.FC = () => {
   const dispatch = useDispatch();
 
   const [isValidURL, setIsValidURL] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     jobTitle: state.user.jobTitle || "",
     organizationName: state.user.organizationName || "",
-    organizationURL: state.user.organizationURL || "",
+    organizationURL: state.user.URLS[0] || "",
   });
 
   const isFormValid =
@@ -52,6 +54,8 @@ const SetUpDoorway: React.FC = () => {
     const { jobTitle, organizationName, organizationURL } = formData;
 
     try {
+      setLoading(true);
+
       const authToken = state.auth.token;
 
       const { response, error } = await Api(
@@ -67,23 +71,25 @@ const SetUpDoorway: React.FC = () => {
         authToken
       );
 
+      setLoading(false);
+
       if (response) {
         dispatch(
           saveCurrentUser({
             steps: state.user.steps + 1,
             jobTitle: jobTitle,
             organizationName: organizationName,
-            organizationURL: organizationURL,
+            URLS: [organizationURL],
           })
         );
       } else if (error) {
         ErrorToastMessage({ message: error?.message });
       }
     } catch (error) {
-      console.log(error);
+      setLoading(false);
     }
 
-    // resetForm();
+    resetForm();
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -103,6 +109,7 @@ const SetUpDoorway: React.FC = () => {
       <div className="md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
         Set up your Doorway
       </div>
+
       <div className="min-md:block text-[16px] heading-[25px] min-md:mb-[38px] font-[400] text-center max-w-[287px] min-md:max-w-full">
         Edit your job title to start personalising your Doorway, confirm your
         URL is correct, and click next to see a sample design.
@@ -163,15 +170,7 @@ const SetUpDoorway: React.FC = () => {
               )}
             </div>
 
-            <button
-              type="submit"
-              disabled={!isFormValid}
-              className={`${
-                isFormValid ? "bg-themeColor" : "bg-gray-400 cursor-pointer"
-              } text-white text-[15px] font-[500] rounded-[5px] py-[12px]`}
-            >
-              Submit
-            </button>
+            <Button loading={loading} disabled={!isFormValid} />
           </form>
         </div>
       </div>

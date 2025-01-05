@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import QRImage from "../../public/QrImage.png";
 import DefaultLogo from "./defaultLogo";
+import QRCode from "./QRCanvas";
 
 interface formValues {
   jobTitle?: string;
@@ -20,31 +21,21 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
-  const [qrCode, setQrCode] = useState<string>("");
   const [passType, setPassType] = useState(
     state.user.passType || enums.PASS_VIEW.APPLE
   );
-  // const stateStripeImage = state.registration.stripeImage
-  //   ? URL.createObjectURL(state.registration.stripeImage)
-  //   : null;
-  // const statetopLeftImage = state.registration.topLeftLogo
-  //   ? URL.createObjectURL(state.registration.topLeftLogo)
-  //   : null;
+
   const data = {
     jobTitle:
       values?.jobTitle?.toUpperCase() || state.user.jobTitle || "DESIGNATION",
     organizationName:
       values?.organizationName || state.user.organizationName || "Doorway",
     organizationURL:
-      values?.organizationURL ||
-      state.user.organizationURL ||
-      "https://doorway.io/",
+      values?.organizationURL || state.user.URLS[0] || "https://doorway.io/",
     backgroundColor:
-      values?.backgroundColor ||
-      state.user.backgroundColor ||
-      "rgb(34, 36, 44)",
-    stripeImage: values?.stripImage,
-    logoImage: values?.logoImage,
+      values?.backgroundColor || state.design.backgroundColor || "#22242C",
+    stripImage: values?.stripImage || state.design.stripImage || "",
+    logoImage: values?.logoImage || state.design.logoImage || "",
   };
 
   return (
@@ -68,7 +59,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                         ) : (
                           <img
                             src={data?.logoImage}
-                            alt="top Image"
+                            alt="Logo Image"
                             className="max-w-full h-auto m-auto"
                           />
                         )}
@@ -77,10 +68,10 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                     <div className="items-center justify-center overflow-hidden flex aspect-[1033/407] my-[15px]">
                       <span className="flex items-center w-full block aspect-[3/1]">
                         <div className="mx-auto w-max text-[2.5rem] border-white text-center">
-                          {data.stripeImage ? (
+                          {data.stripImage ? (
                             <img
-                              src={data?.stripeImage}
-                              alt="top Image"
+                              src={data?.stripImage}
+                              alt="Strip Image"
                               className="max-w-full h-auto m-auto"
                             />
                           ) : (
@@ -106,9 +97,9 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                         </p>
                       </div>
                     </div>
-                    <div className="bg-white mx-auto rounded-md card-qrcode max-w-[138px] ">
-                      {qrCode ? (
-                        <img src={qrCode} alt="QrCode" />
+                    <div className="bg-white mx-auto rounded-md card-qrcode max-w-[138px] py-2 px-2 flex justify-center items-center">
+                      {state.user ? (
+                        <QRCode />
                       ) : (
                         <Image
                           src={QRImage}
@@ -133,10 +124,10 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                   <div className="flex flex-col h-full justify-between pb-6">
                     <div className="mt-3 ml-3 w-1/6">
                       <span className="block w-6  mt-3 ml-3 w-1/6">
-                        {data.logoImage !== "" ? (
+                        {data.logoImage ? (
                           <img
                             src={data?.logoImage}
-                            alt="top Image"
+                            alt="Logo Image"
                             className="w-full h-auto m-auto"
                           />
                         ) : (
@@ -161,9 +152,9 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                         </p>
                       </div>
                     </div>
-                    <div className="bg-white mx-auto rounded-md card-qrcode max-w-[138px] ">
-                      {qrCode ? (
-                        <img src={qrCode} alt="QrCode" />
+                    <div className="bg-white mx-auto rounded-md card-qrcode max-w-[138px] py-2 px-2 flex justify-center items-center">
+                      {state.user ? (
+                        <QRCode />
                       ) : (
                         <Image
                           src={QRImage}
@@ -176,12 +167,12 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                     <div className="items-center justify-center overflow-hidden flex aspect-[1033/407] my-[15px]">
                       <span className="flex items-center  w-full block aspect-[3/1]">
                         <div className="mx-auto w-max text-[2.5rem] border-white text-center">
-                          {data.stripeImage === "" ? (
+                          {!data.stripImage ? (
                             "Doorway"
                           ) : (
                             <img
-                              src={data?.stripeImage}
-                              alt="top Image"
+                              src={data?.stripImage}
+                              alt="Strip Image"
                               className="max-w-full h-auto m-auto"
                             />
                           )}

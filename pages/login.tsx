@@ -18,6 +18,10 @@ import SocialLoginButton from "./Component/socialLoginButton";
 
 import { saveAuthToken } from "@/redux/reducers/auth";
 import env from "../utils/config";
+import { useRouter } from "next/router";
+import { decryptJSON } from "@/utils/security";
+import { saveCurrentUser } from "@/redux/reducers/user";
+import { saveCurrentDesign } from "@/redux/reducers/design";
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -28,6 +32,7 @@ function Login() {
     apple: false,
     linkedIn: false,
   });
+
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .email("Invalid email format")
@@ -58,7 +63,12 @@ function Login() {
     password: string;
   }
 
+  const router = useRouter();
   const dispatch = useDispatch();
+
+  const handleRoute = () => {
+    router.push("/register");
+  };
 
   const loginWithGoogle = async () => {
     setSocialLoginState((prevState) => ({
@@ -86,8 +96,17 @@ function Login() {
       setLoading(false);
 
       if (response) {
+        const decryptedJSON = decryptJSON(response.data);
+        const user = decryptedJSON?.user;
+        const design = decryptedJSON?.design;
+
+        user && dispatch(saveCurrentUser({ ...user, emails: [user.email] }));
+        design && dispatch(saveCurrentDesign(design));
+
+        dispatch(saveAuthToken({ token: response?.accessToken }));
+
         SuccessToastMessage({ message: response?.message });
-        dispatch(saveAuthToken({ token: response?.token }));
+        handleRoute();
       } else if (error) {
         ErrorToastMessage({ message: error?.message });
       }

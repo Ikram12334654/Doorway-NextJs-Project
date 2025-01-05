@@ -3,6 +3,7 @@ export const authRoutes = {
   loginWithGoogle: "/auth/google",
   register: "/auth/signUp",
   setupAccount: "/setupAccount",
+  setupDesign: "/setupDesign",
 };
 
 export default { authRoutes };

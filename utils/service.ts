@@ -15,9 +15,9 @@ export default async function Api<T>(
 ): Promise<{ response?: T; error?: string }> {
   const url = BASE_URL + path;
 
-  const headers: AxiosRequestConfig["headers"] = authToken
-    ? { Authorization: `Bearer ${authToken}` }
-    : {};
+  const headers: AxiosRequestConfig["headers"] = {
+    ...(authToken && { Authorization: `Bearer ${authToken}` }),
+  };
 
   try {
     const response = await axios({

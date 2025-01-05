@@ -4,20 +4,22 @@ import { RootState } from "@/redux/store";
 import { authRoutes } from "@/utils/routes";
 import { decryptJSON } from "@/utils/security";
 import Api from "@/utils/service";
-import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
+import { ErrorToastMessage } from "@/utils/toast";
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import React, { use } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
+import Button from "./button";
 
 const RegisterPage: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const initialValues = {
     firstName: state.user.firstName || "",
     lastName: state.user.lastName || "",
-    email: state.user.email || "",
+    email: state.user.emails[0] || "",
     password: "",
     referral: "",
     terms: false,
@@ -50,6 +52,8 @@ const RegisterPage: React.FC = () => {
   const handleSubmit = async ({ values }: { values: FormValues }) => {
     const { firstName, lastName, email, password, referral } = values;
     try {
+      setLoading(true);
+
       const { response, error } = await Api(authRoutes.register, "post", {
         payload: {
           firstName: firstName,
@@ -61,19 +65,19 @@ const RegisterPage: React.FC = () => {
         },
       });
 
+      setLoading(false);
+
       if (response) {
-        console.log(response.data);
-
         const decryptedJSON = await decryptJSON(response?.data);
-
         const user = decryptedJSON?.user;
-
-        dispatch(saveCurrentUser(user));
+        dispatch(saveCurrentUser({ ...user, emails: [user.email] }));
         dispatch(saveAuthToken({ token: response?.accessToken }));
       } else if (error) {
         ErrorToastMessage({ message: error?.message });
       }
-    } catch (error) {}
+    } catch (error) {
+      setLoading(false);
+    }
   };
 
   return (
@@ -213,15 +217,7 @@ const RegisterPage: React.FC = () => {
             </div>
 
             <div className="w-[280px] mx-auto">
-              <button
-                type="submit"
-                disabled={!isValid || isSubmitting}
-                className={`${
-                  !isValid || isSubmitting ? "bg-gray-400" : "bg-themeColor"
-                } text-white cursor-pointer text-[15px] font-[500] rounded-[5px] py-[12px] min-md:py-[14px] text-center w-[280px]`}
-              >
-                Next
-              </button>
+              <Button loading={loading} disabled={!isValid || isSubmitting} />
             </div>
           </Form>
         )}

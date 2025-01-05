@@ -1,6 +1,5 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { stat } from "fs";
 
 export interface UserState {
   steps: number;
@@ -8,28 +7,36 @@ export interface UserState {
   role: string;
   accountType: string;
   passType: string;
+  prefix: string;
+  sufix: string;
   firstName: string;
   lastName: string;
-  email: string;
+  photo: string;
+  emails: string[];
+  phones: string[];
+  URLS: string[];
+  addresses: string[];
   jobTitle: string;
   organizationName: string;
-  organizationURL: string;
-  backgroundColor: string;
 }
 
 const initialState: UserState = {
   steps: 0,
   _id: "",
   role: "",
+  prefix: "",
+  sufix: "",
   accountType: "",
   passType: "",
   firstName: "",
   lastName: "",
-  email: "",
+  photo: "",
+  emails: [],
+  phones: [],
+  URLS: [],
+  addresses: [],
   jobTitle: "",
   organizationName: "",
-  organizationURL: "",
-  backgroundColor: "",
 };
 
 export const userSlice = createSlice({
@@ -45,41 +52,52 @@ export const userSlice = createSlice({
         passType,
         firstName,
         lastName,
-        email,
+        emails,
+        URLS,
+        addresses,
+        phones,
+        photo,
         jobTitle,
+        prefix,
+        sufix,
         organizationName,
-        organizationURL,
-        backgroundColor,
       } = action.payload;
 
       if (steps !== undefined) state.steps = steps;
       if (_id !== undefined) state._id = _id;
+      if (prefix !== undefined) state.prefix = prefix;
+      if (sufix !== undefined) state.sufix = sufix;
       if (role !== undefined) state.role = role;
       if (accountType !== undefined) state.accountType = accountType;
       if (passType !== undefined) state.passType = passType;
       if (firstName !== undefined) state.firstName = firstName;
       if (lastName !== undefined) state.lastName = lastName;
-      if (email !== undefined) state.email = email;
+      if (emails !== undefined) state.emails = emails;
+      if (phones !== undefined) state.phones = phones;
+      if (URLS !== undefined) state.URLS = URLS;
+      if (addresses !== undefined) state.addresses = addresses;
+      if (photo !== undefined) state.photo = photo;
       if (jobTitle !== undefined) state.jobTitle = jobTitle;
       if (organizationName !== undefined)
         state.organizationName = organizationName;
-      if (organizationURL !== undefined)
-        state.organizationURL = organizationURL;
-      if (backgroundColor !== undefined)
-        state.backgroundColor = backgroundColor;
     },
     clearCurrentUser: (state) => {
       state.steps = 0;
       state._id = "";
       state.role = "";
+      state.prefix = "";
+      state.sufix = "";
       state.accountType = "";
       state.passType = "";
       state.firstName = "";
       state.lastName = "";
-      state.email = "";
+      state.emails = [];
+      state.phones = [];
+      state.URLS = [];
+      state.addresses = [];
+      state.photo = "";
       state.jobTitle = "";
       state.organizationName = "";
-      state.organizationURL = "";
     },
   },
 });

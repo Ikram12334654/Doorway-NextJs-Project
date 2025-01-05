@@ -1,5 +1,4 @@
 import AuthNavbar from "@/assets/authNavbar";
-import { saveCurrentUser } from "@/redux/reducers/registration";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -10,6 +9,7 @@ import EditYourDesign from "../Component/EditYourDesign";
 import RegisterPage from "../Component/registerPage";
 import SelectRequirements from "../Component/SelectRequirements";
 import SetUpDoorway from "../Component/setUpDoorway";
+import { saveCurrentUser } from "@/redux/reducers/user";
 
 function Register() {
   const state = useSelector((state: RootState) => state);
@@ -239,7 +239,7 @@ function Register() {
             )}
             {state.user.steps === 4 && (
               <div className="w-[80%] h-max flex flex-col items-center justify-center m-auto">
-                <SelectRequirements cancel={cancelParam} />
+                <SelectRequirements />
               </div>
             )}
           </div>

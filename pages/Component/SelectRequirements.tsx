@@ -1,13 +1,6 @@
-import { useRouter } from "next/router";
 import React from "react";
 
-interface SelectRequirementsProps {
-  cancel?: boolean; // Optional boolean parameter
-}
-const SelectRequirements: React.FC<SelectRequirementsProps> = ({ cancel }) => {
-  const routes = useRouter();
-  const paymentRoute = (amount: number) =>
-    routes.push(`/register/pay/${amount}`);
+const SelectRequirements: React.FC = () => {
   return (
     <div className="flex flex-col items-center p-10">
       <div className="text-center max-w-[920px] mx-auto mb-[8px]">
@@ -71,16 +64,10 @@ const SelectRequirements: React.FC<SelectRequirementsProps> = ({ cancel }) => {
         </a>
       </div>
 
-      {cancel === true && (
-        <div className="text-center  text-[#FF0000] p-[10px] text-base mb-[45px] ">
-          Your subscription choice was cancelled. Please choose again.
-        </div>
-      )}
-
       <div className="flex flex-col min-md:flex-row gap-[20px] items-center min-md:items-stretch min-md:justify-center">
         <div
           className="group border  border-[#BEBEBE] border-opacity-40 hover:border-themeColor hover:cursor-pointer w-[269px] flex flex-col justify-start rounded-[10px] py-[24px] relative min-md:min-h-[546px] transition-all"
-          onClick={() => paymentRoute(300)}
+          onClick={() => {}}
         >
           <div className="flex flex-col items-center">
             <div className="text-[#061C33] text-center font-inter text-[30px] font-bold leading-snug">
@@ -121,7 +108,7 @@ const SelectRequirements: React.FC<SelectRequirementsProps> = ({ cancel }) => {
 
         <div
           className="group border border-[#BEBEBE] border-opacity-40 hover:border-themeColor hover:cursor-pointer w-[269px] flex flex-col justify-start rounded-[10px] py-[24px] relative min-md:min-h-[546px] transition-all"
-          onClick={() => paymentRoute(750)}
+          onClick={() => {}}
         >
           <div className="flex flex-col items-center">
             <div className="text-[#061C33] text-center font-inter text-[30px] font-bold leading-snug">

@@ -1,15 +1,15 @@
-import { saveCurrentUser } from "@/redux/reducers/user";
+import AuthNavbar from "@/assets/authNavbar";
+import { clearCurrentUser, saveCurrentUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EditYourDesign from "./Component/EditYourDesign";
 import RegisterPage from "./Component/registerPage";
 import SelectRequirements from "./Component/SelectRequirements";
 import SetUpDoorway from "./Component/setUpDoorway";
-import AuthNavbar from "@/assets/authNavbar";
+import Button from "./Component/button";
 
 function Register() {
   const state = useSelector((state: RootState) => state);
@@ -17,17 +17,6 @@ function Register() {
   const dispatch = useDispatch();
 
   const [type, setType] = useState(state.user.accountType || "");
-  const router = useRouter();
-  const [cancelParam, setCancelParam] = useState<boolean | undefined>(
-    undefined
-  );
-
-  useEffect(() => {
-    if (router.isReady) {
-      const { cancel } = router.query;
-      setCancelParam(cancel === "true");
-    }
-  }, [router.isReady, router.query]);
 
   return (
     <div className="w-screen h-screen flex flex-col">
@@ -114,7 +103,7 @@ function Register() {
                     : "bg-themeColor"
                 }`}
               >
-                <button
+                <Button
                   onClick={() => {
                     dispatch(
                       saveCurrentUser({
@@ -124,14 +113,7 @@ function Register() {
                     );
                   }}
                   disabled={type ? false : true}
-                  className={`bg-themeColor w-[285px] disabled:bg-gray-400 text-white cursor-pointer text-[15px] font-[500] heading-[14px] rounded-[5px] py-[12px] min-md:py-[14px] text-center ${
-                    state.user.accountType === ""
-                      ? "bg-gray-400 cursor-default"
-                      : "bg-themeColor"
-                  }`}
-                >
-                  Next
-                </button>
+                />
               </div>
             </div>
           </div>

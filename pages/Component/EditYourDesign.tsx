@@ -1,19 +1,26 @@
+import { saveCurrentDesign } from "@/redux/reducers/design";
 import { saveCurrentUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
+import enums from "@/utils/enums";
+import { authRoutes } from "@/utils/routes";
+import { decryptJSON } from "@/utils/security";
+import Api from "@/utils/service";
 import { ErrorToastMessage } from "@/utils/toast";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Button from "./button";
 import PassPreview from "./passPreview";
 
 const EditYourDesign: React.FC = () => {
-  const state = useSelector((state: RootState) => state);
-  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [stripImage, setStripImage] = React.useState<File | null>(null);
   const [stripImagePreview, setStripImagePreview] = useState<string>("");
-  const [topLeftLogo, setTopLeftLogo] = React.useState<File | null>(null);
-  const [topLeftLogoPreview, setTopLeftLogoPreview] =
-    React.useState<string>("");
+  const [logoImage, setLogoImage] = React.useState<File | null>(null);
+  const [logoImagePreview, setLogoImagePreview] = React.useState<string>("");
   const [backgroundColor, setBackgroundColor] = useState("#21242b");
+
+  const state = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
 
   const maxSize = 1 * 1024 * 1024; // 1MB in bytes
 
@@ -35,39 +42,77 @@ const EditYourDesign: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > maxSize) {
-        alert("File size exceeds the maximum limit of 5MB.");
+        ErrorToastMessage({
+          message: "File size exceeds the maximum limit of 1MB.",
+        });
       } else {
-        console.log("in");
-        setTopLeftLogo(file);
-        setTopLeftLogoPreview(URL.createObjectURL(file));
+        setLogoImage(file);
+        setLogoImagePreview(URL.createObjectURL(file));
       }
     }
   };
+
   const resetForm = () => {
     setBackgroundColor("#21242b");
+    setLogoImage(null);
+    setLogoImagePreview("");
     setStripImage(null);
     setStripImagePreview("");
-    setTopLeftLogo(null);
-    setTopLeftLogoPreview("");
-  };
-  const handleSetupDetails = () => {
-    dispatch(
-      saveCurrentUser({
-        steps: state.user.steps + 1,
-        backgroundColor: backgroundColor,
-        // stripeImage: stripImage,
-        // topLeftLogo: topLeftLogo,
-      })
-    );
-
-    resetForm();
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    handleSetupDetails();
-  };
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBackgroundColor(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+      setLoading(true);
+
+      const formData = new FormData();
+
+      const authToken = state.auth.token;
+
+      formData.append("backgroundColor", backgroundColor || "");
+      formData.append("logoImage", logoImage || "");
+      formData.append("stripImage", stripImage || "");
+
+      const { response, error } = await Api(
+        "/" + enums.ROLES[state.user.role] + authRoutes.setupDesign,
+        "post",
+        {
+          payload: formData,
+        },
+        authToken
+      );
+
+      setLoading(false);
+
+      if (response) {
+        const design = decryptJSON(response?.data);
+
+        dispatch(
+          saveCurrentDesign({
+            backgroundColor: design?.backgroundColor,
+            default: design?.default,
+            logoImage: design?.logoImage,
+            stripImage: design?.stripImage,
+            name: design?.name,
+          })
+        );
+        dispatch(
+          saveCurrentUser({
+            steps: state.user.steps + 1,
+          })
+        );
+      } else if (error) {
+        ErrorToastMessage({ message: error?.message });
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+
+    resetForm();
   };
 
   return (
@@ -87,7 +132,7 @@ const EditYourDesign: React.FC = () => {
               values={{
                 backgroundColor: backgroundColor,
                 stripImage: stripImagePreview,
-                logoImage: topLeftLogoPreview,
+                logoImage: logoImagePreview,
               }}
             />
           </div>
@@ -151,7 +196,7 @@ const EditYourDesign: React.FC = () => {
                     accept="image/png, image/jpg , image/jpeg , image/JPG"
                     id="stripeImage"
                     hidden
-                    onChange={handleFileChange} // Correct invocation here
+                    onChange={handleFileChange}
                   />
                   {stripImagePreview ? (
                     <div className="flex flex-row justify-between w-full ">
@@ -187,7 +232,7 @@ const EditYourDesign: React.FC = () => {
                 <label
                   htmlFor="topLeftLogoInput"
                   className={`cursor-pointer flex items-center w-full ${
-                    topLeftLogoPreview ? "text-[black]" : "text-[#BEBEBE]"
+                    logoImagePreview ? "text-[black]" : "text-[#BEBEBE]"
                   }`}
                 >
                   <input
@@ -197,17 +242,17 @@ const EditYourDesign: React.FC = () => {
                     hidden
                     onChange={handleFileChangeLogo}
                   />
-                  {topLeftLogoPreview ? (
+                  {logoImagePreview ? (
                     <div className="flex flex-row justify-between w-full ">
-                      <div>{topLeftLogo?.name}</div>
+                      <div>{logoImage?.name}</div>
 
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 16 16"
                         width="1em"
                         onClick={() => {
-                          setTopLeftLogo(null);
-                          setTopLeftLogoPreview("");
+                          setLogoImage(null);
+                          setLogoImagePreview("");
                         }}
                         height="1em"
                         fill="currentColor"
@@ -223,23 +268,10 @@ const EditYourDesign: React.FC = () => {
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={
-                stripImage === null &&
-                topLeftLogo === null &&
-                backgroundColor !== ""
-              }
-              className={`${
-                stripImage === null &&
-                topLeftLogo === null &&
-                backgroundColor !== ""
-                  ? "bg-[#BEBEBE]"
-                  : "bg-themeColor"
-              } text-white text-[15px] font-[500] rounded-[5px] py-[12px]`}
-            >
-              Submit
-            </button>
+            <Button
+              loading={loading}
+              disabled={!stripImage || !logoImage || !backgroundColor}
+            />
           </form>
         </div>
       </div>
