@@ -15,6 +15,7 @@ const RegisterPage: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const initialValues = {
     firstName: state.user.firstName || "",
@@ -30,9 +31,14 @@ const RegisterPage: React.FC = () => {
     email: Yup.string()
       .email("Invalid email address")
       .required("Email is required"),
-    password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
+      password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+      .matches(/[0-9]/, "Password must contain at least one number")
+      .matches(/[@$!%*?&]/, "Password must contain at least one special character (@, $, !, %, *, ?, &)")
       .required("Password is required"),
+    
     referral: Yup.string().required("This field is required"),
     terms: Yup.boolean().oneOf(
       [true],
@@ -48,7 +54,37 @@ const RegisterPage: React.FC = () => {
     referral: string;
     terms: boolean;
   }
-
+  const generateStrongPassword = () => {
+    const length = 12; // Desired password length
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const specialChars = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+  
+    // Ensure the password contains at least one of each required character type
+    let password =
+      lowercase.charAt(Math.floor(Math.random() * lowercase.length)) +
+      uppercase.charAt(Math.floor(Math.random() * uppercase.length)) +
+      numbers.charAt(Math.floor(Math.random() * numbers.length)) +
+      specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+  
+    // Combine all character pools
+    const allChars = lowercase + uppercase + numbers + specialChars;
+  
+    // Fill the remaining characters up to the desired length
+    for (let i = password.length; i < length; i++) {
+      password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+    }
+  
+    // Shuffle the password to randomize character order
+    password = password
+      .split("")
+      .sort(() => Math.random() - 0.5)
+      .join("");
+  
+    return password;
+  };
+  
   const handleSubmit = async ({ values }: { values: FormValues }) => {
     const { firstName, lastName, email, password, referral } = values;
     try {
@@ -96,7 +132,7 @@ const RegisterPage: React.FC = () => {
           resetForm();
         }}
       >
-        {({ isSubmitting, isValid }) => (
+        {({ isSubmitting, isValid , values, setFieldValue }) => (
           <Form className="flex flex-col gap-[17px] min-md:gap-[30px] mt-[30px]">
             <div className="flex gap-[17px] flex-col min-md:flex-row items-center min-md:items-start">
               <div className="w-[298px]">
@@ -156,11 +192,14 @@ const RegisterPage: React.FC = () => {
                   className="text-red-500 text-sm"
                 />
               </div>
-              <div className="w-[298px]">
+              <div className="w-[298px] relative">
                 <label className="text-[#304861] text-[15px] min-md:text-[13px] font-[500] heading-[20px]">
                   Password
                 </label>
-                <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] min-md:min-h-[40px] px-[11px] flex items-center">
+                <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] min-md:min-h-[40px] px-[11px] flex items-center"
+                  onFocus={() => setTooltipVisible(true)} // Show tooltip on focus
+                  onBlur={() => setTooltipVisible(false)} // Hide tooltip on blur
+                  onMouseEnter={()=>setTooltipVisible(true)}>
                   <Field
                     type="password"
                     name="password"
@@ -168,14 +207,27 @@ const RegisterPage: React.FC = () => {
                     placeholder="Password"
                   />
                 </div>
+                {values.password === "" && tooltipVisible && (
+    <div
+    className="absolute top-full left-0 cursor-pointer -mt-1 bg-black text-white p-2 rounded shadow-md text-sm w-full z-10"
+    onClick={() => {
+      setFieldValue("password", generateStrongPassword());
+      setTooltipVisible(false); // Close tooltip after generating password
+    }}
+  >
+    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[6px] border-b-black" />
+   <div className="text-sm p-1"> Click to generate a strong password</div>
+  </div>
+              )}
                 <ErrorMessage
                   name="password"
                   component="div"
                   className="text-red-500 text-sm"
                 />
               </div>
+              
             </div>
-
+           
             <div className="w-[298px] min-md:w-full mx-auto">
               <label className="text-[#304861] text-[15px] min-md:text-[13px] font-[500] heading-[20px]">
                 How did you hear about us?

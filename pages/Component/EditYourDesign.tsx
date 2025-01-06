@@ -6,10 +6,14 @@ import { authRoutes } from "@/utils/routes";
 import { decryptJSON } from "@/utils/security";
 import Api from "@/utils/service";
 import { ErrorToastMessage } from "@/utils/toast";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "./button";
 import PassPreview from "./passPreview";
+import  Cropper  from "react-cropper";
+import "cropperjs/dist/cropper.css";
+
+
 
 const EditYourDesign: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -18,10 +22,12 @@ const EditYourDesign: React.FC = () => {
   const [logoImage, setLogoImage] = React.useState<File | null>(null);
   const [logoImagePreview, setLogoImagePreview] = React.useState<string>("");
   const [backgroundColor, setBackgroundColor] = useState("#21242b");
-
+  const [logoImageCropped,setLogoImageCropped]=useState<string|null>(null)
+  const [stripeImageCropped,setStripeImageCropped]=useState<string|null>(null)
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
-
+  const logoImageCropperRef = useRef<Cropper>(null);
+  const stripeImageCropperRef = useRef<Cropper>(null); 
   const maxSize = 1 * 1024 * 1024; // 1MB in bytes
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,6 +121,25 @@ const EditYourDesign: React.FC = () => {
     resetForm();
   };
 
+  const handleCropLogoImage = () => {
+    if (logoImageCropperRef.current) {
+      const cropperInstance = logoImageCropperRef.current.cropper; // Access cropper instance
+      const croppedCanvas = cropperInstance.getCroppedCanvas(); // Call getCroppedCanvas on the cropper instance
+      if (croppedCanvas) {
+        setLogoImageCropped(croppedCanvas.toDataURL("image/png")); // Set the cropped image data
+      }
+    }
+  };
+
+  const handleCropStripeImage = () => {
+    if (stripeImageCropperRef.current) {
+      const cropperInstance = stripeImageCropperRef.current.cropper; // Access cropper instance
+      const croppedCanvas = cropperInstance.getCroppedCanvas(); // Call getCroppedCanvas on the cropper instance
+      if (croppedCanvas) {
+        setStripeImageCropped(croppedCanvas.toDataURL("image/png")); // Set the cropped image data
+      }
+    }
+  };
   return (
     <div className="flex flex-col items-center">
       <div className="md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
@@ -221,6 +246,26 @@ const EditYourDesign: React.FC = () => {
                     ".png or .jpeg files only"
                   )}
                 </label>
+              {stripImagePreview  && (
+                        <div className="mb-4">
+                          <Cropper
+                            src={stripImagePreview}
+                            ref={stripeImageCropperRef} // Use the correctly typed ref
+                            className="cropper"
+                            style={{
+                              width: "96%",
+                              height: "auto",
+                              margin: "auto",
+                            }} // Dynamically set cropper size
+                            aspectRatio={1} // Maintain a square crop
+                            guides={false}
+                            scalable={true}
+                            viewMode={1}
+                            cropBoxResizable={true}
+                            crop={handleCropStripeImage} // Trigger handleCrop on crop update
+                          />
+                        </div>
+                      )}
               </div>
             </div>
 
@@ -265,6 +310,26 @@ const EditYourDesign: React.FC = () => {
                     ".png or .jpeg files only"
                   )}
                 </label>
+                {logoImagePreview  && (
+                        <div className="mb-4">
+                          <Cropper
+                            src={logoImagePreview}
+                            ref={logoImageCropperRef} // Use the correctly typed ref
+                            className="cropper"
+                            style={{
+                              width: "96%",
+                              height: "auto",
+                              margin: "auto",
+                            }} // Dynamically set cropper size
+                            aspectRatio={1} // Maintain a square crop
+                            guides={false}
+                            scalable={true}
+                            viewMode={1}
+                            cropBoxResizable={true}
+                            crop={handleCropLogoImage} // Trigger handleCrop on crop update
+                          />
+                        </div>
+                      )}
               </div>
             </div>
 

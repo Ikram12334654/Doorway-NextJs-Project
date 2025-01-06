@@ -15,6 +15,9 @@ interface formValues {
   backgroundColor?: string;
   stripImage?: string;
   logoImage?: string;
+  firstName?:string;
+  lastName?:string;
+  deviceType?:string;
 }
 
 const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
@@ -36,6 +39,12 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
       values?.backgroundColor || state.design.backgroundColor || "#22242C",
     stripImage: values?.stripImage || state.design.stripImage || "",
     logoImage: values?.logoImage || state.design.logoImage || "",
+    firstName:
+    values?.firstName || state.user.firstName || "" ,
+    lastName:
+    values?.lastName || state.user.lastName || "",
+    deviceType:
+    values?.deviceType || state.user.passType || ""
   };
 
   return (
@@ -92,7 +101,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                           className="text-mde font-extralight"
                           style={{ color: "rgb(255, 255, 255)" }}
                         >
-                          {state.user.firstName + " " + state.user.lastName ||
+                          {data.firstName + " " + data.lastName||
                             ""}
                         </p>
                       </div>
@@ -183,7 +192,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                 </div>
               </div>
             )}
-            <div className="flex mt-[12px] justify-center gap-[22px] text-[10px] font-[500]">
+          {state.user.accountType===enums.ACCOUNT_TYPE.ORGANIZATION &&  <div className="flex mt-[12px] justify-center gap-[22px] text-[10px] font-[500]">
               <span
                 className={`cursor-pointer ${
                   passType === enums.PASS_VIEW.APPLE
@@ -216,7 +225,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
               >
                 {enums.PASS_VIEW.ANDROID}
               </span>
-            </div>
+            </div>}
           </div>
         </div>
       </div>

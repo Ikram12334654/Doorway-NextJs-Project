@@ -10,6 +10,8 @@ import RegisterPage from "../Component/registerPage";
 import SelectRequirements from "../Component/SelectRequirements";
 import SetUpDoorway from "../Component/setUpDoorway";
 import { saveCurrentUser } from "@/redux/reducers/user";
+import CustomizeYourDesign from "../Component/customizeDoorway";
+import SaveToWallet from "../Component/SaveToWallet";
 
 function Register() {
   const state = useSelector((state: RootState) => state);
@@ -242,6 +244,95 @@ function Register() {
                 <SelectRequirements />
               </div>
             )}
+          </div>
+        )}
+                {state.user.accountType &&
+        state.user.accountType === enums.ACCOUNT_TYPE.PERSONAL && (
+          <div className="w-[75%] ml-auto mr-auto mt-10 ">
+            <div className="hidden min-xl:flex justify-center">
+              <div className="flex gap-[10px] items-center mb-[22px] xl:mb-[30px]">
+                <div className="bg-themeColor h-[17px] w-[17px] min-xl:h-[23px] min-xl:w-[23px] flex items-center justify-center rounded-full text-white text-[10px]">
+                  1
+                </div>
+                <div className="text-themeColor text-[8px] min-xl:text-[18px]">
+                  {" "}
+                  Create a Login
+                </div>
+                <div
+                  className={`mr-[15px] ml-[5px] ${
+                    state.user.steps >= 2
+                      ? "text-themeColor"
+                      : "text-[#BEBEBE]"
+                  } text-[13px] min-xl:text-[18px]  font-bold text-lg`}
+                >
+                  <ArrowForwardIcon fontSize="inherit" />
+                </div>
+                <div
+                  className={`${
+                    state.user.steps >= 2
+                      ? "bg-themeColor"
+                      : "bg-[#BEBEBE]"
+                  } h-[17px] w-[17px] min-xl:h-[23px] min-xl:w-[23px] flex items-center justify-center rounded-full text-white text-[10px]`}
+                >
+                  2
+                </div>
+                <div
+                  className={`${
+                    state.user.steps >= 2
+                      ? "text-themeColor"
+                      : "text-[#BEBEBE]"
+                  } text-[8px] min-xl:text-[18px]`}
+                >
+                  {" "}
+                  Customize Doorway
+                </div>
+                <div
+                  className={`mr-[15px] ml-[5px] ${
+                    state.user.steps >= 3
+                      ? "text-themeColor"
+                      : "text-[#BEBEBE]"
+                  } text-[13px] min-xl:text-[18px]  font-bold text-lg`}
+                >
+                  <ArrowForwardIcon fontSize="inherit" />
+                </div>
+                <div
+                  className={`${
+                    state.user.steps >= 3
+                      ? "bg-themeColor"
+                      : "bg-[#BEBEBE]"
+                  } h-[17px] w-[17px] min-xl:h-[23px] min-xl:w-[23px] flex items-center justify-center rounded-full text-white text-[10px]`}
+                >
+                  3
+                </div>
+                <div
+                  className={`${
+                    state.user.steps >= 3
+                      ? "text-themeColor"
+                      : "text-[#BEBEBE]"
+                  } text-[8px] min-xl:text-[18px]`}
+                >
+                  {" "}
+                 Save to Wallet
+                </div>
+              </div>
+            </div>
+
+            {state.user.steps === 1 && (
+              <div className="w-[80%] h-max flex flex-col items-center justify-center m-auto">
+                <RegisterPage />
+              </div>
+            )}
+            {state.user.steps === 2 && (
+              <div className="w-[80%] h-max flex flex-col items-center justify-center m-auto">
+                <CustomizeYourDesign />
+              </div>
+            )}
+            {state.user.steps === 3 && (
+              <div className="w-[80%] h-max flex flex-col items-center justify-center m-auto">
+                <SaveToWallet />
+              </div>
+            )}
+
           </div>
         )}
     </div>
