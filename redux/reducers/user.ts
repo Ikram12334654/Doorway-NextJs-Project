@@ -22,7 +22,7 @@ export interface UserState {
 }
 
 const initialState: UserState = {
-  steps: 0,
+  steps: 1,
   _id: "",
   role: 0,
   prefix: "",

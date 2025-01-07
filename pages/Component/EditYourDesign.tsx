@@ -10,7 +10,7 @@ import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "./button";
 import PassPreview from "./passPreview";
-import  Cropper  from "react-cropper";
+import  Cropper, { ReactCropperElement }  from "react-cropper";
 import "cropperjs/dist/cropper.css";
 
 
@@ -22,12 +22,12 @@ const EditYourDesign: React.FC = () => {
   const [logoImage, setLogoImage] = React.useState<File | null>(null);
   const [logoImagePreview, setLogoImagePreview] = React.useState<string>("");
   const [backgroundColor, setBackgroundColor] = useState("#21242b");
-  const [logoImageCropped,setLogoImageCropped]=useState<string|null>(null)
-  const [stripeImageCropped,setStripeImageCropped]=useState<string|null>(null)
+  const [logoImageCropped,setLogoImageCropped]=useState<string>("")
+  const [stripeImageCropped,setStripeImageCropped]=useState<string>("")
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
-  const logoImageCropperRef = useRef<Cropper>(null);
-  const stripeImageCropperRef = useRef<Cropper>(null); 
+  const logoImageCropperRef = useRef<ReactCropperElement>(null);
+  const stripeImageCropperRef = useRef<ReactCropperElement>(null); 
   const maxSize = 1 * 1024 * 1024; // 1MB in bytes
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,8 +156,8 @@ const EditYourDesign: React.FC = () => {
             <PassPreview
               values={{
                 backgroundColor: backgroundColor,
-                stripImage: stripImagePreview,
-                logoImage: logoImagePreview,
+                stripImage: stripeImageCropped,
+                logoImage: logoImageCropped,
               }}
             />
           </div>
@@ -209,7 +209,8 @@ const EditYourDesign: React.FC = () => {
               <label className="text-[#304861] text-[15px] font-[500]">
                 Strip Image
               </label>
-              <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px] flex items-center">
+              <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px] flex  items-center">
+                <div className="flex flex-col item-center w-[100%]">
                 <label
                   htmlFor="stripeImage"
                   className={`cursor-pointer flex items-center w-full ${
@@ -220,6 +221,7 @@ const EditYourDesign: React.FC = () => {
                     type="file"
                     accept="image/png, image/jpg , image/jpeg , image/JPG"
                     id="stripeImage"
+                     className="z-0"
                     hidden
                     onChange={handleFileChange}
                   />
@@ -237,7 +239,7 @@ const EditYourDesign: React.FC = () => {
                         }}
                         height="1em"
                         fill="currentColor"
-                        className="right-[10px] top-[50%] mt-2 transform  w-[14px] h-[14px] text-[black]"
+                        className="right-[10px] z-10 top-[50%] mt-2 transform  w-[14px] h-[14px] text-[black]"
                       >
                         <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
                       </svg>
@@ -257,7 +259,7 @@ const EditYourDesign: React.FC = () => {
                               height: "auto",
                               margin: "auto",
                             }} // Dynamically set cropper size
-                            aspectRatio={1} // Maintain a square crop
+                            aspectRatio={2} // Maintain a square crop
                             guides={false}
                             scalable={true}
                             viewMode={1}
@@ -265,7 +267,7 @@ const EditYourDesign: React.FC = () => {
                             crop={handleCropStripeImage} // Trigger handleCrop on crop update
                           />
                         </div>
-                      )}
+                      )}</div>
               </div>
             </div>
 
@@ -273,7 +275,8 @@ const EditYourDesign: React.FC = () => {
               <label className="text-[#304861] text-[15px] font-[500]">
                 Top Left Logo*
               </label>
-              <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px] flex items-center">
+              <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px] flex  items-center">
+                <div className="flex flex-col item-center w-[100%]">
                 <label
                   htmlFor="topLeftLogoInput"
                   className={`cursor-pointer flex items-center w-full ${
@@ -282,6 +285,7 @@ const EditYourDesign: React.FC = () => {
                 >
                   <input
                     type="file"
+                    className="z-0"
                     accept="image/png, image/jpg , image/jpeg , image/JPG"
                     id="topLeftLogoInput"
                     hidden
@@ -301,7 +305,7 @@ const EditYourDesign: React.FC = () => {
                         }}
                         height="1em"
                         fill="currentColor"
-                        className="right-[10px] top-[50%] mt-2 transform  w-[14px] h-[14px] text-[black]"
+                        className="right-[10px] z-10 top-[50%] mt-2 transform  w-[14px] h-[14px] text-[black]"
                       >
                         <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
                       </svg>
@@ -329,7 +333,8 @@ const EditYourDesign: React.FC = () => {
                             crop={handleCropLogoImage} // Trigger handleCrop on crop update
                           />
                         </div>
-                      )}
+                      )} </div>
+                 
               </div>
             </div>
 

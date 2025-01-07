@@ -56,16 +56,16 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                   }}
                 >
                   <div className="flex flex-col h-full justify-between pb-6">
-                    <div className="mt-3 ml-3 w-1/6">
-                      <span className="block w-6  mt-3 ml-3 w-1/6">
-                        {!data?.logoImage ? (
-                          <DefaultLogo />
-                        ) : (
+                  <div className="mt-3 ml-3 w-2/6 ">
+                      <span className="block w-6  mt-3 ml-3 w-2/6">
+                        {data.logoImage ? (
                           <img
                             src={data?.logoImage}
                             alt="Logo Image"
-                            className="max-w-full h-auto m-auto"
+                            className="w-[40px] h-auto m-auto"
                           />
+                        ) : (
+                          <DefaultLogo />
                         )}
                       </span>
                     </div>
@@ -125,13 +125,13 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                   }}
                 >
                   <div className="flex flex-col h-full justify-between pb-6">
-                    <div className="mt-3 ml-3 w-1/6">
-                      <span className="block w-6  mt-3 ml-3 w-1/6">
+                    <div className="mt-3 ml-3 w-2/6 ">
+                      <span className="block w-6  mt-3 ml-3 w-2/6">
                         {data.logoImage ? (
                           <img
                             src={data?.logoImage}
                             alt="Logo Image"
-                            className="w-full h-auto m-auto"
+                            className="w-[40px] h-auto m-auto"
                           />
                         ) : (
                           <DefaultLogo />

@@ -3,8 +3,10 @@ import { vcfText } from "@/utils/utils";
 import { QRCodeCanvas } from "qrcode.react";
 import React from "react";
 import { useSelector } from "react-redux";
-
-const QRCode: React.FC = () => {
+interface QRCodeProps {
+  size?: number; // Optional size prop
+}
+const QRCode: React.FC<QRCodeProps> = ({size=128}) => {
   const state = useSelector((state: RootState) => state);
 
   return (
@@ -21,9 +23,9 @@ const QRCode: React.FC = () => {
         photo: state.user.photo,
         URLS: state.user.URLS,
         addresses: state.user.addresses,
-        personal: state.user.role === "1" ? true : false,
+        personal: state.user.role === 1 ? true : false,
       })}
-      size={128}
+      size={size}
     />
   );
 };

@@ -349,26 +349,25 @@ const CustomizeYourDesign: React.FC = () => {
               </div>
               {formData.email.map((email, index) => (
                 <div className="relative flex flex-row gap-[10px] ">
-                  <div className="flex gap-[10px] w-full" key={index}>
-                    <input
-                      type="email"
-                      name={`email-${index}`}
-                      value={email}
-                      onChange={(e) => handleChangeArray(e, index, "email")}
-                      className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-                      placeholder="Email"
-                    />
-                  </div>
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveField("email", index)}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    >
-                      <Remove />
-                    </button>
-                  )}
+                <div className="flex gap-[10px] w-full" key={index}>
+                  <input
+                    type="email"
+                    name={`email-${index}`}
+                    value={email}
+                    onChange={(e) => handleChangeArray(e, index, "email")}
+                    className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
+                    placeholder="Email"
+                  />
+
                 </div>
+                         {index>0 &&         <button
+                            type="button"
+                            onClick={() => handleRemoveField("email", index)}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                          >
+                            <Remove/>
+                          </button>}
+                          </div>
               ))}
               <button
                 type="button"
