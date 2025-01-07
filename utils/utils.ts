@@ -33,7 +33,8 @@ export const vcfText = ({
   };
 
   const formatPhones = (): string => {
-    return phones.map((phone) => `TEL;TYPE=WORK:${phone}`).join("\n");
+    // return phones.map((phone) => `TEL;TYPE=WORK:${phone}`).join("\n");
+    return "";
   };
 
   const formatEmails = (): string => {
@@ -41,11 +42,13 @@ export const vcfText = ({
   };
 
   const formatURLs = (): string => {
-    return URLS.map((url) => `X-SOCIALPROFILE;TYPE=WORK:${url}`).join("\n");
+    // return URLS.map((url) => `X-SOCIALPROFILE;TYPE=WORK:${url}`).join("\n");
+    return "";
   };
 
   const formatAddresses = (): string => {
-    return addresses.map((address) => `ADR;TYPE=WORK:${address}`).join("\n");
+    // return addresses.map((address) => `ADR;TYPE=WORK:${address}`).join("\n");
+    return "";
   };
 
   let vcfString = `BEGIN:VCARD

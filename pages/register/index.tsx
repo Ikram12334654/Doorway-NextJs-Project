@@ -9,9 +9,10 @@ import EditYourDesign from "../Component/EditYourDesign";
 import RegisterPage from "../Component/registerPage";
 import SelectRequirements from "../Component/SelectRequirements";
 import SetUpDoorway from "../Component/setUpDoorway";
-import { saveCurrentUser } from "@/redux/reducers/user";
+import { clearCurrentUser, saveCurrentUser } from "@/redux/reducers/user";
 import CustomizeYourDesign from "../Component/customizeDoorway";
 import SaveToWallet from "../Component/SaveToWallet";
+import { clearCurrentDesign } from "@/redux/reducers/design";
 
 function Register() {
   const state = useSelector((state: RootState) => state);
@@ -25,10 +26,9 @@ function Register() {
   );
 
   useEffect(() => {
-    // Ensure the query parameters are loaded and not undefined
     if (router.isReady) {
       const { cancel } = router.query;
-      // Convert cancel to a boolean (check if it's 'true' in the query)
+
       setCancelParam(cancel === "true");
     }
   }, [router.isReady, router.query]);
@@ -246,7 +246,7 @@ function Register() {
             )}
           </div>
         )}
-                {state.user.accountType &&
+      {state.user.accountType &&
         state.user.accountType === enums.ACCOUNT_TYPE.PERSONAL && (
           <div className="w-[75%] ml-auto mr-auto mt-10 ">
             <div className="hidden min-xl:flex justify-center">
@@ -260,27 +260,21 @@ function Register() {
                 </div>
                 <div
                   className={`mr-[15px] ml-[5px] ${
-                    state.user.steps >= 2
-                      ? "text-themeColor"
-                      : "text-[#BEBEBE]"
+                    state.user.steps >= 2 ? "text-themeColor" : "text-[#BEBEBE]"
                   } text-[13px] min-xl:text-[18px]  font-bold text-lg`}
                 >
                   <ArrowForwardIcon fontSize="inherit" />
                 </div>
                 <div
                   className={`${
-                    state.user.steps >= 2
-                      ? "bg-themeColor"
-                      : "bg-[#BEBEBE]"
+                    state.user.steps >= 2 ? "bg-themeColor" : "bg-[#BEBEBE]"
                   } h-[17px] w-[17px] min-xl:h-[23px] min-xl:w-[23px] flex items-center justify-center rounded-full text-white text-[10px]`}
                 >
                   2
                 </div>
                 <div
                   className={`${
-                    state.user.steps >= 2
-                      ? "text-themeColor"
-                      : "text-[#BEBEBE]"
+                    state.user.steps >= 2 ? "text-themeColor" : "text-[#BEBEBE]"
                   } text-[8px] min-xl:text-[18px]`}
                 >
                   {" "}
@@ -288,31 +282,25 @@ function Register() {
                 </div>
                 <div
                   className={`mr-[15px] ml-[5px] ${
-                    state.user.steps >= 3
-                      ? "text-themeColor"
-                      : "text-[#BEBEBE]"
+                    state.user.steps >= 3 ? "text-themeColor" : "text-[#BEBEBE]"
                   } text-[13px] min-xl:text-[18px]  font-bold text-lg`}
                 >
                   <ArrowForwardIcon fontSize="inherit" />
                 </div>
                 <div
                   className={`${
-                    state.user.steps >= 3
-                      ? "bg-themeColor"
-                      : "bg-[#BEBEBE]"
+                    state.user.steps >= 3 ? "bg-themeColor" : "bg-[#BEBEBE]"
                   } h-[17px] w-[17px] min-xl:h-[23px] min-xl:w-[23px] flex items-center justify-center rounded-full text-white text-[10px]`}
                 >
                   3
                 </div>
                 <div
                   className={`${
-                    state.user.steps >= 3
-                      ? "text-themeColor"
-                      : "text-[#BEBEBE]"
+                    state.user.steps >= 3 ? "text-themeColor" : "text-[#BEBEBE]"
                   } text-[8px] min-xl:text-[18px]`}
                 >
                   {" "}
-                 Save to Wallet
+                  Save to Wallet
                 </div>
               </div>
             </div>
@@ -332,7 +320,6 @@ function Register() {
                 <SaveToWallet />
               </div>
             )}
-
           </div>
         )}
     </div>

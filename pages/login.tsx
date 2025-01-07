@@ -97,15 +97,17 @@ function Login() {
 
       if (response) {
         const decryptedJSON = decryptJSON(response.data);
+
         const user = decryptedJSON?.user;
         const design = decryptedJSON?.design;
 
-        user && dispatch(saveCurrentUser({ ...user, emails: [user.email] }));
+        user && dispatch(saveCurrentUser(user));
         design && dispatch(saveCurrentDesign(design));
 
         dispatch(saveAuthToken({ token: response?.accessToken }));
 
         SuccessToastMessage({ message: response?.message });
+
         handleRoute();
       } else if (error) {
         ErrorToastMessage({ message: error?.message });

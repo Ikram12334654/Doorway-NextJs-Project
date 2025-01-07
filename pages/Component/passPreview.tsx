@@ -15,9 +15,8 @@ interface formValues {
   backgroundColor?: string;
   stripImage?: string;
   logoImage?: string;
-  firstName?:string;
-  lastName?:string;
-  deviceType?:string;
+  firstName?: string;
+  lastName?: string;
 }
 
 const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
@@ -39,12 +38,8 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
       values?.backgroundColor || state.design.backgroundColor || "#22242C",
     stripImage: values?.stripImage || state.design.stripImage || "",
     logoImage: values?.logoImage || state.design.logoImage || "",
-    firstName:
-    values?.firstName || state.user.firstName || "" ,
-    lastName:
-    values?.lastName || state.user.lastName || "",
-    deviceType:
-    values?.deviceType || state.user.passType || ""
+    firstName: values?.firstName || state.user.firstName || "",
+    lastName: values?.lastName || state.user.lastName || "",
   };
 
   return (
@@ -101,8 +96,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                           className="text-mde font-extralight"
                           style={{ color: "rgb(255, 255, 255)" }}
                         >
-                          {data.firstName + " " + data.lastName||
-                            ""}
+                          {data.firstName + " " + data.lastName || ""}
                         </p>
                       </div>
                     </div>
@@ -192,40 +186,42 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                 </div>
               </div>
             )}
-          {state.user.accountType===enums.ACCOUNT_TYPE.ORGANIZATION &&  <div className="flex mt-[12px] justify-center gap-[22px] text-[10px] font-[500]">
-              <span
-                className={`cursor-pointer ${
-                  passType === enums.PASS_VIEW.APPLE
-                    ? "text-black underline"
-                    : "text-[#BEBEBE]"
-                }`}
-                onClick={() => {
-                  setPassType(enums.PASS_VIEW.APPLE);
-                  dispatch(
-                    saveCurrentUser({ passType: enums.PASS_VIEW.APPLE })
-                  );
-                }}
-              >
-                {enums.PASS_VIEW.APPLE}
-              </span>
-              <span
-                className={`cursor-pointer ${
-                  passType === enums.PASS_VIEW.ANDROID
-                    ? "text-black underline"
-                    : "text-[#BEBEBE]"
-                }`}
-                onClick={() => {
-                  setPassType(enums.PASS_VIEW.ANDROID);
-                  dispatch(
-                    saveCurrentUser({
-                      passType: enums.PASS_VIEW.ANDROID,
-                    })
-                  );
-                }}
-              >
-                {enums.PASS_VIEW.ANDROID}
-              </span>
-            </div>}
+            {state.user.accountType === enums.ACCOUNT_TYPE.ORGANIZATION && (
+              <div className="flex mt-[12px] justify-center gap-[22px] text-[10px] font-[500]">
+                <span
+                  className={`cursor-pointer ${
+                    passType === enums.PASS_VIEW.APPLE
+                      ? "text-black underline"
+                      : "text-[#BEBEBE]"
+                  }`}
+                  onClick={() => {
+                    setPassType(enums.PASS_VIEW.APPLE);
+                    dispatch(
+                      saveCurrentUser({ passType: enums.PASS_VIEW.APPLE })
+                    );
+                  }}
+                >
+                  {enums.PASS_VIEW.APPLE}
+                </span>
+                <span
+                  className={`cursor-pointer ${
+                    passType === enums.PASS_VIEW.ANDROID
+                      ? "text-black underline"
+                      : "text-[#BEBEBE]"
+                  }`}
+                  onClick={() => {
+                    setPassType(enums.PASS_VIEW.ANDROID);
+                    dispatch(
+                      saveCurrentUser({
+                        passType: enums.PASS_VIEW.ANDROID,
+                      })
+                    );
+                  }}
+                >
+                  {enums.PASS_VIEW.ANDROID}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>

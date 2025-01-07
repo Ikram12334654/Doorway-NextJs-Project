@@ -3,7 +3,7 @@ const CryptoJS = require("crypto-js");
 const secretKey =
   "b3K8zD1g5LpQ7sX0YwUqJfM9nJLpQ7sX0YwUK8zD1g5LpQ7sX0YwUqJfM9nJLpQ7sX0";
 
-export function decryptJSON(encryptedData: any) {
+export const decryptJSON = (encryptedData: any) => {
   const [salt, encrypted] = encryptedData?.split(":");
   const key = CryptoJS?.PBKDF2(secretKey, CryptoJS?.enc?.Base64?.parse(salt), {
     keySize: 256 / 32,
@@ -17,4 +17,31 @@ export function decryptJSON(encryptedData: any) {
   } catch (error) {
     return null;
   }
-}
+};
+
+export const generateStrongPassword = () => {
+  const length = 12;
+  const lowercase = "abcdefghijklmnopqrstuvwxyz";
+  const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
+  const specialChars = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+
+  let password =
+    lowercase.charAt(Math.floor(Math.random() * lowercase.length)) +
+    uppercase.charAt(Math.floor(Math.random() * uppercase.length)) +
+    numbers.charAt(Math.floor(Math.random() * numbers.length)) +
+    specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+
+  const allChars = lowercase + uppercase + numbers + specialChars;
+
+  for (let i = password.length; i < length; i++) {
+    password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+  }
+
+  password = password
+    .split("")
+    .sort(() => Math.random() - 0.5)
+    .join("");
+
+  return password;
+};

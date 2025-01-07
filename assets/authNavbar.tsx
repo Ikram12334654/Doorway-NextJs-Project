@@ -5,6 +5,7 @@ import { DoorwayImages } from "./style";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCurrentUser } from "@/redux/reducers/user";
 import { logout } from "@/redux/reducers/auth";
+import { clearCurrentDesign } from "@/redux/reducers/design";
 
 function AuthNavbar() {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ function AuthNavbar() {
 
   const handleLogout = () => {
     dispatch(clearCurrentUser());
+    dispatch(clearCurrentDesign());
     dispatch(logout());
     router.push("/login");
   };

@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export interface UserState {
   steps: number;
   _id: string;
-  role: string;
+  role: number;
   accountType: string;
   passType: string;
   prefix: string;
@@ -18,12 +18,13 @@ export interface UserState {
   addresses: string[];
   jobTitle: string;
   organizationName: string;
+  aboutUs: string;
 }
 
 const initialState: UserState = {
   steps: 0,
   _id: "",
-  role: "",
+  role: 0,
   prefix: "",
   sufix: "",
   accountType: "",
@@ -37,6 +38,7 @@ const initialState: UserState = {
   addresses: [],
   jobTitle: "",
   organizationName: "",
+  aboutUs: "",
 };
 
 export const userSlice = createSlice({
@@ -61,6 +63,7 @@ export const userSlice = createSlice({
         prefix,
         sufix,
         organizationName,
+        aboutUs,
       } = action.payload;
 
       if (steps !== undefined) state.steps = steps;
@@ -80,11 +83,12 @@ export const userSlice = createSlice({
       if (jobTitle !== undefined) state.jobTitle = jobTitle;
       if (organizationName !== undefined)
         state.organizationName = organizationName;
+      if (aboutUs !== undefined) state.aboutUs = aboutUs;
     },
     clearCurrentUser: (state) => {
       state.steps = 0;
       state._id = "";
-      state.role = "";
+      state.role = 0;
       state.prefix = "";
       state.sufix = "";
       state.accountType = "";
@@ -98,6 +102,7 @@ export const userSlice = createSlice({
       state.photo = "";
       state.jobTitle = "";
       state.organizationName = "";
+      state.aboutUs = "";
     },
   },
 });
