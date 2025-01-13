@@ -2,7 +2,7 @@ import { saveCurrentUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import QRImage from "../../public/QrImage.png";
 import DefaultLogo from "./defaultLogo";
@@ -42,6 +42,10 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
     lastName: values?.lastName || state.user.lastName || "",
   };
 
+  useEffect(() => {
+    setPassType(state.user.passType || enums.PASS_VIEW.APPLE);
+  }, [state.user.passType]);
+
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-col min-md:flex-row gap-[44px] min-md:gap-[75px] items-center min-md:items-start justify-center p-5">
@@ -56,7 +60,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                   }}
                 >
                   <div className="flex flex-col h-full justify-between pb-6">
-                  <div className="mt-3 ml-3 w-2/6 ">
+                    <div className="mt-3 ml-3 w-2/6 ">
                       <span className="block w-6  mt-3 ml-3 w-2/6">
                         {data.logoImage ? (
                           <img

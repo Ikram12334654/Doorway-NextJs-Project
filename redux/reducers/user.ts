@@ -7,6 +7,7 @@ export interface UserState {
   role: number;
   accountType: string;
   passType: string;
+  passSatus: string;
   prefix: string;
   sufix: string;
   firstName: string;
@@ -29,6 +30,7 @@ const initialState: UserState = {
   sufix: "",
   accountType: "",
   passType: "",
+  passSatus: "",
   firstName: "",
   lastName: "",
   photo: "",
@@ -52,6 +54,7 @@ export const userSlice = createSlice({
         role,
         accountType,
         passType,
+        passSatus,
         firstName,
         lastName,
         emails,
@@ -73,6 +76,7 @@ export const userSlice = createSlice({
       if (role !== undefined) state.role = role;
       if (accountType !== undefined) state.accountType = accountType;
       if (passType !== undefined) state.passType = passType;
+      if (passSatus !== undefined) state.passSatus = passSatus;
       if (firstName !== undefined) state.firstName = firstName;
       if (lastName !== undefined) state.lastName = lastName;
       if (emails !== undefined) state.emails = emails;
@@ -93,6 +97,7 @@ export const userSlice = createSlice({
       state.sufix = "";
       state.accountType = "";
       state.passType = "";
+      state.passSatus = "";
       state.firstName = "";
       state.lastName = "";
       state.emails = [];

@@ -1,6 +1,10 @@
-import React from "react";
+import { setLoggedInFromAnyOtherLocation } from "@/redux/reducers/auth";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 const SelectRequirements: React.FC = () => {
+  const dispatch = useDispatch();
+
   return (
     <div className="flex flex-col items-center p-10">
       <div className="text-center max-w-[920px] mx-auto mb-[8px]">

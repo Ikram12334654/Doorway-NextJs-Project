@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import PassPreview from "./passPreview";
-import { useDispatch, useSelector } from "react-redux";
+import { saveCurrentUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
-import { saveCurrentUser } from "@/redux/reducers/user";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Button from "./button";
+import PassPreview from "./passPreview";
 
 const CustomizeYourDesign: React.FC = () => {
   const state = useSelector((state: RootState) => state);
@@ -100,8 +101,27 @@ const CustomizeYourDesign: React.FC = () => {
 
     const hasErrors = Object.values(newErrors).some((error) => error);
     if (!hasErrors) {
-      console.log("Form submitted successfully", formData);
+      handleCreate(formData);
+      handleReset();
     }
+  };
+
+  const handleReset = () => {
+    setFormData({
+      color: "#22242C",
+      firstName: "",
+      lastName: "",
+      organization: "",
+      jobTitle: "",
+      email: [""],
+      phoneNumber: [""],
+      urls: [""],
+      aboutus: "",
+    });
+  };
+
+  const handleCreate = (form: any) => {
+    console.log(JSON.stringify(form, null, 2));
   };
 
   return (
@@ -109,7 +129,6 @@ const CustomizeYourDesign: React.FC = () => {
       <div className="md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
         Customize your doorway
       </div>
-      <p>{JSON.stringify(state.user, null, 2)}</p>
       <div className="min-md:block text-[16px] heading-[25px] min-md:mb-[38px] font-[400] text-center max-w-[287px] min-md:max-w-[70%]">
         Add the information you want your Doorway to share.
       </div>
@@ -246,7 +265,7 @@ const CustomizeYourDesign: React.FC = () => {
             <div className="flex flex-row w-full justify-between space-x-7">
               <div className="grow flex flex-col gap-[7px] w-[40%] ">
                 <div className="text-[#304861] text-[15px]  md:text-[13px] font-[500]">
-                  First Name
+                  First Name*
                 </div>
                 <input
                   type="text"
@@ -262,7 +281,7 @@ const CustomizeYourDesign: React.FC = () => {
 
               <div className="grow flex flex-col gap-[7px] w-[45%]">
                 <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
-                  Last Name
+                  Last Name*
                 </div>
                 <input
                   type="text"
@@ -278,7 +297,7 @@ const CustomizeYourDesign: React.FC = () => {
             </div>
             <div className="grow flex flex-col gap-[7px]">
               <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
-                Organisation
+                Organization*
               </div>
               <input
                 type="text"
@@ -295,7 +314,7 @@ const CustomizeYourDesign: React.FC = () => {
 
             <div className="grow flex flex-col gap-[7px]">
               <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
-                Job Title
+                Job Title*
               </div>
               <input
                 type="text"
@@ -349,25 +368,26 @@ const CustomizeYourDesign: React.FC = () => {
               </div>
               {formData.email.map((email, index) => (
                 <div className="relative flex flex-row gap-[10px] ">
-                <div className="flex gap-[10px] w-full" key={index}>
-                  <input
-                    type="email"
-                    name={`email-${index}`}
-                    value={email}
-                    onChange={(e) => handleChangeArray(e, index, "email")}
-                    className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-                    placeholder="Email"
-                  />
-
+                  <div className="flex gap-[10px] w-full" key={index}>
+                    <input
+                      type="email"
+                      name={`email-${index}`}
+                      value={email}
+                      onChange={(e) => handleChangeArray(e, index, "email")}
+                      className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
+                      placeholder="Email"
+                    />
+                  </div>
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveField("email", index)}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    >
+                      <Remove />
+                    </button>
+                  )}
                 </div>
-                         {index>0 &&         <button
-                            type="button"
-                            onClick={() => handleRemoveField("email", index)}
-                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                          >
-                            <Remove/>
-                          </button>}
-                          </div>
               ))}
               <button
                 type="button"
@@ -427,12 +447,7 @@ const CustomizeYourDesign: React.FC = () => {
                 <p className="text-red-500">Phone number is required.</p>
               )}
             </div>
-            <button
-              type="submit"
-              className="bg-themeColor text-white p-3 rounded-[5px] mt-5"
-            >
-              Submit
-            </button>
+            <Button />
           </form>
         </div>
       </div>
