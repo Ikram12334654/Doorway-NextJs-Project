@@ -1,37 +1,46 @@
+import { setLoggedInFromAnyOtherLocation } from "@/redux/reducers/auth";
 import { persistor, RootState, store } from "@/redux/store";
 import "@/styles/globals.css";
+import { decryptJSON } from "@/utils/security";
 import { SOCKET } from "@/utils/socket";
 import type { AppProps } from "next/app";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import { Provider, useSelector } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import Logout from "./Component/logoutModal";
 
 const AppInner = ({ Component, pageProps }: AppProps) => {
   const state = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
 
   const socketIo = () => {
-    SOCKET.on("connection", () => {
-      SOCKET.emit("authenticate", {
-        _id: state.user._id,
-        token: state.auth.token,
-      });
-      SOCKET.on(state.user._id, (data) => {
-        console.log(data);
-      });
+    SOCKET.connect();
+
+    SOCKET.emit("authenticate", {
+      _id: state.user._id,
+      token: decryptJSON(state.auth.token),
+    });
+
+    SOCKET.on(state.user._id, (data) => {
+      if (data.status === 401) {
+        dispatch(
+          setLoggedInFromAnyOtherLocation({
+            loggedInFromAnyOtherLocation: true,
+          })
+        );
+      } else {
+        console.log("data--->", JSON.stringify(data, null, 2));
+      }
     });
   };
 
   useEffect(() => {
-    if (state.auth.token && !SOCKET.connected) {
+    if (state.auth.token) {
+      console.log("token---->", JSON.stringify(state.auth.token));
       socketIo();
-
-      return () => {
-        SOCKET.off("connection");
-      };
     }
-  }, [state.auth.token]);
+  }, [state]);
 
   return (
     <>

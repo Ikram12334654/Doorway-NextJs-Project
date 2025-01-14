@@ -1,9 +1,10 @@
-import { setLoggedInFromAnyOtherLocation } from "@/redux/reducers/auth";
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { RootState } from "@/redux/store";
+import { decryptJSON } from "@/utils/security";
+import React from "react";
+import { useSelector } from "react-redux";
 
 const SelectRequirements: React.FC = () => {
-  const dispatch = useDispatch();
+  const state = useSelector((state: RootState) => state);
 
   return (
     <div className="flex flex-col items-center p-10">
@@ -11,6 +12,7 @@ const SelectRequirements: React.FC = () => {
         <div className="text-[25px] min-md:text-[50px]  font-bold">
           Select your requirements
         </div>
+
         <div className="text-[16px] min-md:text-[25px] font-normal mb-[38px] min-md:mb-[29px]">
           Get started instantly in Core or Business Tiers, or speak to the
           Doorway team about a custom enterprise plan. In any case,

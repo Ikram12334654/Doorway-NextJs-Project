@@ -1,16 +1,30 @@
-import { setLoggedInFromAnyOtherLocation } from "@/redux/reducers/auth";
+import { logout, setLoggedInFromAnyOtherLocation } from "@/redux/reducers/auth";
+import { clearCurrentDesign } from "@/redux/reducers/design";
+import { clearCurrentUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import { SuccessToastMessage } from "@/utils/toast";
+import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const Logout: React.FC = () => {
   const dispatch = useDispatch();
   const state = useSelector((state: RootState) => state.auth);
+  const router = useRouter();
 
   if (!state.loggedInFromAnyOtherLocation) {
     return null;
   }
+
+  const handleLogout = () => {
+    SuccessToastMessage({
+      message: "You have been logged out successfully.",
+    });
+    dispatch(clearCurrentUser());
+    dispatch(clearCurrentDesign());
+    dispatch(logout());
+    router.push("/login");
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-md">
@@ -24,16 +38,7 @@ const Logout: React.FC = () => {
         </p>
         <div className="flex justify-center gap-4">
           <button
-            onClick={() => {
-              SuccessToastMessage({
-                message: "You have been logged out successfully.",
-              });
-              dispatch(
-                setLoggedInFromAnyOtherLocation({
-                  loggedInFromAnyOtherLocation: false,
-                })
-              );
-            }}
+            onClick={handleLogout}
             className="px-6 py-2 bg-themeColor text-white font-medium rounded-[20px] shadow-md"
           >
             Logout
