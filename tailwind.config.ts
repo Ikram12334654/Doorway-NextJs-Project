@@ -26,6 +26,18 @@ export default {
       },
       colors: {
         themeColor: "#1ed761",
+        brand: { // This sets the default when you use 'bg-themeColor'
+          50: '#e6fff2',
+          100: '#ccffe6',
+          200: '#99ffcc',
+          300: '#66ffb3',
+          400: '#33ff99',
+          500: '#1ed761', // Base color and default
+          600: '#1ab255',
+          700: '#137a3d',
+          800: '#0d5228',
+          900: '#073916',
+        },
       },
       width: {
         "90p": "90%",
@@ -38,7 +50,7 @@ export default {
         lg: "2rem",
         md: "1.5rem",
         mde: "1rem",
-        sm: "0.7rem",
+        sm: ['0.875rem', '1.25rem'],
       },
     },
   },

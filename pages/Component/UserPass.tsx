@@ -4,7 +4,7 @@ import enums from "@/utils/enums";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import QRImage from "../../public/QrImage.png";
+import QRImage from "../../public/QrImage.png"
 import DefaultLogo from "./defaultLogo";
 import QRCode from "./QRCanvas";
 
@@ -17,9 +17,10 @@ interface formValues {
   logoImage?: string;
   firstName?: string;
   lastName?: string;
+  passType?:string
 }
 
-const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
+const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
@@ -190,42 +191,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                 </div>
               </div>
             )}
-            {state.user.accountType === enums.ACCOUNT_TYPE.ORGANIZATION && (
-              <div className="flex mt-[12px] justify-center gap-[22px] text-[10px] font-[500]">
-                <span
-                  className={`cursor-pointer ${
-                    passType === enums.PASS_VIEW.APPLE
-                      ? "text-black underline"
-                      : "text-[#BEBEBE]"
-                  }`}
-                  onClick={() => {
-                    setPassType(enums.PASS_VIEW.APPLE);
-                    dispatch(
-                      saveCurrentUser({ passType: enums.PASS_VIEW.APPLE })
-                    );
-                  }}
-                >
-                  {enums.PASS_VIEW.APPLE}
-                </span>
-                <span
-                  className={`cursor-pointer ${
-                    passType === enums.PASS_VIEW.ANDROID
-                      ? "text-black underline"
-                      : "text-[#BEBEBE]"
-                  }`}
-                  onClick={() => {
-                    setPassType(enums.PASS_VIEW.ANDROID);
-                    dispatch(
-                      saveCurrentUser({
-                        passType: enums.PASS_VIEW.ANDROID,
-                      })
-                    );
-                  }}
-                >
-                  {enums.PASS_VIEW.ANDROID}
-                </span>
-              </div>
-            )}
+            
           </div>
         </div>
       </div>
@@ -233,4 +199,4 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
   );
 };
 
-export default PassPreview;
+export default UserPass;
