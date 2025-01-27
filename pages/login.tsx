@@ -103,9 +103,7 @@ function Login() {
 
         user && dispatch(saveCurrentUser(user));
         design && dispatch(saveCurrentDesign(design));
-
         dispatch(saveAuthToken({ token: response?.accessToken }));
-
         SuccessToastMessage({ message: response?.message });
 
         handleRoute();

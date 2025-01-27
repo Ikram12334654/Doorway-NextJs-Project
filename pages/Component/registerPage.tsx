@@ -42,7 +42,6 @@ const RegisterPage: React.FC = () => {
       )
       .required("Password is required"),
 
-    referral: Yup.string().required("This field is required"),
     terms: Yup.boolean().oneOf(
       [true],
       "You must accept the Terms & Privacy Policy"

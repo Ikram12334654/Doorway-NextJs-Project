@@ -15,9 +15,24 @@ const CustomizeYourDesign: React.FC = () => {
     lastName: state.user.lastName || "",
     organization: state.user.organizationName || "",
     jobTitle: state.user.jobTitle || "",
-    email: state.user.emails || [""],
-    phoneNumber: [""],
-    urls: [""],
+    email: state.user.emails || [
+      {
+        type: "",
+        value: "",
+      },
+    ],
+    phoneNumber: [
+      {
+        type: "",
+        value: "",
+      },
+    ],
+    urls: [
+      {
+        type: "",
+        value: "",
+      },
+    ],
     aboutus: "",
   });
   const Remove = () => (
@@ -77,14 +92,17 @@ const CustomizeYourDesign: React.FC = () => {
     field: keyof typeof formData
   ) => {
     const { value } = e.target;
-    const updatedValues = [...formData[field]];
-    updatedValues[index] = value;
+
+    const updatedValues = [...formData[field]].map((item, i) =>
+      i === index ? { type: "work", value } : item
+    );
 
     setFormData((prevState) => ({
       ...prevState,
       [field]: updatedValues,
     }));
   };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -102,7 +120,7 @@ const CustomizeYourDesign: React.FC = () => {
     const hasErrors = Object.values(newErrors).some((error) => error);
     if (!hasErrors) {
       handleCreate(formData);
-      handleReset();
+      // handleReset();
     }
   };
 
@@ -113,9 +131,24 @@ const CustomizeYourDesign: React.FC = () => {
       lastName: "",
       organization: "",
       jobTitle: "",
-      email: [""],
-      phoneNumber: [""],
-      urls: [""],
+      email: [
+        {
+          type: "",
+          value: "",
+        },
+      ],
+      phoneNumber: [
+        {
+          type: "",
+          value: "",
+        },
+      ],
+      urls: [
+        {
+          type: "",
+          value: "",
+        },
+      ],
       aboutus: "",
     });
   };
@@ -129,6 +162,7 @@ const CustomizeYourDesign: React.FC = () => {
       <div className="md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
         Customize your doorway
       </div>
+
       <div className="min-md:block text-[16px] heading-[25px] min-md:mb-[38px] font-[400] text-center max-w-[287px] min-md:max-w-[70%]">
         Add the information you want your Doorway to share.
       </div>
@@ -337,7 +371,7 @@ const CustomizeYourDesign: React.FC = () => {
                   <input
                     type="tel"
                     name={`phone-${index}`}
-                    value={phone}
+                    value={phone.value}
                     onChange={(e) => handleChangeArray(e, index, "phoneNumber")}
                     className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
                     placeholder="Phone Number"
@@ -372,7 +406,7 @@ const CustomizeYourDesign: React.FC = () => {
                     <input
                       type="email"
                       name={`email-${index}`}
-                      value={email}
+                      value={email.value}
                       onChange={(e) => handleChangeArray(e, index, "email")}
                       className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
                       placeholder="Email"
@@ -407,7 +441,7 @@ const CustomizeYourDesign: React.FC = () => {
                   <input
                     type="url"
                     name={`url-${index}`}
-                    value={url}
+                    value={url.value}
                     onChange={(e) => handleChangeArray(e, index, "urls")}
                     className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
                     placeholder="URL"

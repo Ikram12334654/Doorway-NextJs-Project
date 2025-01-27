@@ -13,10 +13,10 @@ export interface UserState {
   firstName: string;
   lastName: string;
   photo: string;
-  emails: string[];
-  phones: string[];
-  URLS: string[];
-  addresses: string[];
+  emails: { type?: string; value: string }[];
+  phones: { type?: string; value: string }[];
+  URLS: { type?: string; value: string }[];
+  addresses: { type?: string; value: string }[];
   jobTitle: string;
   organizationName: string;
   aboutUs: string;

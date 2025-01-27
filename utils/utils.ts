@@ -4,12 +4,12 @@ interface VFCProps {
   firstName?: string;
   lastName?: string;
   organizationName?: string;
-  emails?: string[];
-  phones?: string[];
+  emails?: { type?: string; value: string }[];
+  phones?: { type?: string; value: string }[];
   jobTitle?: string;
   photo?: string;
-  URLS?: string[];
-  addresses?: string[];
+  URLS?: { type?: string; value: string }[];
+  addresses?: { type?: string; value: string }[];
   personal?: boolean;
 }
 
@@ -38,7 +38,9 @@ export const vcfText = ({
   };
 
   const formatEmails = (): string => {
-    return emails.map((email) => `EMAIL;TYPE=WORK:${email}`).join("\n");
+    return emails
+      .map((data) => `EMAIL;TYPE=${data?.type || "WORK"}:${data?.value}`)
+      .join("\n");
   };
 
   const formatURLs = (): string => {

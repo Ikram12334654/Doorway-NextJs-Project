@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import enums from "../../utils/enums";
 import Button from "./button";
 import PassPreview from "./passPreview";
-import { decryptJSON } from "@/utils/security";
 const SetUpDoorway: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
@@ -18,7 +17,7 @@ const SetUpDoorway: React.FC = () => {
   const [formData, setFormData] = useState({
     jobTitle: state.user.jobTitle || "",
     organizationName: state.user.organizationName || "",
-    organizationURL: state.user.URLS[0] || "",
+    organizationURL: state.user.URLS[0]?.value || "",
   });
 
   const isFormValid =
@@ -79,7 +78,7 @@ const SetUpDoorway: React.FC = () => {
             steps: state.user.steps + 1,
             jobTitle: jobTitle,
             organizationName: organizationName,
-            URLS: [organizationURL],
+            URLS: [{ type: "work", value: organizationURL }],
           })
         );
       } else if (error) {
@@ -109,7 +108,6 @@ const SetUpDoorway: React.FC = () => {
       <div className="md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
         Set up your Doorway
       </div>
-
       <div className="min-md:block text-[16px] heading-[25px] min-md:mb-[38px] font-[400] text-center max-w-[287px] min-md:max-w-full">
         Edit your job title to start personalising your Doorway, confirm your
         URL is correct, and click next to see a sample design.

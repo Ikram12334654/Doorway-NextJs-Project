@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 interface QRCodeProps {
   size?: number; // Optional size prop
 }
-const QRCode: React.FC<QRCodeProps> = ({size=128}) => {
+const QRCode: React.FC<QRCodeProps> = ({ size = 128 }) => {
   const state = useSelector((state: RootState) => state);
 
   return (
