@@ -167,7 +167,7 @@ const EditDesignTemplate: React.FC = () => {
           <span className="ml-1">Back</span>
         </button>
       </div>
-      <div className="md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
+      <div className="min-md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
         Edit your design
       </div>
       <div className="min-md:block text-[16px] heading-[25px] min-md:mb-[38px] font-[400] text-center max-w-[287px] min-md:max-w-[70%]">

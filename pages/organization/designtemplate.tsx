@@ -27,20 +27,18 @@ const DesignTemplate: React.FC = () => {
                 <PrivateRoutesNavBar />
             </div>
 
-             <div className="flex items-start gap-4 mb-6">
-               <div className="px-8 min-md:px-[112px] mt-6 mb-16">
+            <div className="flex flex-col items-start gap-4 mb-6 px-8 min-md:px-[112px] mt-6 mb-16">
                 {/* Back Button */}
-                    <button
-                        onClick={() => router.push("/organization/home")}
-                        className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
-                    >
-                        <WestIcon fontSize="small" />
-                        <span className="ml-1">Back</span>
-                    </button>
-                </div>
+                <button
+                    onClick={() => router.push("/organization/home")}
+                    className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
+                >
+                    <WestIcon fontSize="small" />
+                    <span className="ml-1">Back</span>
+                </button>
 
                 {/* Header Section */}
-                <div className="flex pb-6 border-b border-gray-200 justify-between items-center">
+                <div className="flex pb-6 border-b border-gray-200 justify-between items-center w-full">
                     <div className="flex gap-3 items-center">
                         <span className="text-lg font-semibold text-gray-950">Design Templates</span>
                         <span className="px-2 py-1 bg-gray-50 border-gray-100 text-gray-500 border text-sm font-medium rounded">
@@ -67,7 +65,7 @@ const DesignTemplate: React.FC = () => {
                 </div>
 
                 {/* Table */}
-                <div className="overflow-auto mt-4">
+                <div className="overflow-auto mt-4 w-full">
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="border-b border-gray-100 text-left text-gray-700 text-sm font-medium">
@@ -80,7 +78,7 @@ const DesignTemplate: React.FC = () => {
                         <tbody>
                             {filteredDesigns.length > 0 ? (
                                 filteredDesigns.map((design, index) => (
-                                    <tr key={index} className="h-11 cursor-pointer hover:bg-brand-50 group" onClick={()=>setSelectedDesign(design.Template)}>
+                                    <tr key={index} className="h-11 cursor-pointer hover:bg-brand-50 group" onClick={() => setSelectedDesign(design.Template)}>
                                         {/* Template Name */}
                                         <td className="py-2 px-3 text-gray-900">{design.Template}</td>
 
@@ -122,6 +120,7 @@ const DesignTemplate: React.FC = () => {
                 </div>
             </div>
         </div>
+
     );
 };
 
