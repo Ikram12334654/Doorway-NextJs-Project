@@ -13,6 +13,7 @@ import TwoStepVarificationModel from '../Component/Models/TwoStepVarificationMod
 const MyAccount: React.FC = () => {
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = React.useState(false);
+
     const [isModalOpen1, setIsModalOpen1] = React.useState(false);
     const handleBackClick = () => {
         router.push('/organization/home'); // Replace '/previous-route' with your desired path
