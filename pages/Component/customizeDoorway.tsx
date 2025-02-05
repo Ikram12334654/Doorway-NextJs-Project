@@ -15,13 +15,13 @@ const CustomizeYourDesign: React.FC = () => {
     lastName: state.user.lastName || "",
     organization: state.user.organizationName || "",
     jobTitle: state.user.jobTitle || "",
-    email: state.user.emails || [
+    emails: state.user.emails || [
       {
         type: "",
         value: "",
       },
     ],
-    phoneNumber: [
+    phoneNumbers: [
       {
         type: "",
         value: "",
@@ -33,7 +33,7 @@ const CustomizeYourDesign: React.FC = () => {
         value: "",
       },
     ],
-    aboutus: "",
+    aboutUs: state.user.aboutUs || "",
   });
   const Remove = () => (
     <svg
@@ -107,8 +107,8 @@ const CustomizeYourDesign: React.FC = () => {
     e.preventDefault();
 
     const newErrors = Object.keys(formData).reduce((errors, key) => {
+      if (key === "aboutUs") return errors;
       const value = formData[key as keyof typeof formData];
-
       errors[key as keyof typeof formErrors] =
         typeof value === "string" ? value.trim() === "" : false;
 
@@ -131,13 +131,13 @@ const CustomizeYourDesign: React.FC = () => {
       lastName: "",
       organization: "",
       jobTitle: "",
-      email: [
+      emails: [
         {
           type: "",
           value: "",
         },
       ],
-      phoneNumber: [
+      phoneNumbers: [
         {
           type: "",
           value: "",
@@ -149,12 +149,50 @@ const CustomizeYourDesign: React.FC = () => {
           value: "",
         },
       ],
-      aboutus: "",
+      aboutUs: "",
     });
   };
 
   const handleCreate = (form: any) => {
-    console.log(JSON.stringify(form, null, 2));
+    const {
+      color,
+      firstName,
+      lastName,
+      organization,
+      jobTitle,
+      emails,
+      phoneNumbers,
+      urls,
+      aboutUs,
+    } = form;
+
+    const data = {
+      color,
+      firstName,
+      lastName,
+      organization,
+      jobTitle,
+      emails: emails?.filter(
+        (email: any) => email?.type?.trim() && email?.value?.trim()
+      ),
+      ...(phoneNumbers?.some(
+        (phone: any) => phone?.type?.trim() && phone?.value?.trim()
+      )
+        ? {
+            phoneNumbers: phoneNumbers?.filter(
+              (phone: any) => phone?.type?.trim() && phone?.value?.trim()
+            ),
+          }
+        : {}),
+      ...(urls?.some((url: any) => url?.type?.trim() && url?.value?.trim())
+        ? {
+            urls: urls?.filter(
+              (url: any) => url?.type?.trim() && url?.value?.trim()
+            ),
+          }
+        : {}),
+      ...(aboutUs?.trim() ? { aboutUs } : {}),
+    };
   };
 
   return (
@@ -162,7 +200,6 @@ const CustomizeYourDesign: React.FC = () => {
       <div className="md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
         Customize your doorway
       </div>
-
       <div className="min-md:block text-[16px] heading-[25px] min-md:mb-[38px] font-[400] text-center max-w-[287px] min-md:max-w-[70%]">
         Add the information you want your Doorway to share.
       </div>
@@ -366,20 +403,22 @@ const CustomizeYourDesign: React.FC = () => {
               <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
                 Phone Numbers
               </div>
-              {formData.phoneNumber.map((phone, index) => (
+              {formData.phoneNumbers.map((phone, index) => (
                 <div className="relative flex gap-[10px]" key={index}>
                   <input
                     type="tel"
                     name={`phone-${index}`}
                     value={phone.value}
-                    onChange={(e) => handleChangeArray(e, index, "phoneNumber")}
+                    onChange={(e) =>
+                      handleChangeArray(e, index, "phoneNumbers")
+                    }
                     className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
                     placeholder="Phone Number"
                   />
                   {index > 0 && (
                     <button
                       type="button"
-                      onClick={() => handleRemoveField("phoneNumber", index)}
+                      onClick={() => handleRemoveField("phoneNumbers", index)}
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
                     >
                       <Remove />
@@ -389,7 +428,7 @@ const CustomizeYourDesign: React.FC = () => {
               ))}
               <button
                 type="button"
-                onClick={() => handleAddField("phoneNumber")}
+                onClick={() => handleAddField("phoneNumbers")}
                 className="text-black font-semibold mt-2 text-left"
               >
                 + Add Phone Number
@@ -400,14 +439,14 @@ const CustomizeYourDesign: React.FC = () => {
               <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
                 Email
               </div>
-              {formData.email.map((email, index) => (
+              {formData.emails.map((email, index) => (
                 <div className="relative flex flex-row gap-[10px] ">
                   <div className="flex gap-[10px] w-full" key={index}>
                     <input
                       type="email"
                       name={`email-${index}`}
                       value={email.value}
-                      onChange={(e) => handleChangeArray(e, index, "email")}
+                      onChange={(e) => handleChangeArray(e, index, "emails")}
                       className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
                       placeholder="Email"
                     />
@@ -415,7 +454,7 @@ const CustomizeYourDesign: React.FC = () => {
                   {index > 0 && (
                     <button
                       type="button"
-                      onClick={() => handleRemoveField("email", index)}
+                      onClick={() => handleRemoveField("emails", index)}
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
                     >
                       <Remove />
@@ -425,7 +464,7 @@ const CustomizeYourDesign: React.FC = () => {
               ))}
               <button
                 type="button"
-                onClick={() => handleAddField("email")}
+                onClick={() => handleAddField("emails")}
                 className="text-black font-semibold mt-2 text-left"
               >
                 + Add Email
@@ -471,8 +510,8 @@ const CustomizeYourDesign: React.FC = () => {
               </div>
               <input
                 type="text"
-                name="aboutus"
-                value={formData.aboutus}
+                name="aboutUs"
+                value={formData.aboutUs}
                 onChange={handleChange}
                 placeholder="how did you here about us "
                 className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
