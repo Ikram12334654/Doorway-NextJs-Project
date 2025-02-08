@@ -5,6 +5,11 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "./button";
 import PassPreview from "./passPreview";
+interface FormArrayErrors {
+  email: string[];
+  phoneNumber: string[];
+  urls: string[];
+}
 
 const CustomizeYourDesign: React.FC = () => {
   const state = useSelector((state: RootState) => state);
@@ -54,9 +59,12 @@ const CustomizeYourDesign: React.FC = () => {
     lastName: false,
     organization: false,
     jobTitle: false,
-    email: false,
-    phoneNumber: false,
-    urls: false,
+    aboutus: false
+  });
+  const [formArrayErrors, setArrayFormErrors] = useState<FormArrayErrors>({
+    email: [],
+    phoneNumber: [],
+    urls: [],
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,43 +94,105 @@ const CustomizeYourDesign: React.FC = () => {
     }
   };
 
+
   const handleChangeArray = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number,
-    field: keyof typeof formData
+    field: keyof FormArrayErrors
   ) => {
     const { value } = e.target;
-
-    const updatedValues = [...formData[field]].map((item, i) =>
-      i === index ? { type: "work", value } : item
-    );
-
-    setFormData((prevState) => ({
-      ...prevState,
-      [field]: updatedValues,
-    }));
+    let errorMessage = "";
+  
+    // Validate phone number (must be a number or contain special characters)
+    if (field === "phoneNumber") {
+      const phoneNumberRegex = /^[0-9+\-\(\)\s]*$/; // Allow numbers and special characters like +, -, (, ), and spaces
+      if (!phoneNumberRegex.test(value)) {
+        errorMessage = "Phone number is invalid";
+      }
+    }
+  
+    // Validate email (must be a valid email address)
+    if (field === "email") {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(value)) {
+        errorMessage = "Email is not valid";
+      }
+    }
+  
+    // Validate URL (must be a valid URL)
+    if (field === "urls") {
+      const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+      if (!urlRegex.test(value)) {
+        errorMessage = "URL is not valid";
+      }
+    }
+  
+    // Ensure the error array exists and update form errors
+    setArrayFormErrors((prevErrors) => {
+      const updatedErrors = [...(prevErrors[field] || [])]; // Ensure it's an array
+      updatedErrors[index] = errorMessage; // Set error for specific index
+      return { ...prevErrors, [field]: updatedErrors };
+    });
+  
+    // Update form data
+    setFormData((prevState) => {
+      const updatedValues = [...(prevState[field] || [])]; // Ensure it's an array
+      updatedValues[index] = { type: "work", value }; // Update specific index
+      return { ...prevState, [field]: updatedValues };
+    });
   };
+  
+
+
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
+  
+    // Check errors for single fields (Boolean instead of string)
     const newErrors = Object.keys(formData).reduce((errors, key) => {
       const value = formData[key as keyof typeof formData];
-
+  
       errors[key as keyof typeof formErrors] =
-        typeof value === "string" ? value.trim() === "" : false;
-
+        typeof value === "string" && value?.trim() === "";
+  
       return errors;
     }, {} as typeof formErrors);
-
+  
     setFormErrors(newErrors);
-
-    const hasErrors = Object.values(newErrors).some((error) => error);
-    if (!hasErrors) {
-      handleCreate(formData);
-      // handleReset();
-    }
+  
+    // Check errors for array fields
+    const newArrayErrors = Object.keys(formArrayErrors).reduce((errors, key) => {
+      const fieldArray = (formData[key as keyof typeof formData] as { value?: string }[]) || [];
+    
+      errors[key as keyof typeof formArrayErrors] = fieldArray.map((item) =>
+        !item?.value?.trim() ? `${key.replace(/([A-Z])/g, " $1").trim()} is required` : ""
+      );
+    
+      return errors;
+    }, {} as typeof formArrayErrors);
+    
+    setArrayFormErrors(newArrayErrors);
+    
+  
+    setArrayFormErrors(newArrayErrors);
+  
+    // Check if any errors exist
+    const hasErrors =
+    Object.values(newErrors).some((error: boolean) => error === true) || // Explicitly type as boolean
+    Object.values(newArrayErrors).some((array: string[]) =>
+      array.some((error: string) => error !== "")
+    );
+  
+    if (hasErrors) return; // Stop execution if there are errors
+  
+    // Proceed with form submission
+    handleCreate(formData);
+    // handleReset();
   };
+  
+  
+  
 
   const handleReset = () => {
     setFormData({
@@ -194,11 +264,10 @@ const CustomizeYourDesign: React.FC = () => {
               </div>
               <div className="flex gap-4 justify-between">
                 <label
-                  className={`border py-[15px] text-legacy-regular rounded-regular flex-1 flex justify-center cursor-pointer ${
-                    state.user.passType === enums.PASS_VIEW.APPLE
+                  className={`border py-[15px] text-legacy-regular rounded-regular flex-1 flex justify-center cursor-pointer ${state.user.passType === enums.PASS_VIEW.APPLE
                       ? "border-themeColor text-themeColor"
                       : "border-gray-200 text-gray-400"
-                  }`}
+                    }`}
                   htmlFor="apple"
                 >
                   Apple
@@ -220,11 +289,10 @@ const CustomizeYourDesign: React.FC = () => {
                   />
                 </label>
                 <label
-                  className={`border py-[15px] text-legacy-regular rounded-regular flex-1 flex justify-center cursor-pointer ${
-                    state.user.passType === enums.PASS_VIEW.ANDROID
+                  className={`border py-[15px] text-legacy-regular rounded-regular flex-1 flex justify-center cursor-pointer ${state.user.passType === enums.PASS_VIEW.ANDROID
                       ? "border-themeColor text-themeColor"
                       : "border-gray-200 text-gray-400"
-                  }`}
+                    }`}
                   htmlFor="android"
                 >
                   Android
@@ -367,7 +435,7 @@ const CustomizeYourDesign: React.FC = () => {
                 Phone Numbers
               </div>
               {formData.phoneNumber.map((phone, index) => (
-                <div className="relative flex gap-[10px]" key={index}>
+                <div className="flex flex-col"><div className="relative flex gap-[10px]" key={index}>
                   <input
                     type="tel"
                     name={`phone-${index}`}
@@ -385,6 +453,11 @@ const CustomizeYourDesign: React.FC = () => {
                       <Remove />
                     </button>
                   )}
+
+                </div>
+                  {formArrayErrors.phoneNumber?.[index] && (
+                    <div className="text-red-500 text-sm">{formArrayErrors.phoneNumber[index]}</div>
+                  )}
                 </div>
               ))}
               <button
@@ -401,25 +474,30 @@ const CustomizeYourDesign: React.FC = () => {
                 Email
               </div>
               {formData.email.map((email, index) => (
-                <div className="relative flex flex-row gap-[10px] ">
-                  <div className="flex gap-[10px] w-full" key={index}>
-                    <input
-                      type="email"
-                      name={`email-${index}`}
-                      value={email.value}
-                      onChange={(e) => handleChangeArray(e, index, "email")}
-                      className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-                      placeholder="Email"
-                    />
+                <div className="flex flex-col">
+                  <div className="relative flex flex-row gap-[10px] ">
+                    <div className="flex gap-[10px] w-full" key={index}>
+                      <input
+                        type="email"
+                        name={`email-${index}`}
+                        value={email.value}
+                        onChange={(e) => handleChangeArray(e, index, "email")}
+                        className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
+                        placeholder="Email"
+                      />
+                    </div>
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveField("email", index)}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      >
+                        <Remove />
+                      </button>
+                    )}
                   </div>
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveField("email", index)}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    >
-                      <Remove />
-                    </button>
+                  {formArrayErrors.email[index] && (
+                    <div className="text-red-500 text-sm">{formArrayErrors.email[index]}</div>
                   )}
                 </div>
               ))}
@@ -437,23 +515,30 @@ const CustomizeYourDesign: React.FC = () => {
                 URLs
               </div>
               {formData.urls.map((url, index) => (
-                <div className="relative flex gap-[10px]" key={index}>
-                  <input
-                    type="url"
-                    name={`url-${index}`}
-                    value={url.value}
-                    onChange={(e) => handleChangeArray(e, index, "urls")}
-                    className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-                    placeholder="URL"
-                  />
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveField("urls", index)}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    >
-                      <Remove />
-                    </button>
+                <div className="flex flex-col">
+
+
+                  <div className="relative flex gap-[10px]" key={index}>
+                    <input
+                      type="url"
+                      name={`url-${index}`}
+                      value={url.value}
+                      onChange={(e) => handleChangeArray(e, index, "urls")}
+                      className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
+                      placeholder="URL"
+                    />
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveField("urls", index)}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      >
+                        <Remove />
+                      </button>
+                    )}
+                  </div>
+                  {formArrayErrors.urls[index] && (
+                    <div className="text-red-500 text-sm">{formArrayErrors.urls[index]}</div>
                   )}
                 </div>
               ))}
@@ -477,8 +562,8 @@ const CustomizeYourDesign: React.FC = () => {
                 placeholder="how did you here about us "
                 className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
               />
-              {formErrors.phoneNumber && (
-                <p className="text-red-500">Phone number is required.</p>
+              {formErrors.aboutus && (
+                <p className="text-red-500">About us is required.</p>
               )}
             </div>
             <Button />
