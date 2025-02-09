@@ -23,15 +23,22 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
     const [urls, setUrls] = useState<string[]>(["https://example.com"]);
     const [selectedOption, setSelectedOption] = useState<string>();
     const [customValue, setCustomValue] = useState<string>("");
-    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    const [dropdownStates, setDropdownStates] = useState<{ [key: string]: boolean }>({});
 
-    const handleSelectOption = (option: string) => {
-        setSelectedOption(option);
+
+    const handleSelectOption = (fieldName: string, index: number, option: string) => {
+        setSelectedOption(option);  // Update the selected option
         if (option !== "Custom") {
             setCustomValue(""); // Clear the custom value if another option is selected
         }
-        setIsDropdownOpen(false); // Close the dropdown
+        
+        // Close only the dropdown for the specific field and index
+        setDropdownStates((prev) => ({
+            ...prev,
+            [`${fieldName}-${index}`]: false,
+        }));
     };
+    
 
     const handleCustomValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCustomValue(e.target.value);
@@ -61,6 +68,13 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
     ) => {
         setState((prev) => prev.filter((_, i) => i !== index));
     };
+    const toggleDropdown = (fieldName: string, index: number) => {
+        setDropdownStates((prev) => ({
+            ...prev,
+            [`${fieldName}-${index}`]: !prev[`${fieldName}-${index}`],
+        }));
+    };
+
     const renderUrlFields = (
         label: string,
         state: string[],
@@ -73,11 +87,11 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
             <div className="text-small font-semibold">{label}</div>
             {state.map((value, index) => (
                 <div key={index} className="w-full flex flex-col gap-[4px]">
-                    <div className="flex items-center justify-between " >
+                    <div className="flex items-center justify-between w-full  " >
                         <div className="relative flex-1">
                             <div
-                                className="cursor-pointer rounded-[6px] hover:bg-brand-50 px-[12px] py-[10px] flex items-center w-full gap-[8px]"
-                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="cursor-pointer rounded-[6px] hover:bg-brand-50 border-black px-[12px] py-[10px] justify-between flex items-center w-full gap-[8px]"
+                                onClick={() => toggleDropdown(label, index)}
                             >
                                 <div className="flex items-center flex-grow gap-[8px]">
                                     <div className="flex flex-col gap-[4px]">
@@ -89,27 +103,29 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
                                         </span>
                                     </div>
                                 </div>
-                                {selectedOption ? <svg
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            fill="currentColor"
-                                            className="remixicon text-brand-500 w-[20px]"
-                                        >
-                                            <path d="M9.9997 15.1709L19.1921 5.97852L20.6063 7.39273L9.9997 17.9993L3.63574 11.6354L5.04996 10.2212L9.9997 15.1709Z"></path>
-                                        </svg>:
-                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#DBDBDBFF" className="remixicon w-[18px] h-[18px]"><path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path></svg>
-                                        }
+                                <div>{selectedOption ? <svg
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="currentColor"
+                                    className="remixicon text-brand-500 w-[20px]"
+                                >
+                                    <path d="M9.9997 15.1709L19.1921 5.97852L20.6063 7.39273L9.9997 17.9993L3.63574 11.6354L5.04996 10.2212L9.9997 15.1709Z"></path>
+                                </svg> :
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#DBDBDBFF" className="remixicon w-[18px] h-[18px]"><path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path></svg>
+                                }</div>
                             </div>
-                            {isDropdownOpen && (
+                            
+
+                            {dropdownStates[`${label}-${index}`] && (
                                 <div className="absolute top-[25px] min-w-[170px] bg-white border border-gray-100 rounded-[8px] overflow-hidden z-10 shadow-regular">
                                     <div className="p-[8px] flex flex-col gap-[8px]">
                                         {["Work", "Home", "Custom"].map((option) => (
                                             <div
                                                 key={option}
                                                 className="cursor-pointer rounded-[6px] hover:bg-brand-50 px-[12px] py-[10px] flex items-center w-full gap-[8px]"
-                                                onClick={() => handleSelectOption(option)}
+                                                onClick={() => handleSelectOption(label,index,option)}
                                             >
                                                 <div className="flex items-center flex-grow gap-[8px]">
                                                     <div className="flex flex-col gap-[4px]">
@@ -121,6 +137,7 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
                                     </div>
                                 </div>
                             )}
+
                             {selectedOption === "Custom" && (
                                 <div className="absolute top-[25px] min-w-[170px] bg-white border border-gray-100 rounded-[8px] overflow-hidden z-10 shadow-regular">
                                     <div className="p-[8px] flex flex-col gap-[8px]">
@@ -144,7 +161,7 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
                                         <div className="flex gap-[10px]">
                                             <div
                                                 className="inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-500 ease-in-out w-full px-[11px] py-[5px] border-[1px] text-gray-700 border-gray-100 bg-white hover:bg-gray-50 focus:border-[2px] focus:border-gray-100 cursor-pointer"
-                                                onClick={() => setIsDropdownOpen(false)}
+                                                onClick={() => handleSelectOption(label,index,"")}
                                             >
                                                 <span className="whitespace-nowrap">Cancel</span>
                                             </div>
@@ -159,20 +176,20 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
                                 </div>
                             )}
                         </div>
-                        <div className='flex-1 '>
-                        {index > 0 && (
-                            <svg
-                                onClick={() => handleRemoveField(index, setState)}
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="currentColor"
-                                className="remixicon w-[20px] h-[20px] text-gray-300 cursor-pointer hover:text-danger "
-                            >
-                                <path d="M7 4V2H17V4H22V6H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V6H2V4H7ZM6 6V20H18V6H6ZM9 9H11V17H9V9ZM13 9H15V17H13V9Z"></path>
-                            </svg>
-                        )}
+                        <div className='flex items-center '>
+                            {index > 0 && (
+                                <svg
+                                    onClick={() => handleRemoveField(index, setState)}
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="currentColor"
+                                    className="remixicon w-[20px] h-[20px] text-gray-300 cursor-pointer hover:text-danger "
+                                >
+                                    <path d="M7 4V2H17V4H22V6H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V6H2V4H7ZM6 6V20H18V6H6ZM9 9H11V17H9V9ZM13 9H15V17H13V9Z"></path>
+                                </svg>
+                            )}
                         </div>
                     </div>
                     <div className="flex items-center justify-stretch gap-[10px]">
@@ -229,13 +246,13 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
             <div className="text-small font-semibold">{label}</div>
             {state.map((value, index) => (
                 <div key={index} className="w-full flex flex-col gap-[4px]">
-                    <div className="flex">
-                        <div className="flex-grow relative">
+                    <div className="flex items-center">
+                        <div className="flex-grow items-center relative">
                             <div className="flex items-center cursor-pointer hover:text-brand">
                                 <div className="relative">
                                     <div
                                         className="cursor-pointer rounded-[6px] hover:bg-brand-50 px-[12px] py-[10px] flex items-center w-full gap-[8px]"
-                                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                        onClick={() => toggleDropdown(label, index)}
                                     >
                                         <div className="flex items-center flex-grow gap-[8px]">
                                             <div className="flex flex-col gap-[4px]">
@@ -257,18 +274,18 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
                                             className="remixicon text-brand-500 w-[20px]"
                                         >
                                             <path d="M9.9997 15.1709L19.1921 5.97852L20.6063 7.39273L9.9997 17.9993L3.63574 11.6354L5.04996 10.2212L9.9997 15.1709Z"></path>
-                                        </svg>:
-                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#DBDBDBFF" className="remixicon w-[16px] h-[16px]"><path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path></svg>
+                                        </svg> :
+                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#DBDBDBFF" className="remixicon w-[16px] h-[16px]"><path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path></svg>
                                         }
                                     </div>
-                                    {isDropdownOpen && (
+                                    {dropdownStates[`${label}-${index}`] && (
                                         <div className="absolute top-[25px] min-w-[170px] bg-white border border-gray-100 rounded-[8px] overflow-hidden z-10 shadow-regular">
                                             <div className="p-[8px] flex flex-col gap-[8px]">
                                                 {["Work", "Home", "Custom"].map((option) => (
                                                     <div
                                                         key={option}
                                                         className="cursor-pointer rounded-[6px] hover:bg-brand-50 px-[12px] py-[10px] flex items-center w-full gap-[8px]"
-                                                        onClick={() => handleSelectOption(option)}
+                                                        onClick={() => handleSelectOption(label,index,option)}
                                                     >
                                                         <div className="flex items-center flex-grow gap-[8px]">
                                                             <div className="flex flex-col gap-[4px]">
@@ -303,7 +320,7 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
                                                 <div className="flex gap-[10px]">
                                                     <div
                                                         className="inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-500 ease-in-out w-full px-[11px] py-[5px] border-[1px] text-gray-700 border-gray-100 bg-white hover:bg-gray-50 focus:border-[2px] focus:border-gray-100 cursor-pointer"
-                                                        onClick={() => handleSelectOption("")}
+                                                        onClick={() => handleSelectOption(label,index,"")}
                                                     >
                                                         <span className="whitespace-nowrap">Cancel</span>
                                                     </div>
@@ -320,18 +337,18 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className='flex-1'>
-                        <svg
-                            onClick={() => handleRemoveField(index, setState)}
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="currentColor"
-                            className="remixicon w-[20px] h-[20px] text-gray-300 cursor-pointer hover:text-danger"
-                        >
-                            <path d="M7 4V2H17V4H22V6H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V6H2V4H7ZM6 6V20H18V6H6ZM9 9H11V17H9V9ZM13 9H15V17H13V9Z"></path>
-                        </svg>
+                        <div className='flex'>
+                            <svg
+                                onClick={() => handleRemoveField(index, setState)}
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="currentColor"
+                                className="remixicon w-[20px] h-[20px] text-gray-300 cursor-pointer hover:text-danger"
+                            >
+                                <path d="M7 4V2H17V4H22V6H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V6H2V4H7ZM6 6V20H18V6H6ZM9 9H11V17H9V9ZM13 9H15V17H13V9Z"></path>
+                            </svg>
                         </div>
                     </div>
                     <div className="flex items-center justify-stretch gap-[10px]">
@@ -542,21 +559,21 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
                                                     <ul className="list-none p-0 m-0">
                                                         <li
                                                             className="py-2 px-3 text-gray-900 cursor-pointer hover:bg-[#ccffe6] hover:text-[#1ed761]"
-                                                            onClick={() => handleOptionSelect("English")}
+                                                            onClick={() => handleOptionSelect("hr")}
                                                         >
-                                                            English
+                                                            Hr
                                                         </li>
                                                         <li
                                                             className="py-2 px-3 text-gray-900 cursor-pointer hover:bg-[#ccffe6] hover:text-[#1ed761]"
-                                                            onClick={() => handleOptionSelect("Espanio")}
+                                                            onClick={() => handleOptionSelect("admin")}
                                                         >
-                                                            Espanio
+                                                            Admin
                                                         </li>
                                                         <li
                                                             className="py-2 px-3 text-gray-900 cursor-pointer hover:bg-[#ccffe6] hover:text-[#1ed761]"
-                                                            onClick={() => handleOptionSelect("Italian")}
+                                                            onClick={() => handleOptionSelect("developer")}
                                                         >
-                                                            Italian
+                                                            Developer
                                                         </li>
                                                     </ul>
                                                 </div>}
