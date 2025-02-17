@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import WestIcon from "@mui/icons-material/West";
 import SearchIcon from "@mui/icons-material/Search";
+import UserSidebar from "../Component/Models/useSidebarModel";
 
 const DesignTemplate: React.FC = () => {
     const router = useRouter();
@@ -119,6 +120,7 @@ const DesignTemplate: React.FC = () => {
                     </table>
                 </div>
             </div>
+            
         </div>
 
     );

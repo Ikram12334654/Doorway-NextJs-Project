@@ -1,26 +1,70 @@
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
 import WestIcon from "@mui/icons-material/West";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
-
+import React, { useId, useState } from "react";
+import UserSidebar from "../Component/Models/useSidebarModel";
+import UserProfile from "../Component/Models/useSidebarModel";
+interface Doorway {
+    name: string;
+    type: 'Primary' | 'Secondary';
+    status: 'Invited' | 'Not Invited';
+  }
+  
 const DoorwayandUser: React.FC = () => {
     const router = useRouter();
     const [selectedTab, setSelectedTab] = useState("Users");
     const [searchTerm, setSearchTerm] = useState("");
     const [showFilter, setShowFilter] = useState(false);
+    const [userId, setUserId] = useState(""); // Replace with dynamic userId
+    const [doorways, setDoorways] = useState<Doorway[]>([]); // State to hold doorways data
 
+    interface Doorway {
+        name: string;
+        type: 'Primary' | 'Secondary';
+        status: 'Invited' | 'Not Invited';
+      }
+      
     const [selectedFilters, setSelectedFilters] = useState({
         role: [] as string[],
         twoFAStatus: [] as string[],
         doorways: [] as string[],
     });
-
+    const fetchDoorways = async (userId: string) => {
+        //const res = await fetch(`https://api.example.com/doorways?userId=${userId}`);
+        //const data = await res.json();
+        const doorways: Doorway[] = [
+            {
+              name: "Sami Ullah",
+              type: "Primary",
+              status: "Invited",
+            },
+            {
+              name: "sami ullah Ikram",
+              type: "Secondary",
+              status: "Invited",
+            },
+            {
+              name: "Another User",
+              type: "Secondary",
+              status: "Not Invited",
+            },
+          ];
+        setDoorways(doorways);
+      };
     const users = [
-        { name: "Sami Ullah", role: "Administrator", email: "sami_ullah71@outlook.com", doorways: "1", twoFAStatus: "Enabled" },
-        { name: "Abdullah Mughal", role: "Member", email: "abdullah448836@gmail.com", doorways: "1", twoFAStatus: "Disabled" },
-        // Add more users as needed
+        { name: "Sami Ullah", role: "Administrator", email: "sami_ullah71@outlook.com", doorways: "1", twoFAStatus: "Enabled", id:"1"},
+        { name: "Abdullah Mughal", role: "Member", email: "abdullah448836@gmail.com", doorways: "1", twoFAStatus: "Disabled",  id:"2" },
     ];
+const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const toggleModal = (id:string) => {
+        setIsModalOpen(!isModalOpen);
+        fetchDoorways(id)
+        setUserId(id);
+    };
 
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
     // Filter function for search
     const filteredUsers = users.filter((user) => {
         // Filter by search term
@@ -187,10 +231,10 @@ const DoorwayandUser: React.FC = () => {
                                         </td>
                                         <td className="pr-[10px] pl-[10px]">
                                             <span className="text-petite font-regular text-gray-500 flex gap-[12px] truncate invisible group-hover:visible">
-                                                <div className="inline-flex items-center rounded-[6px] text-petite font-medium justify-center gap-[6px] text-gray-500 hover:text-brand-500 focus:text-brand-500 cursor-pointer" role="button" aria-disabled="false">
+                                                <div className="inline-flex items-center rounded-[6px] text-mde  justify-center gap-[6px] text-gray-500 hover:text-brand-500 focus:text-brand-500 cursor-pointer" role="button" aria-disabled="false" onClick={()=>toggleModal(user.id)}>
                                                     <span className="whitespace-nowrap">Edit</span>
                                                 </div>
-                                                <div className="inline-flex items-center rounded-[6px] text-petite font-medium justify-center gap-[6px] text-gray-500 hover:text-brand-500 focus:text-brand-500 cursor-pointer" role="button" aria-disabled="false">
+                                                <div className="inline-flex items-center rounded-[6px] text-mde  justify-center gap-[6px] text-gray-500 hover:text-brand-500 focus:text-brand-500 cursor-pointer" role="button" aria-disabled="false">
                                                     <span className="whitespace-nowrap">Copy User's Download Link</span>
                                                 </div>
                                             </span>
@@ -202,6 +246,8 @@ const DoorwayandUser: React.FC = () => {
                     </div>}
                 </div>
             </div>
+            {isModalOpen && <UserProfile doorways={doorways} userId={userId} onClose={closeModal} />}
+
         </div>
     );
 };
