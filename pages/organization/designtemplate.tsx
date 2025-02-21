@@ -4,11 +4,13 @@ import React, { useState } from "react";
 import WestIcon from "@mui/icons-material/West";
 import SearchIcon from "@mui/icons-material/Search";
 import UserSidebar from "../Component/Models/useSidebarModel";
+import EditDesignTemplate from "./EditDesignTemplate";
 
 const DesignTemplate: React.FC = () => {
     const router = useRouter();
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedDesign, setSelectedDesign] = useState("Default")
+    const [selectedDesign, setSelectedDesign] = useState("Default");
+    
     // Design Templates Data
     const Designs = [
         { Template: "Default" },
@@ -102,7 +104,7 @@ const DesignTemplate: React.FC = () => {
                                         {/* Quick Actions */}
                                         <td className="py-2 px-3">
                                             <span className="text-sm text-gray-500 flex gap-3 invisible group-hover:visible">
-                                                <button className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer">
+                                                <button className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer" onClick={() => router.push("/organization/EditDesignTemplate")}>
                                                     Edit
                                                 </button>
                                             </span>
@@ -120,7 +122,7 @@ const DesignTemplate: React.FC = () => {
                     </table>
                 </div>
             </div>
-            
+
         </div>
 
     );

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import toast from "react-hot-toast";
 import DoorwayDetailsModel from "./DoorwayDetailsModel";
+import AddNewDoorwayModel from "./AddNewDoorway";
 
 // Define the type for doorway data
 interface Doorway {
@@ -18,6 +19,24 @@ interface UserProfileProps {
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({ doorways, userId, onClose }) => {
+    const modalRef = useRef<HTMLDivElement>(null);
+  
+    // Handle clicks outside the modal
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+          onClose(); // Close the modal if clicked outside
+        }
+      };
+  
+      // Add event listener for clicks
+      document.addEventListener("mousedown", handleClickOutside);
+  
+      // Cleanup the event listener on unmount
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [onClose]);
   // Determine if the "New Doorway" button should have a different background
   const isButtonDisabled = doorways.length >= 3;
 
@@ -27,16 +46,23 @@ const UserProfile: React.FC<UserProfileProps> = ({ doorways, userId, onClose }) 
   const menuRef = useRef(null);
 
   const [isDoorwayDetailsOpen, setIsDoorwayDetailsOpen] = useState(false);
+  const [isAddDoorwayOpen, setIsAddDoorwayOpen] = useState(false);
 
   const handleEditClick = () => {
-    setIsDoorwayDetailsOpen(true); // Open DoorwayDetailsModel
+    setIsDoorwayDetailsOpen(true);
+   
   };
 
+  const handleAddDoorwayClick = () => {
+    setIsAddDoorwayOpen(true); 
+
+  };
 
   // Toggle menu visibility
   const toggleMenu = (index: number) => {
     setIsOpen(isOpen === index ? null : index);
   };
+
   // const handleClickOutside = useCallback((event) => {
   //   if (menuRef.current && !menuRef.current.contains(event.target)) {
   //     setIsOpen(false);
@@ -66,7 +92,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ doorways, userId, onClose }) 
     
       aria-modal="true"
     >
-      <div className="absolute right-0 top-0 w-full max-w-[450px] bg-white shadow-xl h-full">
+      <div className="absolute right-0 top-0 w-full max-w-[450px] bg-white shadow-xl h-full" ref={modalRef}>
         <div className="flex flex-col h-full">
           {/* Header Section */}
           <div className="p-[22px] flex gap-[12px] border-b border-b-gray-100 items-center">
@@ -96,8 +122,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ doorways, userId, onClose }) 
                 <div className="flex items-center justify-between">
                   <div className="text-small font-semibold">Doorways</div>
                   <div
-                    className={`items-center inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-500 ease-in-out px-[16px] py-[8px] ${isButtonDisabled ? "bg-brand-300 cursor-default" : "bg-brand-500 hover:bg-brand-600 cursor-pointer"
+                    className={`items-center inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-500 ease-in-out px-[16px] py-[8px] ${isButtonDisabled ? "bg-green-400 cursor-default" : "bg-brand-500 hover:bg-brand-600 cursor-pointer"
                       } text-white `}
+                    role="button"
+                    onClick={()=>handleAddDoorwayClick()}  
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -295,7 +323,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ doorways, userId, onClose }) 
         </div>
       </div>
       {isDoorwayDetailsOpen && <DoorwayDetailsModel onClose={() => setIsDoorwayDetailsOpen(false)} />}
-
+      {isAddDoorwayOpen && <AddNewDoorwayModel onClose={() => setIsAddDoorwayOpen(false)} />}
     </div>
   );
 };
