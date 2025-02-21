@@ -48,7 +48,7 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
   }, [state.user.passType]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center ">
       <div className="flex flex-col min-md:flex-row gap-[44px] min-md:gap-[75px] items-center min-md:items-start justify-center p-5">
         <div className={"width: 360px max-width: 100% min-width: 300px"}>
           <div className="block">

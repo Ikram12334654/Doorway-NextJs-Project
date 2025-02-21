@@ -6,11 +6,10 @@ import { StringifyOptions } from 'querystring';
 
 interface CloseModelProps {
     onClose: () => void;
-    extra?: boolean
 }
 
-const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose, extra = false }) => {
-    const modalRef = useRef<HTMLDivElement>(null);
+const AddNewDoorwayModel: React.FC<CloseModelProps> = ({ onClose }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // Handle clicks outside the modal
   useEffect(() => {
@@ -30,11 +29,11 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose, extra = false
   }, [onClose]);
 
     const initialState = useRef({
-        selectedDepartment: "Hr" as string | null,
-        firstName: "Sami" as string,
-        lastName: "Ullah" as string,
-        jobTitle: "CEO" as string,
-        company: "Outlook" as string,
+        selectedDepartment: "" as string | null,
+        firstName: "" as string,
+        lastName: "" as string,
+        jobTitle: "" as string,
+        company: "" as string,
         license: "" as string,
         prefix: "" as string,
         doorwayName: "" as string,
@@ -42,11 +41,10 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose, extra = false
         model: false as boolean,
         emails: [{ value: "", type: "" }] as { value: string; type: string }[],
         phoneNumbers: [
-            { value: "03349388918", type: "" },
-            { value: "03091504735", type: "" },
+            { value: "", type: "" },
         ] as { value: string; type: string }[],
         addresses: [""],
-        urls: [{ type: "", value: "https://example.com" }] as { type: string; value: string }[],
+        urls: [{ type: "", value: "" }] as { type: string; value: string }[],
         selectedOption: undefined as string | undefined,
         customValue: "" as string,
         dropdownStates: {} as { [key: string]: boolean },
@@ -85,24 +83,11 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose, extra = false
         urls?: string[];
     }>({});
     useEffect(() => {
-        const hasChanged =
-            selectedDepartment !== initialState.current.selectedDepartment ||
-            firstName !== initialState.current.firstName ||
-            lastName !== initialState.current.lastName ||
-            jobTitle !== initialState.current.jobTitle ||
-            company !== initialState.current.company ||
-            license !== initialState.current.license ||
-            prefix !== initialState.current.prefix ||
-            doorwayName !== initialState.current.doorwayName ||
-            suffix !== initialState.current.suffix ||
-            model !== initialState.current.model ||
-            JSON.stringify(emails) !== JSON.stringify(initialState.current.emails) ||
-            JSON.stringify(phoneNumbers) !== JSON.stringify(initialState.current.phoneNumbers) ||
-            JSON.stringify(addresses) !== JSON.stringify(initialState.current.addresses) ||
-            JSON.stringify(urls) !== JSON.stringify(initialState.current.urls) ||
-            selectedOption !== initialState.current.selectedOption ||
-            customValue !== initialState.current.customValue ||
-            JSON.stringify(dropdownStates) !== JSON.stringify(initialState.current.dropdownStates);
+        const hasChanged = firstName !== "" &&
+                            lastName !== "" &&
+                            jobTitle !== "" &&
+                            company !== "" &&
+                            doorwayName !== ""
 
         setIsDisabled(!hasChanged);
     }, [
@@ -429,12 +414,12 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose, extra = false
                                     placeholder={placeholder}
                                     readOnly={index === 0}
                                 />
-
+                               
                             </div>
-                            {/* Error message */}
-                            {errors.urls?.[index] && (
-                                <div className="text-red-500 text-xs m-2">{errors.urls[index]}</div>
-                            )}
+                             {/* Error message */}
+                             {errors.urls?.[index] && (
+                                    <div className="text-red-500 text-xs m-2">{errors.urls[index]}</div>
+                                )}
                         </div>
                     </div>
                 </div>
@@ -599,20 +584,15 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose, extra = false
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
         setter(e.target.value);
     };
-    const userCard={
-        name:"Sami Ullah",
-        email:"rao ikram431@gmail.com",
-        doorways: 2,
-        
-    }
+
     return (
         <div
             className="fixed top-0 bottom-0 inset-0 border bg-[#23272E33] z-[2000]"
             role="dialog"
             aria-modal="true"
         >
-            <div className="absolute inset-0 overflow-hidden h-full" >
-                <div className="absolute right-0 top-0 w-full max-w-[450px] bg-white shadow-xl h-full " ref={modalRef}>
+            <div className="absolute inset-0 overflow-hidden h-full">
+                <div className="absolute right-0 top-0 w-full max-w-[450px] bg-white shadow-xl h-full" ref={modalRef}>
                     <div className="flex flex-col h-full">
                         {/* Header */}
                         <div className="p-[22px] flex gap-[12px] border-b border-b-gray-100 items-center">
@@ -635,36 +615,10 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose, extra = false
 
                         {/* Content */}
                         <div className="overflow-y-scroll flex-grow">
-                        {extra===true && <div className="p-[24px] bg-brand-50 flex gap-[24px] items-center">
-                                            {/* User Info */}
-                                            <div className="flex gap-[12px] items-center flex-grow">
-                                                {/* Profile Avatar */}
-                                                <div className="bg-brand-200 text-brand-500 rounded-full flex items-center justify-center w-[40px] h-[40px] text-petite font-medium">
-                                                    {userCard.name.split(" ").map(word => word[0]).join("").toUpperCase()}
-                                                </div>
-                                                {/* User Details */}
-                                                <div className="flex flex-col flex-grow">
-                                                    <span className="text-petite font-bold text-brand-950">{userCard.name}</span>
-                                                    <span className="text-tiny font-regular text-gray-950">{userCard.email}</span>
-                                                    <span className="text-tiny font-regular text-gray-500">{userCard.doorways} Doorways</span>
-                                                </div>
-                                            </div>
-
-                                            {/* View User Button */}
-                                            <div className="text-regular font-regular">
-                                                <div
-                                                    className="inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-500 ease-in-out px-[12px] py-[6px] text-brand-500 hover:bg-brand-100 focus:border-[2px] focus:border-brand-300 cursor-pointer"
-                                                   
-                                                >
-                                                    <span className="whitespace-nowrap">View User</span>
-                                                </div>
-                                            </div>
-                                        </div>}
-                            <div className={`px-[24px] py-[32px] flex flex-col gap-[36px] w-full`}>
-
+                            <div className="px-[24px] py-[32px] flex flex-col gap-[36px] w-full">
                                 {/* Management Information */}
                                 <div className="flex flex-col gap-6">
-                          
+
                                     <div>
                                         <div className="flex flex-col gap-[24px]">
                                             {/* Header Section */}
@@ -873,7 +827,7 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose, extra = false
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-[24px]">
-                                        {renderFields("Emails", emails, setEmails, "Enter email address", "email", false, undefined, errors.emails)}
+                                        {renderFields("Emails", emails, setEmails, "Enter email address", "email",false,undefined,errors.emails)}
                                         {renderFields(
                                             "Phone Numbers",
                                             phoneNumbers,
@@ -912,7 +866,7 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose, extra = false
                                     className={`inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-300 ease-in-out px-[16px] py-[8px] 
                                     ${isDisabled ? "bg-brand-100 cursor-default" : "bg-themeColor cursor-pointer text-black"}`}
                                 >
-                                    <span className="whitespace-nowrap">Update Password</span>
+                                    <span className="whitespace-nowrap">Add Doorway</span>
                                 </button>
                             </div>
                         </div>
@@ -923,4 +877,4 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose, extra = false
     );
 };
 
-export default DoorwayDetailsModel;
+export default AddNewDoorwayModel;
