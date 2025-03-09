@@ -40,7 +40,7 @@ function home() {
                             </svg>Manage Nextuf Store's Doorways
                         </div>
                         <div className="my-4">
-                            <Link className="border-2 border-gray-300 flex items-center justify-between pl-4 min-sm:pl-6 pr-1.5 py-1.5 rounded text-gray-400 text-sm " href="/doorways">
+                            <Link className="border-2 border-gray-300 flex items-center justify-between pl-4 min-sm:pl-6 pr-1.5 py-1.5 rounded text-gray-400 text-sm " href="/organization/doorway&user">
                                 <div className="flex items-center gap-[15px]"><SupervisorAccountIcon sx={{ width: "1rem", height: 20 }} />
                                     Doorways &amp; Users
                                 </div>

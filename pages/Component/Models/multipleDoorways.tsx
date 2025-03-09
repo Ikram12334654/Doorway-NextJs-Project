@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 interface CloseModelProps {
@@ -8,7 +8,24 @@ interface CloseModelProps {
 const DoorwayPanel: React.FC<CloseModelProps> = ({ onClose }) => {
   const [maxDoorways, setMaxDoorways] = useState<string>("1");
   const [model, setModel] = useState<boolean>(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
+  // Handle clicks outside the modal
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose(); // Close the modal if clicked outside
+      }
+    };
+
+    // Add event listener for clicks
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener on unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
   const handleSelectChange = (value: string) => {
     setMaxDoorways(value);
     setModel(false); // Close dropdown after selection
@@ -26,7 +43,7 @@ const DoorwayPanel: React.FC<CloseModelProps> = ({ onClose }) => {
   return (
     <div className="fixed top-0 bottom-0 inset-0 border bg-[#23272E33] z-[2000]" role="dialog" aria-modal="true">
       <div className="absolute inset-0 overflow-hidden h-full">
-        <div className="absolute right-0 top-0 w-full max-w-[450px] bg-white shadow-xl h-full overflow-y-auto">
+        <div className="absolute right-0 top-0 w-full max-w-[450px] bg-white shadow-xl h-full overflow-y-auto" ref={modalRef}>
           <div className="relative w-screen h-screen max-w-md">
             <div className="h-full flex flex-col pb-6 pt-3 bg-white shadow-xl overflow-y-scroll">
               <div className="relative flex-1 px-4 sm:px-6">

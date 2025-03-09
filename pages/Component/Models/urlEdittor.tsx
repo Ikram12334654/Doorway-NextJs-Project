@@ -1,8 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 interface CloseModelProps {
     onClose: () => void;
 }
 const URLManager: React.FC<CloseModelProps> = ({ onClose }) => {
+    const modalRef = useRef<HTMLDivElement>(null);
+
+  // Handle clicks outside the modal
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose(); // Close the modal if clicked outside
+      }
+    };
+
+    // Add event listener for clicks
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener on unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
     // Explicitly typing the state variables
     const [urls, setUrls] = useState<{ id: number; url: string; type: string }[]>([
         { id: 1, url: "https://nextuf.store/", type: "Work" },
@@ -76,8 +94,8 @@ const URLManager: React.FC<CloseModelProps> = ({ onClose }) => {
             role="dialog"
             aria-modal="true"
         >
-            <div className="absolute inset-0 overflow-hidden h-full">
-                <div className="absolute right-0 top-0 w-full max-w-[450px] bg-white shadow-xl h-full overflow-y-auto">
+            <div className="absolute inset-0 overflow-hidden h-full" ref={modalRef}>
+                <div className="absolute right-0 top-0 w-full max-w-[450px] bg-white shadow-xl h-full overflow-y-auto" ref={modalRef}>
                     <div className="flex flex-col h-full">
                         <div className="p-[22px] flex gap-[12px] border-b border-b-gray-100 items-center">
                             <div className="flex-grow text-gray-950 text-small font-medium">Company URLs</div>

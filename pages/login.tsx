@@ -268,7 +268,11 @@ function Login() {
                     Next
                   </button>
                 )}
-                {!showPasswordField && (
+              
+              </Form>
+            )}
+          </Formik>
+          {!showPasswordField && (
                   <div className="w-full flex flex-col item-center .justify-center mt-5 sm:text-sm">
                     <span className="flex justify-center">or</span>
 
@@ -300,9 +304,6 @@ function Login() {
                     />
                   </div>
                 )}
-              </Form>
-            )}
-          </Formik>
         </div>
       </div>
     </div>
