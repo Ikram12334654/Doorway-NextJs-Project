@@ -1,25 +1,25 @@
 import AuthNavbar from "@/assets/authNavbar";
+import { saveCurrentUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import CustomizeYourDesign from "../Component/customizeDoorway";
 import EditYourDesign from "../Component/EditYourDesign";
 import RegisterPage from "../Component/registerPage";
+import SaveToWallet from "../Component/SaveToWallet";
 import SelectRequirements from "../Component/SelectRequirements";
 import SetUpDoorway from "../Component/setUpDoorway";
-import { clearCurrentUser, saveCurrentUser } from "@/redux/reducers/user";
-import CustomizeYourDesign from "../Component/customizeDoorway";
-import SaveToWallet from "../Component/SaveToWallet";
-import { clearCurrentDesign } from "@/redux/reducers/design";
+import { saveAccount } from "@/redux/reducers/account";
 
 function Register() {
   const state = useSelector((state: RootState) => state);
 
   const dispatch = useDispatch();
 
-  const [type, setType] = useState(state.user.accountType || "");
+  const [type, setType] = useState(state.account.type || "");
   const router = useRouter();
   const [cancelParam, setCancelParam] = useState<boolean | undefined>(
     undefined
@@ -32,14 +32,13 @@ function Register() {
       setCancelParam(cancel === "true");
     }
   }, [router.isReady, router.query]);
-  console.log("this is ", cancelParam);
 
   return (
     <div className="w-screen h-screen flex flex-col">
       <div className="w-[80%] z-10 mt-3 ml-[10%] md:w-[90%] md:ml-[5%]">
         <AuthNavbar />
       </div>
-      {!state.user.accountType && (
+      {!state.account.type && (
         <div>
           <div className="w-[60%] z-10 text-center flex flex-col items-center justify-center mx-auto md:w-[80%] mt-[5%]">
             <span className="min-lg:text-xl min-sm:text-md min-md:text-lg font-semibold">
@@ -114,7 +113,7 @@ function Register() {
             <div className="w-[285px]">
               <div
                 className={` disabled:bg-gray-400 text-white cursor-pointer text-[15px] font-[500] heading-[14px] rounded-[5px] text-center ${
-                  state.user.accountType === ""
+                  state.account.type === ""
                     ? "bg-gray-400 cursor-default"
                     : "bg-themeColor"
                 }`}
@@ -123,14 +122,14 @@ function Register() {
                   onClick={() => {
                     dispatch(
                       saveCurrentUser({
-                        steps: state.user.steps + 1,
-                        accountType: type,
+                        steps: 1,
                       })
                     );
+                    dispatch(saveAccount({ type }));
                   }}
                   disabled={type ? false : true}
                   className={`bg-themeColor w-[285px] disabled:bg-gray-400 text-white cursor-pointer text-[15px] font-[500] heading-[14px] rounded-[5px] py-[12px] min-md:py-[14px] text-center ${
-                    state.user.accountType === ""
+                    state.account.type === ""
                       ? "bg-gray-400 cursor-default"
                       : "bg-themeColor"
                   }`}
@@ -143,8 +142,8 @@ function Register() {
         </div>
       )}
 
-      {state.user.accountType &&
-        state.user.accountType === enums.ACCOUNT_TYPE.ORGANIZATION && (
+      {state.account.type &&
+        state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION && (
           <div className="w-[75%] ml-auto mr-auto mt-10 ">
             <div className="hidden min-xl:flex justify-center">
               <div className="flex gap-[10px] items-center mb-[22px] xl:mb-[30px]">
@@ -223,7 +222,6 @@ function Register() {
                 </div>
               </div>
             </div>
-
             {state.user.steps === 1 && (
               <div className="w-[80%] h-max flex flex-col items-center justify-center m-auto">
                 <RegisterPage />
@@ -246,8 +244,8 @@ function Register() {
             )}
           </div>
         )}
-      {state.user.accountType &&
-        state.user.accountType === enums.ACCOUNT_TYPE.PERSONAL && (
+      {state.account.type &&
+        state.account.type === enums.ACCOUNT_TYPE.PERSONAL && (
           <div className="w-[75%] ml-auto mr-auto mt-10 ">
             <div className="hidden min-xl:flex justify-center">
               <div className="flex gap-[10px] items-center mb-[22px] xl:mb-[30px]">

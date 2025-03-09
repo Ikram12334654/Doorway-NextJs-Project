@@ -2,41 +2,31 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface AuthState {
-  token: string;
-  loggedInFromAnyOtherLocation: boolean;
+  accessToken: string;
+  refreshToken: string;
 }
 
 const initialState: AuthState = {
-  token: "",
-  loggedInFromAnyOtherLocation: false,
+  accessToken: "",
+  refreshToken: "",
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    saveAuthToken: (state, action: PayloadAction<{ token: string }>) => {
-      const { token } = action.payload;
-
-      state.token = token;
+    saveAuth: (state, action: PayloadAction<Partial<AuthState>>) => {
+      Object.keys(action.payload).forEach((key) => {
+        if (key in initialState) {
+          (state as any)[key] = (action.payload as any)[key];
+        }
+      });
     },
 
-    setLoggedInFromAnyOtherLocation: (
-      state,
-      action: PayloadAction<{ loggedInFromAnyOtherLocation: boolean }>
-    ) => {
-      const { loggedInFromAnyOtherLocation } = action.payload;
-
-      state.loggedInFromAnyOtherLocation = loggedInFromAnyOtherLocation;
-    },
-    logout: (state) => {
-      state.token = "";
-      state.loggedInFromAnyOtherLocation = false;
-    },
+    logout: () => initialState,
   },
 });
 
-export const { saveAuthToken, setLoggedInFromAnyOtherLocation, logout } =
-  authSlice.actions;
+export const { saveAuth, logout } = authSlice.actions;
 
 export default authSlice.reducer;

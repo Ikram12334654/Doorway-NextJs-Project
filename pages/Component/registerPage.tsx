@@ -1,8 +1,6 @@
-import { saveAuthToken } from "@/redux/reducers/auth";
-import { saveCurrentUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import { authRoutes } from "@/utils/routes";
-import { decryptJSON, generateStrongPassword } from "@/utils/security";
+import { generateStrongPassword } from "@/utils/security";
 import Api from "@/utils/service";
 import { ErrorToastMessage } from "@/utils/toast";
 import { ErrorMessage, Field, Form, Formik } from "formik";
@@ -10,6 +8,9 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import Button from "./button";
+import { saveAuth } from "@/redux/reducers/auth";
+import { saveCurrentUser } from "@/redux/reducers/user";
+import enums from "@/utils/enums";
 
 const RegisterPage: React.FC = () => {
   const state = useSelector((state: RootState) => state);
@@ -57,30 +58,51 @@ const RegisterPage: React.FC = () => {
     terms: boolean;
   }
 
+  interface ApiResponse<T = any> {
+    data?: T;
+    [key: string]: any;
+  }
+
   const handleSubmit = async ({ values }: { values: FormValues }) => {
     const { firstName, lastName, email, password, referral } = values;
     try {
       setLoading(true);
 
-      const { response, error } = await Api(authRoutes.register, "post", {
-        payload: {
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          password: password,
-          aboutUs: referral,
-          accountType: state.user.accountType,
-        },
-      });
+      const { response, error }: ApiResponse = await Api(
+        authRoutes.register,
+        "post",
+        {
+          payload: {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+            aboutUs: referral,
+            accountType: state.account.type,
+          },
+        }
+      );
 
       setLoading(false);
 
       if (response) {
-        const decryptedJSON = await decryptJSON(response?.data);
+        dispatch(
+          saveAuth({
+            accessToken: response?.accessToken,
+            refreshToken: response?.refreshToken,
+          }),
 
-        const user = decryptedJSON?.user;
-        dispatch(saveCurrentUser({ ...user, emails: [user?.email] }));
-        dispatch(saveAuthToken({ token: response?.accessToken }));
+          dispatch(
+            saveCurrentUser({
+              firstName: firstName,
+              lastName: lastName,
+              email: email,
+              role:
+                state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION ? 2 : 1,
+              steps: 2,
+            })
+          )
+        );
       } else if (error) {
         ErrorToastMessage({ message: error?.message });
       }
@@ -100,7 +122,7 @@ const RegisterPage: React.FC = () => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values, { resetForm }) => {
+        onSubmit={(values: any, { resetForm }) => {
           handleSubmit({ values });
           resetForm();
         }}
@@ -192,7 +214,6 @@ const RegisterPage: React.FC = () => {
                   >
                     <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[6px] border-b-black" />
                     <div className="text-sm p-1">
-                      {" "}
                       Click to generate a strong password
                     </div>
                   </div>

@@ -1,6 +1,6 @@
 interface VFCProps {
   prefix?: string;
-  sufix?: string;
+  suffix?: string;
   firstName?: string;
   lastName?: string;
   organizationName?: string;
@@ -15,7 +15,7 @@ interface VFCProps {
 
 export const vcfText = ({
   prefix = "",
-  sufix = "",
+  suffix = "",
   firstName = "",
   lastName = "",
   organizationName = "",
@@ -28,7 +28,7 @@ export const vcfText = ({
   personal = false,
 }: VFCProps): string => {
   const getFullName = (): string => {
-    const nameParts = [prefix, firstName, lastName, sufix].filter(Boolean);
+    const nameParts = [prefix, firstName, lastName, suffix].filter(Boolean);
     return nameParts.join(" ").trim();
   };
 

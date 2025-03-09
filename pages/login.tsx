@@ -3,9 +3,9 @@ import Api from "@/utils/service";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import AuthNavbar from "../assets/authNavbar";
 import { DoorwayImages } from "../assets/style";
@@ -15,13 +15,12 @@ import linkedInlogo from "../public/linkedin.png";
 import { authRoutes } from "../utils/routes";
 import { ErrorToastMessage, SuccessToastMessage } from "../utils/toast";
 import SocialLoginButton from "./Component/socialLoginButton";
-
-import { saveAuthToken } from "@/redux/reducers/auth";
-import env from "../utils/config";
+import { clearCurrentUser, saveCurrentUser } from "@/redux/reducers/user";
 import { useRouter } from "next/router";
-import { decryptJSON } from "@/utils/security";
-import { saveCurrentUser } from "@/redux/reducers/user";
-import { saveCurrentDesign } from "@/redux/reducers/design";
+import env from "../utils/config";
+import { logout, saveAuth } from "@/redux/reducers/auth";
+import { RootState } from "@/redux/store";
+import { clearAccount } from "@/redux/reducers/account";
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,10 +62,24 @@ function Login() {
     password: string;
   }
 
+  interface ApiResponse<T = any> {
+    data?: T;
+    [key: string]: any;
+  }
+
   const router = useRouter();
+  const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
-  const handleRoute = () => {
+  useEffect(() => {
+    dispatch(clearCurrentUser());
+    dispatch(clearAccount());
+    dispatch(logout());
+  }, [state]);
+
+  const handleRoute = ({ response }: any) => {
+    setLoading(false);
+    SuccessToastMessage({ message: response?.message });
     router.push("/register");
   };
 
@@ -86,28 +99,28 @@ function Login() {
     try {
       setLoading(true);
 
-      const { response, error } = await Api(authRoutes.login, "post", {
-        payload: {
-          email,
-          password,
-        },
-      });
-
-      setLoading(false);
+      const { response, error }: ApiResponse = await Api(
+        authRoutes.login,
+        "post",
+        {
+          payload: {
+            email,
+            password,
+          },
+        }
+      );
 
       if (response) {
-        const decryptedJSON = decryptJSON(response.data);
-
-        const user = decryptedJSON?.user;
-        const design = decryptedJSON?.design;
-
-        user && dispatch(saveCurrentUser(user));
-        design && dispatch(saveCurrentDesign(design));
-        dispatch(saveAuthToken({ token: response?.accessToken }));
-        SuccessToastMessage({ message: response?.message });
-
-        handleRoute();
+        response?.data?.user && dispatch(saveCurrentUser(response?.data?.user));
+        dispatch(
+          saveAuth({
+            accessToken: response?.accessToken,
+            refreshToken: response?.refreshToken,
+          })
+        );
+        handleRoute({ response });
       } else if (error) {
+        setLoading(false);
         ErrorToastMessage({ message: error?.message });
       }
     } catch (e) {

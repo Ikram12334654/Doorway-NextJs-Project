@@ -13,7 +13,7 @@ const QRCode: React.FC<QRCodeProps> = ({ size = 128 }) => {
     <QRCodeCanvas
       value={vcfText({
         prefix: state.user.prefix,
-        sufix: state.user.sufix,
+        suffix: state.user.suffix,
         firstName: state.user.firstName,
         lastName: state.user.lastName,
         organizationName: state.user.organizationName,

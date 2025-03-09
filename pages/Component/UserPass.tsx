@@ -4,7 +4,7 @@ import enums from "@/utils/enums";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import QRImage from "../../public/QrImage.png"
+import QRImage from "../../public/QrImage.png";
 import DefaultLogo from "./defaultLogo";
 import QRCode from "./QRCanvas";
 
@@ -17,7 +17,7 @@ interface formValues {
   logoImage?: string;
   firstName?: string;
   lastName?: string;
-  passType?:string
+  passType?: string;
 }
 
 const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
@@ -34,7 +34,7 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
     organizationName:
       values?.organizationName || state.user.organizationName || "Doorway",
     organizationURL:
-      values?.organizationURL || state.user.URLS[0] || "https://doorway.io/",
+      values?.organizationURL || state.user.URLs[0] || "https://doorway.io/",
     backgroundColor:
       values?.backgroundColor || state.design.backgroundColor || "#22242C",
     stripImage: values?.stripImage || state.design.stripImage || "",
@@ -191,7 +191,6 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
                 </div>
               </div>
             )}
-            
           </div>
         </div>
       </div>

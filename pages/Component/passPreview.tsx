@@ -33,7 +33,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
     organizationName:
       values?.organizationName || state.user.organizationName || "Doorway",
     organizationURL:
-      values?.organizationURL || state.user.URLS[0] || "https://doorway.io/",
+      values?.organizationURL || state.user.URLs[0] || "https://doorway.io/",
     backgroundColor:
       values?.backgroundColor || state.design.backgroundColor || "#22242C",
     stripImage: values?.stripImage || state.design.stripImage || "",
@@ -190,7 +190,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                 </div>
               </div>
             )}
-            {state.user.accountType === enums.ACCOUNT_TYPE.ORGANIZATION && (
+            {state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION && (
               <div className="flex mt-[12px] justify-center gap-[22px] text-[10px] font-[500]">
                 <span
                   className={`cursor-pointer ${

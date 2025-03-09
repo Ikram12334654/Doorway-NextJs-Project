@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import enums from "../../utils/enums";
 import Button from "./button";
 import PassPreview from "./passPreview";
+import { decryptJSON } from "@/utils/security";
 const SetUpDoorway: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
@@ -17,7 +18,7 @@ const SetUpDoorway: React.FC = () => {
   const [formData, setFormData] = useState({
     jobTitle: state.user.jobTitle || "",
     organizationName: state.user.organizationName || "",
-    organizationURL: state.user.URLS[0]?.value || "",
+    organizationURL: state.user.URLs[0]?.value || "",
   });
 
   const isFormValid =
@@ -40,6 +41,11 @@ const SetUpDoorway: React.FC = () => {
     });
   };
 
+  interface ApiResponse<T = any> {
+    data?: T;
+    [key: string]: any;
+  }
+
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
@@ -55,10 +61,11 @@ const SetUpDoorway: React.FC = () => {
     try {
       setLoading(true);
 
-      const authToken = state.auth.token;
+      const authToken = state.auth.accessToken;
+      const role: string = enums.ROLES[2];
 
-      const { response, error } = await Api(
-        "/" + enums.ROLES[state.user.role] + authRoutes.setupAccount,
+      const { response, error }: ApiResponse = await Api(
+        "/" + role + authRoutes.setupAccount,
         "post",
         {
           payload: {
@@ -73,14 +80,14 @@ const SetUpDoorway: React.FC = () => {
       setLoading(false);
 
       if (response) {
-        dispatch(
-          saveCurrentUser({
-            steps: state.user.steps + 1,
-            jobTitle: jobTitle,
-            organizationName: organizationName,
-            URLS: [{ type: "work", value: organizationURL }],
-          })
-        );
+        // dispatch(
+        //   saveCurrentUser({
+        //     steps: state.user.steps + 1,
+        //     jobTitle: jobTitle,
+        //     organizationName: organizationName,
+        //     URLs: [{ type: "work", value: organizationURL }],
+        //   })
+        // );
       } else if (error) {
         ErrorToastMessage({ message: error?.message });
       }
