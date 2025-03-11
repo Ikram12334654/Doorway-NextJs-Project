@@ -1,19 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { DoorwayImages } from './style';
-import { CircularProgressWithLabel } from './CircularProgress';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useRef, useState } from "react";
+import { CircularProgressWithLabel } from "./CircularProgress";
+import { DoorwayImages } from "./style";
 
 interface navbarDataProps {
   name?: string;
   totalUsers?: number;
-  availableUser?: number; // Updated spelling
-  id?: number; // Changed `Number` to `number`
+  availableUser?: number;
+  id?: number;
 }
 
 const PrivateRoutesNavBar: React.FC<navbarDataProps> = ({
-  name = 'Samu Ullah',
+  name = "Samu Ullah",
   totalUsers = 100,
   availableUser = 2,
   id = 1,
@@ -22,19 +21,22 @@ const PrivateRoutesNavBar: React.FC<navbarDataProps> = ({
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
       setShowOption(false);
     }
   };
 
   useEffect(() => {
     if (showOption) {
-      document.addEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
     } else {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [showOption]);
 
@@ -43,7 +45,7 @@ const PrivateRoutesNavBar: React.FC<navbarDataProps> = ({
       <div>
         <Link href="/organization/home">
           <Image
-            src={DoorwayImages?.logo || '/default-logo.png'} // Added fallback
+            src={DoorwayImages?.logo || "/default-logo.png"}
             alt="Logo"
             className="w-auto h-[3rem]"
           />
@@ -62,7 +64,8 @@ const PrivateRoutesNavBar: React.FC<navbarDataProps> = ({
                   Using {availableUser} of {totalUsers}
                 </span>
               </div>
-              <CircularProgressWithLabel value={availableUser || 0} /> {/* Added fallback */}
+              <CircularProgressWithLabel value={availableUser || 0} />{" "}
+              {/* Added fallback */}
             </div>
             <div className="h-8 border-r border-r-gray-100"></div>
           </div>
@@ -92,9 +95,7 @@ const PrivateRoutesNavBar: React.FC<navbarDataProps> = ({
               </div>
             </div>
             {showOption && (
-              <div
-                className="absolute z-50 top-[45px] left-1/2 transform -translate-x-1/2 px-2 py-3 bg-white border border-gray-50 rounded-regular opacity-100 scale-95 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:scale-100"
-              >
+              <div className="absolute z-50 top-[45px] left-1/2 transform -translate-x-1/2 px-2 py-3 bg-white border border-gray-50 rounded-regular opacity-100 scale-95 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:scale-100">
                 <div className="w-fit min-md:w-[200px] flex flex-col gap-3 text-center">
                   <Link href="/organization/account">
                     <div className="inline-flex justify-center gap-6 px-[16px] py-[8px] text-petite font-semibold bg-brand-50 text-brand-500 rounded-[6px] hover:bg-brand-100 cursor-pointer">

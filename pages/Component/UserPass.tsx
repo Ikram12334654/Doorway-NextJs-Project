@@ -1,4 +1,4 @@
-import { saveCurrentUser } from "@/redux/reducers/user";
+import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import Image from "next/image";

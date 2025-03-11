@@ -1,5 +1,5 @@
 import AuthNavbar from "@/assets/authNavbar";
-import { saveCurrentUser } from "@/redux/reducers/user";
+import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -121,7 +121,7 @@ function Register() {
                 <button
                   onClick={() => {
                     dispatch(
-                      saveCurrentUser({
+                      saveUser({
                         steps: 1,
                       })
                     );

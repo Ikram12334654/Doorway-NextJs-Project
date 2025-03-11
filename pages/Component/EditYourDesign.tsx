@@ -1,5 +1,5 @@
 import { saveCurrentDesign } from "@/redux/reducers/design";
-import { saveCurrentUser } from "@/redux/reducers/user";
+import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import { authRoutes } from "@/utils/routes";
@@ -10,10 +10,8 @@ import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "./button";
 import PassPreview from "./passPreview";
-import  Cropper, { ReactCropperElement }  from "react-cropper";
+import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
-
-
 
 const EditYourDesign: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -22,12 +20,12 @@ const EditYourDesign: React.FC = () => {
   const [logoImage, setLogoImage] = React.useState<File | null>(null);
   const [logoImagePreview, setLogoImagePreview] = React.useState<string>("");
   const [backgroundColor, setBackgroundColor] = useState("#21242b");
-  const [logoImageCropped,setLogoImageCropped]=useState<string>("")
-  const [stripeImageCropped,setStripeImageCropped]=useState<string>("")
+  const [logoImageCropped, setLogoImageCropped] = useState<string>("");
+  const [stripeImageCropped, setStripeImageCropped] = useState<string>("");
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const logoImageCropperRef = useRef<ReactCropperElement>(null);
-  const stripeImageCropperRef = useRef<ReactCropperElement>(null); 
+  const stripeImageCropperRef = useRef<ReactCropperElement>(null);
   const maxSize = 1 * 1024 * 1024; // 1MB in bytes
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,7 +105,7 @@ const EditYourDesign: React.FC = () => {
           })
         );
         dispatch(
-          saveCurrentUser({
+          saveUser({
             steps: state.user.steps + 1,
           })
         );
@@ -211,63 +209,64 @@ const EditYourDesign: React.FC = () => {
               </label>
               <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px] flex  items-center">
                 <div className="flex flex-col item-center w-[100%]">
-                <label
-                  htmlFor="stripeImage"
-                  className={`cursor-pointer flex items-center w-full ${
-                    stripImagePreview ? "text-[black]" : "text-[#BEBEBE]"
-                  }`}
-                >
-                  <input
-                    type="file"
-                    accept="image/png, image/jpg , image/jpeg , image/JPG"
-                    id="stripeImage"
-                     className="z-0"
-                    hidden
-                    onChange={handleFileChange}
-                  />
-                  {stripImagePreview ? (
-                    <div className="flex flex-row justify-between w-full ">
-                      <div>{stripImage?.name}</div>
+                  <label
+                    htmlFor="stripeImage"
+                    className={`cursor-pointer flex items-center w-full ${
+                      stripImagePreview ? "text-[black]" : "text-[#BEBEBE]"
+                    }`}
+                  >
+                    <input
+                      type="file"
+                      accept="image/png, image/jpg , image/jpeg , image/JPG"
+                      id="stripeImage"
+                      className="z-0"
+                      hidden
+                      onChange={handleFileChange}
+                    />
+                    {stripImagePreview ? (
+                      <div className="flex flex-row justify-between w-full ">
+                        <div>{stripImage?.name}</div>
 
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 16 16"
-                        width="1em"
-                        onClick={() => {
-                          setStripImage(null);
-                          setStripImagePreview("");
-                        }}
-                        height="1em"
-                        fill="currentColor"
-                        className="right-[10px] z-10 top-[50%] mt-2 transform  w-[14px] h-[14px] text-[black]"
-                      >
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
-                      </svg>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 16 16"
+                          width="1em"
+                          onClick={() => {
+                            setStripImage(null);
+                            setStripImagePreview("");
+                          }}
+                          height="1em"
+                          fill="currentColor"
+                          className="right-[10px] z-10 top-[50%] mt-2 transform  w-[14px] h-[14px] text-[black]"
+                        >
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
+                        </svg>
+                      </div>
+                    ) : (
+                      ".png or .jpeg files only"
+                    )}
+                  </label>
+                  {stripImagePreview && (
+                    <div className="mb-4">
+                      <Cropper
+                        src={stripImagePreview}
+                        ref={stripeImageCropperRef} // Use the correctly typed ref
+                        className="cropper"
+                        style={{
+                          width: "96%",
+                          height: "auto",
+                          margin: "auto",
+                        }} // Dynamically set cropper size
+                        aspectRatio={2} // Maintain a square crop
+                        guides={false}
+                        scalable={true}
+                        viewMode={1}
+                        cropBoxResizable={true}
+                        crop={handleCropStripeImage} // Trigger handleCrop on crop update
+                      />
                     </div>
-                  ) : (
-                    ".png or .jpeg files only"
                   )}
-                </label>
-              {stripImagePreview  && (
-                        <div className="mb-4">
-                          <Cropper
-                            src={stripImagePreview}
-                            ref={stripeImageCropperRef} // Use the correctly typed ref
-                            className="cropper"
-                            style={{
-                              width: "96%",
-                              height: "auto",
-                              margin: "auto",
-                            }} // Dynamically set cropper size
-                            aspectRatio={2} // Maintain a square crop
-                            guides={false}
-                            scalable={true}
-                            viewMode={1}
-                            cropBoxResizable={true}
-                            crop={handleCropStripeImage} // Trigger handleCrop on crop update
-                          />
-                        </div>
-                      )}</div>
+                </div>
               </div>
             </div>
 
@@ -277,64 +276,64 @@ const EditYourDesign: React.FC = () => {
               </label>
               <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px] flex  items-center">
                 <div className="flex flex-col item-center w-[100%]">
-                <label
-                  htmlFor="topLeftLogoInput"
-                  className={`cursor-pointer flex items-center w-full ${
-                    logoImagePreview ? "text-[black]" : "text-[#BEBEBE]"
-                  }`}
-                >
-                  <input
-                    type="file"
-                    className="z-0"
-                    accept="image/png, image/jpg , image/jpeg , image/JPG"
-                    id="topLeftLogoInput"
-                    hidden
-                    onChange={handleFileChangeLogo}
-                  />
-                  {logoImagePreview ? (
-                    <div className="flex flex-row justify-between w-full ">
-                      <div>{logoImage?.name}</div>
+                  <label
+                    htmlFor="topLeftLogoInput"
+                    className={`cursor-pointer flex items-center w-full ${
+                      logoImagePreview ? "text-[black]" : "text-[#BEBEBE]"
+                    }`}
+                  >
+                    <input
+                      type="file"
+                      className="z-0"
+                      accept="image/png, image/jpg , image/jpeg , image/JPG"
+                      id="topLeftLogoInput"
+                      hidden
+                      onChange={handleFileChangeLogo}
+                    />
+                    {logoImagePreview ? (
+                      <div className="flex flex-row justify-between w-full ">
+                        <div>{logoImage?.name}</div>
 
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 16 16"
-                        width="1em"
-                        onClick={() => {
-                          setLogoImage(null);
-                          setLogoImagePreview("");
-                        }}
-                        height="1em"
-                        fill="currentColor"
-                        className="right-[10px] z-10 top-[50%] mt-2 transform  w-[14px] h-[14px] text-[black]"
-                      >
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
-                      </svg>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 16 16"
+                          width="1em"
+                          onClick={() => {
+                            setLogoImage(null);
+                            setLogoImagePreview("");
+                          }}
+                          height="1em"
+                          fill="currentColor"
+                          className="right-[10px] z-10 top-[50%] mt-2 transform  w-[14px] h-[14px] text-[black]"
+                        >
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
+                        </svg>
+                      </div>
+                    ) : (
+                      ".png or .jpeg files only"
+                    )}
+                  </label>
+                  {logoImagePreview && (
+                    <div className="mb-4">
+                      <Cropper
+                        src={logoImagePreview}
+                        ref={logoImageCropperRef} // Use the correctly typed ref
+                        className="cropper"
+                        style={{
+                          width: "96%",
+                          height: "auto",
+                          margin: "auto",
+                        }} // Dynamically set cropper size
+                        aspectRatio={1} // Maintain a square crop
+                        guides={false}
+                        scalable={true}
+                        viewMode={1}
+                        cropBoxResizable={true}
+                        crop={handleCropLogoImage} // Trigger handleCrop on crop update
+                      />
                     </div>
-                  ) : (
-                    ".png or .jpeg files only"
-                  )}
-                </label>
-                {logoImagePreview  && (
-                        <div className="mb-4">
-                          <Cropper
-                            src={logoImagePreview}
-                            ref={logoImageCropperRef} // Use the correctly typed ref
-                            className="cropper"
-                            style={{
-                              width: "96%",
-                              height: "auto",
-                              margin: "auto",
-                            }} // Dynamically set cropper size
-                            aspectRatio={1} // Maintain a square crop
-                            guides={false}
-                            scalable={true}
-                            viewMode={1}
-                            cropBoxResizable={true}
-                            crop={handleCropLogoImage} // Trigger handleCrop on crop update
-                          />
-                        </div>
-                      )} </div>
-                 
+                  )}{" "}
+                </div>
               </div>
             </div>
 

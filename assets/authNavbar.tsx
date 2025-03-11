@@ -1,25 +1,14 @@
 import { RootState } from "@/redux/store";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 import { DoorwayImages } from "./style";
-import { useDispatch, useSelector } from "react-redux";
-import { clearCurrentUser } from "@/redux/reducers/user";
-import { logout } from "@/redux/reducers/auth";
-import { clearCurrentDesign } from "@/redux/reducers/design";
 
 function AuthNavbar() {
-  const dispatch = useDispatch();
   const state = useSelector((state: RootState) => state);
   const router = useRouter();
 
-  const handleLogin = () => {
-    router.push("/login");
-  };
-
-  const handleLogout = () => {
-    dispatch(clearCurrentUser());
-    dispatch(clearCurrentDesign());
-    dispatch(logout());
+  const handleSubmit = () => {
     router.push("/login");
   };
 
@@ -34,17 +23,17 @@ function AuthNavbar() {
           />
         </div>
         <div>
-          {!state.user._id ? (
+          {!state.auth ? (
             <button
               className={`px-4 py-2 bg-blue-500 rounded disabled:bg-gray-400 flex bg-themeColor justify-right aling-center px-8`}
-              onClick={handleLogin}
+              onClick={handleSubmit}
             >
               Login
             </button>
           ) : (
             <button
               className={`px-4 py-2 bg-blue-500 rounded disabled:bg-gray-400 flex bg-themeColor justify-right aling-center px-8`}
-              onClick={handleLogout}
+              onClick={handleSubmit}
             >
               Logout
             </button>

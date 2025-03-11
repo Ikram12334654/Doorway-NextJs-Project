@@ -1,4 +1,4 @@
-import { saveCurrentUser } from "@/redux/reducers/user";
+import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import Image from "next/image";
@@ -200,9 +200,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                   }`}
                   onClick={() => {
                     setPassType(enums.PASS_VIEW.APPLE);
-                    dispatch(
-                      saveCurrentUser({ passType: enums.PASS_VIEW.APPLE })
-                    );
+                    dispatch(saveUser({ passType: enums.PASS_VIEW.APPLE }));
                   }}
                 >
                   {enums.PASS_VIEW.APPLE}
@@ -216,7 +214,7 @@ const PassPreview: React.FC<{ values?: formValues }> = ({ values }) => {
                   onClick={() => {
                     setPassType(enums.PASS_VIEW.ANDROID);
                     dispatch(
-                      saveCurrentUser({
+                      saveUser({
                         passType: enums.PASS_VIEW.ANDROID,
                       })
                     );

@@ -1,8 +1,14 @@
 import LoadingSpinner from "@/assets/LoadingSpinner";
+import { clearAccount, saveAccount } from "@/redux/reducers/account";
+import { logout, saveAuth } from "@/redux/reducers/auth";
+import { clearDesign, saveDesign } from "@/redux/reducers/design";
+import { clearUser, saveUser } from "@/redux/reducers/user";
+import { RootState } from "@/redux/store";
 import Api from "@/utils/service";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,15 +18,10 @@ import { DoorwayImages } from "../assets/style";
 import applelogo from "../public/apple.png";
 import googleLogo from "../public/google.png";
 import linkedInlogo from "../public/linkedin.png";
+import env from "../utils/config";
 import { authRoutes } from "../utils/routes";
 import { ErrorToastMessage, SuccessToastMessage } from "../utils/toast";
 import SocialLoginButton from "./Component/socialLoginButton";
-import { clearCurrentUser, saveCurrentUser } from "@/redux/reducers/user";
-import { useRouter } from "next/router";
-import env from "../utils/config";
-import { logout, saveAuth } from "@/redux/reducers/auth";
-import { RootState } from "@/redux/store";
-import { clearAccount } from "@/redux/reducers/account";
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -72,10 +73,11 @@ function Login() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(clearCurrentUser());
+    dispatch(clearUser());
     dispatch(clearAccount());
+    dispatch(clearDesign());
     dispatch(logout());
-  }, [state]);
+  }, []);
 
   const handleRoute = ({ response }: any) => {
     setLoading(false);
@@ -111,13 +113,17 @@ function Login() {
       );
 
       if (response) {
-        response?.data?.user && dispatch(saveCurrentUser(response?.data?.user));
+        response?.data?.user && dispatch(saveUser(response?.data?.user));
+        response?.data?.account &&
+          dispatch(saveAccount(response?.data?.account));
+        response?.data?.design && dispatch(saveDesign(response?.data?.design));
         dispatch(
           saveAuth({
             accessToken: response?.accessToken,
             refreshToken: response?.refreshToken,
           })
         );
+
         handleRoute({ response });
       } else if (error) {
         setLoading(false);
@@ -155,6 +161,7 @@ function Login() {
             }}
             validationSchema={validationSchema}
             onSubmit={(values, { resetForm }) => {
+              setIsDisabled(true);
               handleSubmit({ values });
               resetForm();
             }}
@@ -190,7 +197,7 @@ function Login() {
                     />
 
                     <div className="flex flex-row justify-between aling-center color-themeColor mt-3  mb-3 text-sm text-themeColor">
-                      <Link href="/forgetPassword">forget Password ?</Link>
+                      <Link href="/forgotPassword">Forgot password ?</Link>
                       <Link href="/register">Sign Up</Link>
                     </div>
                   </div>
@@ -248,7 +255,7 @@ function Login() {
                       </div>
                     </div>
                     <div className="flex flex-row justify-left aling-center color-themeColor mt-3  mb-4 text-sm text-themeColor">
-                      <Link href="/forgetPassword">forget Password ?</Link>
+                      <Link href="/forgotPassword">Forgot password ?</Link>
                     </div>
                     <button
                       type="submit"
@@ -268,42 +275,41 @@ function Login() {
                     Next
                   </button>
                 )}
-              
               </Form>
             )}
           </Formik>
           {!showPasswordField && (
-                  <div className="w-full flex flex-col item-center .justify-center mt-5 sm:text-sm">
-                    <span className="flex justify-center">or</span>
+            <div className="w-full flex flex-col item-center .justify-center mt-5 sm:text-sm">
+              <span className="flex justify-center">or</span>
 
-                    <SocialLoginButton
-                      loading={socialLoginState.google}
-                      values={{
-                        logo: googleLogo,
-                        label: "Login with Google",
-                        onClick: () => {
-                          loginWithGoogle();
-                        },
-                      }}
-                    />
-                    <SocialLoginButton
-                      loading={socialLoginState.apple}
-                      values={{
-                        logo: applelogo,
-                        label: "Login with Apple",
-                        onClick: () => {},
-                      }}
-                    />
-                    <SocialLoginButton
-                      loading={socialLoginState.linkedIn}
-                      values={{
-                        logo: linkedInlogo,
-                        label: "Login with LinkedIn",
-                        onClick: () => {},
-                      }}
-                    />
-                  </div>
-                )}
+              <SocialLoginButton
+                loading={socialLoginState.google}
+                values={{
+                  logo: googleLogo,
+                  label: "Login with Google",
+                  onClick: () => {
+                    loginWithGoogle();
+                  },
+                }}
+              />
+              <SocialLoginButton
+                loading={socialLoginState.apple}
+                values={{
+                  logo: applelogo,
+                  label: "Login with Apple",
+                  onClick: () => {},
+                }}
+              />
+              <SocialLoginButton
+                loading={socialLoginState.linkedIn}
+                values={{
+                  logo: linkedInlogo,
+                  label: "Login with LinkedIn",
+                  onClick: () => {},
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

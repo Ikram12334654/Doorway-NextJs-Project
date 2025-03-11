@@ -1,4 +1,3 @@
-import { saveCurrentUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import { authRoutes } from "@/utils/routes";
 import Api from "@/utils/service";
@@ -8,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import enums from "../../utils/enums";
 import Button from "./button";
 import PassPreview from "./passPreview";
-import { decryptJSON } from "@/utils/security";
 const SetUpDoorway: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
@@ -81,7 +79,7 @@ const SetUpDoorway: React.FC = () => {
 
       if (response) {
         // dispatch(
-        //   saveCurrentUser({
+        //   saveUser({
         //     steps: state.user.steps + 1,
         //     jobTitle: jobTitle,
         //     organizationName: organizationName,

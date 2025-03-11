@@ -1,3 +1,5 @@
+import { saveAuth } from "@/redux/reducers/auth";
+import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import { authRoutes } from "@/utils/routes";
 import { generateStrongPassword } from "@/utils/security";
@@ -8,9 +10,6 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import Button from "./button";
-import { saveAuth } from "@/redux/reducers/auth";
-import { saveCurrentUser } from "@/redux/reducers/user";
-import enums from "@/utils/enums";
 
 const RegisterPage: React.FC = () => {
   const state = useSelector((state: RootState) => state);
@@ -92,16 +91,7 @@ const RegisterPage: React.FC = () => {
             refreshToken: response?.refreshToken,
           }),
 
-          dispatch(
-            saveCurrentUser({
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
-              role:
-                state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION ? 2 : 1,
-              steps: 2,
-            })
-          )
+          dispatch(saveUser(response?.user))
         );
       } else if (error) {
         ErrorToastMessage({ message: error?.message });

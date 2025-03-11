@@ -2,6 +2,7 @@ import React from "react";
 import { LoaderIcon } from "react-hot-toast";
 
 interface ButtonProps {
+  title?: string;
   disabled?: boolean;
   loading?: boolean;
   onClick?: () => void;
@@ -9,6 +10,7 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({
+  title = "Next",
   disabled = false,
   loading = false,
   onClick,
@@ -29,7 +31,7 @@ const Button: React.FC<ButtonProps> = ({
       {loading ? (
         <LoaderIcon className="animate-spin text-gray-600 mr-[8px]" />
       ) : null}
-      Next
+      {title}
     </button>
   );
 };

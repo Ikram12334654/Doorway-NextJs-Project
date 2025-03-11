@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface ContactInfo {
-  type?: string;
+  type: string;
   value: string;
 }
 
@@ -53,16 +53,16 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    saveCurrentUser: (state, action: PayloadAction<Partial<UserState>>) => {
+    saveUser: (state, action: PayloadAction<Partial<UserState>>) => {
       Object.keys(action.payload).forEach((key) => {
         if (key in initialState) {
           (state as any)[key] = (action.payload as any)[key];
         }
       });
     },
-    clearCurrentUser: () => initialState,
+    clearUser: () => initialState,
   },
 });
 
-export const { saveCurrentUser, clearCurrentUser } = userSlice.actions;
+export const { saveUser, clearUser } = userSlice.actions;
 export default userSlice.reducer;

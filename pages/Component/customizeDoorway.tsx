@@ -1,45 +1,84 @@
-import { saveCurrentUser } from "@/redux/reducers/user";
+import { saveAccount } from "@/redux/reducers/account";
+import { saveDesign } from "@/redux/reducers/design";
+import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
+import { authRoutes } from "@/utils/routes";
+import Api from "@/utils/service";
+import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
+import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import * as Yup from "yup";
 import Button from "./button";
 import PassPreview from "./passPreview";
-interface FormArrayErrors {
-  email: string[];
-  phoneNumber: string[];
-  urls: string[];
-}
 
 const CustomizeYourDesign: React.FC = () => {
   const state = useSelector((state: RootState) => state);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
+
+  const initialValues = {
     color: state.design.backgroundColor || "#22242C",
-    firstName: state.user.firstName || "",
-    lastName: state.user.lastName || "",
-    organization: state.user.organizationName || "",
-    jobTitle: state.user.jobTitle || "",
-    email: state.user.emails || [
+    organization: "",
+    orgUrl: "",
+    jobTitle: "",
+    emails: [
       {
-        type: "",
+        type: "work",
         value: "",
       },
     ],
-    phoneNumber: [
+    phoneNumbers: [
       {
-        type: "",
+        type: "work",
         value: "",
       },
     ],
     urls: [
       {
-        type: "",
+        type: "work",
         value: "",
       },
     ],
-    aboutus: "",
+  };
+
+  const validationSchema = Yup.object({
+    color: Yup.string().required("Color is required"),
+    organization: Yup.string().required("Organization Name is required"),
+    orgUrl: Yup.string()
+      .url("Invalid URL format")
+      .required("Organization URL is required"),
+    jobTitle: Yup.string().required("Job Title is required"),
+    emails: Yup.array().of(
+      Yup.object({
+        value: Yup.string()
+          .notRequired()
+          .test("isValidEmail", "Invalid email format", (value) =>
+            value ? Yup.string().email().isValidSync(value) : true
+          ),
+      })
+    ),
+    phoneNumbers: Yup.array().of(
+      Yup.object({
+        value: Yup.string()
+          .notRequired()
+          .test("isValidPhone", "Only numbers are allowed", (value) =>
+            value ? /^\d+$/.test(value) : true
+          ),
+      })
+    ),
+    urls: Yup.array().of(
+      Yup.object({
+        value: Yup.string()
+          .notRequired()
+          .test("isValidURL", "Invalid URL format", (value) =>
+            value ? Yup.string().url().isValidSync(value) : true
+          ),
+      })
+    ),
   });
+
   const Remove = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -52,179 +91,118 @@ const CustomizeYourDesign: React.FC = () => {
       <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
     </svg>
   );
-  const [formErrors, setFormErrors] = useState({
-    deviceType: false,
-    color: false,
-    firstName: false,
-    lastName: false,
-    organization: false,
-    jobTitle: false,
-    aboutus: false
-  });
-  const [formArrayErrors, setArrayFormErrors] = useState<FormArrayErrors>({
-    email: [],
-    phoneNumber: [],
-    urls: [],
-  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  interface FormValues {
+    color: string;
+    organization: string;
+    orgUrl: string;
+    jobTitle: string;
+    emails: string[];
+    phoneNumbers: string[];
+    urls: string[];
+  }
 
-  const handleAddField = (field: keyof typeof formData) => {
-    if (Array.isArray(formData[field])) {
-      setFormData((prevState) => ({
-        ...prevState,
-        [field]: [...prevState[field], ""],
-      }));
-    }
-  };
+  interface ApiResponse<T = any> {
+    data?: T;
+    [key: string]: any;
+  }
 
-  const handleRemoveField = (field: keyof typeof formData, index: number) => {
-    if (Array.isArray(formData[field])) {
-      const updatedValues = formData[field].filter((_, i) => i !== index);
-      setFormData((prevState) => ({
-        ...prevState,
-        [field]: updatedValues,
-      }));
-    }
-  };
-
-
-  const handleChangeArray = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-    field: keyof FormArrayErrors
-  ) => {
-    const { value } = e.target;
-    let errorMessage = "";
-  
-    // Validate phone number (must be a number or contain special characters)
-    if (field === "phoneNumber") {
-      const phoneNumberRegex = /^[0-9+\-\(\)\s]*$/; // Allow numbers and special characters like +, -, (, ), and spaces
-      if (!phoneNumberRegex.test(value)) {
-        errorMessage = "Phone number is invalid";
+  const uniqueFilter = (items: any[]) => {
+    const seen = new Set();
+    return items.filter((e: any) => {
+      if (e?.type && e?.value && !seen.has(e.value)) {
+        seen.add(e.value);
+        return true;
       }
-    }
-  
-    // Validate email (must be a valid email address)
-    if (field === "email") {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(value)) {
-        errorMessage = "Email is not valid";
-      }
-    }
-  
-    // Validate URL (must be a valid URL)
-    if (field === "urls") {
-      const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
-      if (!urlRegex.test(value)) {
-        errorMessage = "URL is not valid";
-      }
-    }
-  
-    // Ensure the error array exists and update form errors
-    setArrayFormErrors((prevErrors) => {
-      const updatedErrors = [...(prevErrors[field] || [])]; // Ensure it's an array
-      updatedErrors[index] = errorMessage; // Set error for specific index
-      return { ...prevErrors, [field]: updatedErrors };
-    });
-  
-    // Update form data
-    setFormData((prevState) => {
-      const updatedValues = [...(prevState[field] || [])]; // Ensure it's an array
-      updatedValues[index] = { type: "work", value }; // Update specific index
-      return { ...prevState, [field]: updatedValues };
+      return false;
     });
   };
-  
 
+  const handleSubmit = async ({ values }: { values: FormValues }) => {
+    const filteredEmails = uniqueFilter(values.emails);
+    const filteredPhones = uniqueFilter(values.phoneNumbers);
+    const filteredUrls = uniqueFilter(values.urls);
 
+    const data = {
+      passType: state.user.passType,
+      backgroundColor: values.color,
+      organizationName: values.organization,
+      organizationURL: values.orgUrl,
+      jobTitle: values.jobTitle,
+      ...(filteredEmails.length && { emails: filteredEmails }),
+      ...(filteredPhones.length && { phones: filteredPhones }),
+      ...(filteredUrls.length && { urls: filteredUrls }),
+    };
 
+    try {
+      setLoading(true);
+      const authToken = state.auth.accessToken;
+      const role: string = enums.ROLES[1];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  
-    // Check errors for single fields (Boolean instead of string)
-    const newErrors = Object.keys(formData).reduce((errors, key) => {
-      const value = formData[key as keyof typeof formData];
-  
-      errors[key as keyof typeof formErrors] =
-        typeof value === "string" && value?.trim() === "";
-  
-      return errors;
-    }, {} as typeof formErrors);
-  
-    setFormErrors(newErrors);
-  
-    // Check errors for array fields
-    const newArrayErrors = Object.keys(formArrayErrors).reduce((errors, key) => {
-      const fieldArray = (formData[key as keyof typeof formData] as { value?: string }[]) || [];
-    
-      errors[key as keyof typeof formArrayErrors] = fieldArray.map((item) =>
-        !item?.value?.trim() ? `${key.replace(/([A-Z])/g, " $1").trim()} is required` : ""
+      const { response, error }: ApiResponse = await Api(
+        "/" + role + authRoutes.setupAccount,
+        "post",
+        {
+          payload: data,
+        },
+        authToken
       );
-    
-      return errors;
-    }, {} as typeof formArrayErrors);
-    
-    setArrayFormErrors(newArrayErrors);
-    
-  
-    setArrayFormErrors(newArrayErrors);
-  
-    // Check if any errors exist
-    const hasErrors =
-    Object.values(newErrors).some((error: boolean) => error === true) || // Explicitly type as boolean
-    Object.values(newArrayErrors).some((array: string[]) =>
-      array.some((error: string) => error !== "")
-    );
-  
-    if (hasErrors) return; // Stop execution if there are errors
-  
-    // Proceed with form submission
-    handleCreate(formData);
-    // handleReset();
-  };
-  
-  
-  
 
-  const handleReset = () => {
-    setFormData({
-      color: "#22242C",
-      firstName: "",
-      lastName: "",
-      organization: "",
-      jobTitle: "",
-      email: [
-        {
-          type: "",
-          value: "",
-        },
-      ],
-      phoneNumber: [
-        {
-          type: "",
-          value: "",
-        },
-      ],
-      urls: [
-        {
-          type: "",
-          value: "",
-        },
-      ],
-      aboutus: "",
-    });
-  };
+      setLoading(false);
 
-  const handleCreate = (form: any) => {
-    console.log(JSON.stringify(form, null, 2));
+      if (response) {
+        const design = response?.data;
+
+        dispatch(
+          saveAccount({
+            _id: state.account._id,
+            creator: state.user._id,
+            type: enums.ACCOUNT_TYPE.PERSONAL,
+            organizationName: values.organization,
+            organizationURL: values.orgUrl,
+          })
+        );
+
+        dispatch(
+          saveDesign({
+            _id: design?._id,
+            name: design?.name,
+            backgroundColor: design?.backgroundColor,
+          })
+        );
+
+        dispatch(
+          saveUser({
+            jobTitle: values.jobTitle,
+            steps: 3,
+            ...(filteredEmails.length && {
+              emails: filteredEmails.map((e: any) => ({
+                type: e?.type,
+                value: e?.value,
+              })),
+            }),
+            ...(filteredPhones.length && {
+              phones: filteredPhones.map((e: any) => ({
+                type: e?.type,
+                value: e?.value,
+              })),
+            }),
+            ...(filteredUrls.length && {
+              URLs: filteredUrls.map((e: any) => ({
+                type: e?.type,
+                value: e?.value,
+              })),
+            }),
+          })
+        );
+
+        SuccessToastMessage({ message: response?.message });
+      } else if (error) {
+        ErrorToastMessage({ message: error?.message });
+      }
+    } catch (error) {
+      setLoading(false);
+    }
   };
 
   return (
@@ -236,340 +214,334 @@ const CustomizeYourDesign: React.FC = () => {
       <div className="min-md:block text-[16px] heading-[25px] min-md:mb-[38px] font-[400] text-center max-w-[287px] min-md:max-w-[70%]">
         Add the information you want your Doorway to share.
       </div>
-      <div className="flex flex-col min-md:flex-row gap-[44px] min-md:gap-[75px] items-center min-md:items-start justify-center p-5">
-        <div className={`width:330px`}>
-          <div className="block">
-            <PassPreview
-              values={{
-                backgroundColor: formData.color,
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                jobTitle: formData.jobTitle,
-              }}
-            />
-          </div>
-        </div>
-        <div className="w-[330px] flex flex-col gap-[30px]">
-          <form
-            onSubmit={handleSubmit}
-            className="w-[330px] flex flex-col gap-[20px]"
-          >
-            <div className="flex flex-col gap-[25px]">
-              <div className="text-navyBlue leading-regular flex cursor-default items-center gap-[5px] text-[15px] md:text-[13px]">
-                <div className="flex items-center gap-[5px] font-[500]">
-                  <div className="flex items-center">
-                    Device Type<span>*</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-4 justify-between">
-                <label
-                  className={`border py-[15px] text-legacy-regular rounded-regular flex-1 flex justify-center cursor-pointer ${state.user.passType === enums.PASS_VIEW.APPLE
-                      ? "border-themeColor text-themeColor"
-                      : "border-gray-200 text-gray-400"
-                    }`}
-                  htmlFor="apple"
-                >
-                  Apple
-                  <input
-                    className="hidden"
-                    id="apple"
-                    name="deviceType"
-                    type="radio"
-                    value="apple"
-                    checked={state.user.passType === enums.PASS_VIEW.APPLE}
-                    onChange={handleChange}
-                    onClick={() => {
-                      dispatch(
-                        saveCurrentUser({
-                          passType: enums.PASS_VIEW.APPLE,
-                        })
-                      );
+
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={(values: any, { resetForm }) => {
+          handleSubmit({ values });
+          // resetForm();
+        }}
+      >
+        {({ isSubmitting, isValid, values, setFieldValue }) => (
+          <Form>
+            <div className="flex flex-col min-md:flex-row gap-[44px] min-md:gap-[75px] items-center min-md:items-start justify-center p-5">
+              <div className={`width:330px`}>
+                <div className="block">
+                  <PassPreview
+                    values={{
+                      backgroundColor: values.color,
+                      jobTitle: values.jobTitle,
                     }}
                   />
-                </label>
-                <label
-                  className={`border py-[15px] text-legacy-regular rounded-regular flex-1 flex justify-center cursor-pointer ${state.user.passType === enums.PASS_VIEW.ANDROID
-                      ? "border-themeColor text-themeColor"
-                      : "border-gray-200 text-gray-400"
-                    }`}
-                  htmlFor="android"
-                >
-                  Android
-                  <input
-                    className="hidden"
-                    id="android"
-                    name="deviceType"
-                    type="radio"
-                    value="android"
-                    checked={state.user.passType === enums.PASS_VIEW.ANDROID}
-                    onClick={() => {
-                      dispatch(
-                        saveCurrentUser({
-                          passType: enums.PASS_VIEW.ANDROID,
-                        })
-                      );
-                    }}
-                    onChange={handleChange}
-                  />
-                </label>
-              </div>
-              {formErrors.deviceType && (
-                <p className="text-red-500">Device type is required.</p>
-              )}
-            </div>
-
-            <div className="grow flex flex-col gap-[7px]">
-              <label className="text-[#304861] text-[15px] font-[500]">
-                Color*
-              </label>
-              <div
-                className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] flex items-center"
-                onClick={() => document.getElementById("color")!.click()}
-              >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center">
-                    <span
-                      className="w-[18px] h-[18px] inline-block mr-[8px] rounded-sm"
-                      style={{ background: formData.color }}
-                    ></span>
-                    {formData.color}
-                  </div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    width="1em"
-                    height="1em"
-                    fill="currentColor"
-                    className="w-[14px] h-[14px] text-[#BEBEBE]"
-                  >
-                    <path d="M6.192 2.78c-.458-.677-.927-1.248-1.35-1.643a3 3 0 0 0-.71-.515c-.217-.104-.56-.205-.882-.02-.367.213-.427.63-.43.896-.003.304.064.664.173 1.044.196.687.556 1.528 1.035 2.402L.752 8.22c-.277.277-.269.656-.218.918.055.283.187.593.36.903.348.627.92 1.361 1.626 2.068.707.707 1.441 1.278 2.068 1.626.31.173.62.305.903.36.262.05.64.059.918-.218l5.615-5.615c.118.257.092.512.05.939-.03.292-.068.665-.073 1.176v.123h.003a1 1 0 0 0 1.993 0H14v-.057a1 1 0 0 0-.004-.117c-.055-1.25-.7-2.738-1.86-3.494a4 4 0 0 0-.211-.434c-.349-.626-.92-1.36-1.627-2.067S8.857 3.052 8.23 2.704c-.31-.172-.62-.304-.903-.36-.262-.05-.64-.058-.918.219zM4.16 1.867c.381.356.844.922 1.311 1.632l-.704.705c-.382-.727-.66-1.402-.813-1.938a3.3 3.3 0 0 1-.131-.673q.137.09.337.274m.394 3.965c.54.852 1.107 1.567 1.607 2.033a.5.5 0 1 0 .682-.732c-.453-.422-1.017-1.136-1.564-2.027l1.088-1.088q.081.181.183.365c.349.627.92 1.361 1.627 2.068.706.707 1.44 1.278 2.068 1.626q.183.103.365.183l-4.861 4.862-.068-.01c-.137-.027-.342-.104-.608-.252-.524-.292-1.186-.8-1.846-1.46s-1.168-1.32-1.46-1.846c-.147-.265-.225-.47-.251-.607l-.01-.068zm2.87-1.935a2.4 2.4 0 0 1-.241-.561c.135.033.324.11.562.241.524.292 1.186.8 1.846 1.46.45.45.83.901 1.118 1.31a3.5 3.5 0 0 0-1.066.091 11 11 0 0 1-.76-.694c-.66-.66-1.167-1.322-1.458-1.847z"></path>
-                  </svg>
                 </div>
               </div>
-              <input
-                id="color"
-                type="color"
-                name="color"
-                value={formData.color}
-                onChange={handleChange}
-                style={{
-                  position: "absolute",
-                  opacity: 0,
-                  pointerEvents: "none",
-                }}
-              />
-              {formErrors.color && (
-                <p className="text-red-500">Color is required.</p>
-              )}
-            </div>
-
-            <div className="flex flex-row w-full justify-between space-x-7">
-              <div className="grow flex flex-col gap-[7px] w-[40%] ">
-                <div className="text-[#304861] text-[15px]  md:text-[13px] font-[500]">
-                  First Name*
-                </div>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-                />
-                {formErrors.firstName && (
-                  <p className="text-red-500">First name is required.</p>
-                )}
-              </div>
-
-              <div className="grow flex flex-col gap-[7px] w-[45%]">
-                <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
-                  Last Name*
-                </div>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-                />
-                {formErrors.lastName && (
-                  <p className="text-red-500">Last name is required.</p>
-                )}
-              </div>
-            </div>
-            <div className="grow flex flex-col gap-[7px]">
-              <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
-                Organization*
-              </div>
-              <input
-                type="text"
-                name="organization"
-                value={formData.organization}
-                onChange={handleChange}
-                placeholder="Pierce & Pierce"
-                className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-              />
-              {formErrors.organization && (
-                <p className="text-red-500">Organisation is required.</p>
-              )}
-            </div>
-
-            <div className="grow flex flex-col gap-[7px]">
-              <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
-                Job Title*
-              </div>
-              <input
-                type="text"
-                name="jobTitle"
-                value={formData.jobTitle}
-                onChange={handleChange}
-                placeholder="Vice President"
-                className="bg-[#F2F5F5] focus   rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-              />
-              {formErrors.jobTitle && (
-                <p className="text-red-500">Job title is required.</p>
-              )}
-            </div>
-            <div className="grow flex flex-col gap-[7px]">
-              <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
-                Phone Numbers
-              </div>
-              {formData.phoneNumber.map((phone, index) => (
-                <div className="flex flex-col"><div className="relative flex gap-[10px]" key={index}>
-                  <input
-                    type="tel"
-                    name={`phone-${index}`}
-                    value={phone.value}
-                    onChange={(e) => handleChangeArray(e, index, "phoneNumber")}
-                    className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-                    placeholder="Phone Number"
-                  />
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveField("phoneNumber", index)}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    >
-                      <Remove />
-                    </button>
-                  )}
-
-                </div>
-                  {formArrayErrors.phoneNumber?.[index] && (
-                    <div className="text-red-500 text-sm">{formArrayErrors.phoneNumber[index]}</div>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => handleAddField("phoneNumber")}
-                className="text-black font-semibold mt-2 text-left"
-              >
-                + Add Phone Number
-              </button>
-            </div>
-
-            <div className="grow flex flex-col gap-[7px]">
-              <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
-                Email
-              </div>
-              {formData.email.map((email, index) => (
-                <div className="flex flex-col">
-                  <div className="relative flex flex-row gap-[10px] ">
-                    <div className="flex gap-[10px] w-full" key={index}>
-                      <input
-                        type="email"
-                        name={`email-${index}`}
-                        value={email.value}
-                        onChange={(e) => handleChangeArray(e, index, "email")}
-                        className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-                        placeholder="Email"
-                      />
+              <div className="w-[330px] flex flex-col gap-[30px]">
+                <div className="flex flex-col gap-[25px]">
+                  <div className="text-navyBlue leading-regular flex cursor-default items-center gap-[5px] text-[15px] md:text-[13px]">
+                    <div className="flex items-center gap-[5px] font-[500]">
+                      <div className="flex items-center">
+                        Device Type<span>*</span>
+                      </div>
                     </div>
-                    {index > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveField("email", index)}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                      >
-                        <Remove />
-                      </button>
-                    )}
                   </div>
-                  {formArrayErrors.email[index] && (
-                    <div className="text-red-500 text-sm">{formArrayErrors.email[index]}</div>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => handleAddField("email")}
-                className="text-black font-semibold mt-2 text-left"
-              >
-                + Add Email
-              </button>
-            </div>
-
-            <div className="grow flex flex-col gap-[7px]">
-              <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
-                URLs
-              </div>
-              {formData.urls.map((url, index) => (
-                <div className="flex flex-col">
-
-
-                  <div className="relative flex gap-[10px]" key={index}>
-                    <input
-                      type="url"
-                      name={`url-${index}`}
-                      value={url.value}
-                      onChange={(e) => handleChangeArray(e, index, "urls")}
-                      className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-                      placeholder="URL"
-                    />
-                    {index > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveField("urls", index)}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                      >
-                        <Remove />
-                      </button>
-                    )}
+                  <div className="flex gap-4 justify-between">
+                    <label
+                      className={`border py-[15px] text-legacy-regular rounded-regular flex-1 flex justify-center cursor-pointer ${
+                        state.user.passType === enums.PASS_VIEW.APPLE
+                          ? "border-themeColor text-themeColor"
+                          : "border-gray-200 text-gray-400"
+                      }`}
+                      htmlFor="apple"
+                    >
+                      Apple
+                      <input
+                        className="hidden"
+                        id="apple"
+                        name="deviceType"
+                        type="radio"
+                        value="apple"
+                        checked={state.user.passType === enums.PASS_VIEW.APPLE}
+                        onClick={() => {
+                          dispatch(
+                            saveUser({
+                              passType: enums.PASS_VIEW.APPLE,
+                            })
+                          );
+                        }}
+                      />
+                    </label>
+                    <label
+                      className={`border py-[15px] text-legacy-regular rounded-regular flex-1 flex justify-center cursor-pointer ${
+                        state.user.passType === enums.PASS_VIEW.ANDROID
+                          ? "border-themeColor text-themeColor"
+                          : "border-gray-200 text-gray-400"
+                      }`}
+                      htmlFor="android"
+                    >
+                      Android
+                      <input
+                        className="hidden"
+                        id="android"
+                        name="deviceType"
+                        type="radio"
+                        value="android"
+                        checked={
+                          state.user.passType === enums.PASS_VIEW.ANDROID
+                        }
+                        onClick={() => {
+                          dispatch(
+                            saveUser({
+                              passType: enums.PASS_VIEW.ANDROID,
+                            })
+                          );
+                        }}
+                      />
+                    </label>
                   </div>
-                  {formArrayErrors.urls[index] && (
-                    <div className="text-red-500 text-sm">{formArrayErrors.urls[index]}</div>
-                  )}
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => handleAddField("urls")}
-                className="text-black font-semibold mt-2 text-left"
-              >
-                + Add URL
-              </button>
-            </div>
-            <div className="grow flex flex-col gap-[7px]">
-              <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
-                how did you here about us?
+                <div className="grow flex flex-col gap-[7px]">
+                  <label className="text-[#304861] text-[15px] font-[500]">
+                    Color*
+                  </label>
+                  <div
+                    className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] flex items-center"
+                    onClick={() => document.getElementById("color")!.click()}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center">
+                        <span
+                          className="w-[18px] h-[18px] inline-block mr-[8px] rounded-sm"
+                          style={{ background: values.color }}
+                        ></span>
+                        {values.color}
+                      </div>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 16 16"
+                        width="1em"
+                        height="1em"
+                        fill="currentColor"
+                        className="w-[14px] h-[14px] text-[#BEBEBE]"
+                      >
+                        <path d="M6.192 2.78c-.458-.677-.927-1.248-1.35-1.643a3 3 0 0 0-.71-.515c-.217-.104-.56-.205-.882-.02-.367.213-.427.63-.43.896-.003.304.064.664.173 1.044.196.687.556 1.528 1.035 2.402L.752 8.22c-.277.277-.269.656-.218.918.055.283.187.593.36.903.348.627.92 1.361 1.626 2.068.707.707 1.441 1.278 2.068 1.626.31.173.62.305.903.36.262.05.64.059.918-.218l5.615-5.615c.118.257.092.512.05.939-.03.292-.068.665-.073 1.176v.123h.003a1 1 0 0 0 1.993 0H14v-.057a1 1 0 0 0-.004-.117c-.055-1.25-.7-2.738-1.86-3.494a4 4 0 0 0-.211-.434c-.349-.626-.92-1.36-1.627-2.067S8.857 3.052 8.23 2.704c-.31-.172-.62-.304-.903-.36-.262-.05-.64-.058-.918.219zM4.16 1.867c.381.356.844.922 1.311 1.632l-.704.705c-.382-.727-.66-1.402-.813-1.938a3.3 3.3 0 0 1-.131-.673q.137.09.337.274m.394 3.965c.54.852 1.107 1.567 1.607 2.033a.5.5 0 1 0 .682-.732c-.453-.422-1.017-1.136-1.564-2.027l1.088-1.088q.081.181.183.365c.349.627.92 1.361 1.627 2.068.706.707 1.44 1.278 2.068 1.626q.183.103.365.183l-4.861 4.862-.068-.01c-.137-.027-.342-.104-.608-.252-.524-.292-1.186-.8-1.846-1.46s-1.168-1.32-1.46-1.846c-.147-.265-.225-.47-.251-.607l-.01-.068zm2.87-1.935a2.4 2.4 0 0 1-.241-.561c.135.033.324.11.562.241.524.292 1.186.8 1.846 1.46.45.45.83.901 1.118 1.31a3.5 3.5 0 0 0-1.066.091 11 11 0 0 1-.76-.694c-.66-.66-1.167-1.322-1.458-1.847z"></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <Field
+                    id="color"
+                    type="color"
+                    name="color"
+                    placeholder="Color"
+                    style={{
+                      position: "absolute",
+                      opacity: 0,
+                      pointerEvents: "none",
+                    }}
+                  />
+                  <ErrorMessage
+                    name="color"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div className="grow flex flex-col gap-[7px]">
+                  <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
+                    Organization Name*
+                  </div>
+                  <Field
+                    type="text"
+                    name="organization"
+                    className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
+                    placeholder="Organization Name"
+                  />
+                  <ErrorMessage
+                    name="organization"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div className="grow flex flex-col gap-[7px]">
+                  <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
+                    Organization URL*
+                  </div>
+                  <Field
+                    type="url"
+                    name="orgUrl"
+                    className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
+                    placeholder="Organization URL"
+                  />
+                  <ErrorMessage
+                    name="orgUrl"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div className="grow flex flex-col gap-[7px]">
+                  <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
+                    Job Title*
+                  </div>
+                  <Field
+                    type="text"
+                    name="jobTitle"
+                    className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
+                    placeholder="Job Title"
+                  />
+                  <ErrorMessage
+                    name="jobTitle"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div className="grow flex flex-col gap-[7px]">
+                  <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
+                    Phone Numbers
+                  </div>
+                  <FieldArray name="phoneNumbers">
+                    {({ push, remove, form }) => {
+                      return (
+                        <>
+                          {form.values.phoneNumbers.map(
+                            (_: any, index: any) => (
+                              <div key={index} className="flex flex-col">
+                                <div className="relative flex gap-[10px]">
+                                  <Field
+                                    type="tel"
+                                    name={`phoneNumbers[${index}].value`}
+                                    className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
+                                    placeholder="Phone Number"
+                                  />
+
+                                  {index > 0 && (
+                                    <button
+                                      type="button"
+                                      onClick={() => remove(index)}
+                                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                                    >
+                                      <Remove />
+                                    </button>
+                                  )}
+                                </div>
+                                <ErrorMessage
+                                  name={`phoneNumbers[${index}].value`}
+                                  component="div"
+                                  className="text-red-500 text-sm"
+                                />
+                              </div>
+                            )
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => push({ type: "work", value: "" })}
+                            className="text-black font-semibold mt-2 text-left"
+                          >
+                            + Add Phone Number
+                          </button>
+                        </>
+                      );
+                    }}
+                  </FieldArray>
+                </div>
+                <div className="grow flex flex-col gap-[7px]">
+                  <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
+                    Email
+                  </div>
+                  <FieldArray name="emails">
+                    {({ push, remove, form }) => {
+                      return (
+                        <>
+                          {form.values.emails.map((_: any, index: any) => (
+                            <div key={index} className="flex flex-col">
+                              <div className="relative flex gap-[10px]">
+                                <Field
+                                  type="email"
+                                  name={`emails[${index}].value`}
+                                  className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
+                                  placeholder="Email"
+                                />
+
+                                {index > 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => remove(index)}
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                                  >
+                                    <Remove />
+                                  </button>
+                                )}
+                              </div>
+                              <ErrorMessage
+                                name={`emails[${index}].value`}
+                                component="div"
+                                className="text-red-500 text-sm"
+                              />
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => push({ type: "work", value: "" })}
+                            className="text-black font-semibold mt-2 text-left"
+                          >
+                            + Add Email
+                          </button>
+                        </>
+                      );
+                    }}
+                  </FieldArray>
+                </div>
+                <div className="grow flex flex-col gap-[7px]">
+                  <div className="text-[#304861] text-[15px] md:text-[13px] font-[500]">
+                    URLs
+                  </div>
+                  <FieldArray name="urls">
+                    {({ push, remove, form }) => {
+                      return (
+                        <>
+                          {form.values.urls.map((_: any, index: any) => (
+                            <div key={index} className="flex flex-col">
+                              <div className="relative flex gap-[10px]">
+                                <Field
+                                  type="url"
+                                  name={`urls[${index}].value`}
+                                  className="bg-[#F2F5F5] rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
+                                  placeholder="URL"
+                                />
+
+                                {index > 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => remove(index)}
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+                                  >
+                                    <Remove />
+                                  </button>
+                                )}
+                              </div>
+                              <ErrorMessage
+                                name={`urls[${index}].value`}
+                                component="div"
+                                className="text-red-500 text-sm"
+                              />
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => push({ type: "work", value: "" })}
+                            className="text-black font-semibold mt-2 text-left"
+                          >
+                            + Add URL
+                          </button>
+                        </>
+                      );
+                    }}
+                  </FieldArray>
+                </div>
+                <Button loading={loading} disabled={!isValid || isSubmitting} />
               </div>
-              <input
-                type="text"
-                name="aboutus"
-                value={formData.aboutus}
-                onChange={handleChange}
-                placeholder="how did you here about us "
-                className="bg-[#F2F5F5] focus rounded-[5px] min-h-[45px] px-[11px] text-[16px] placeholder-gray-300 outline-none w-full"
-              />
-              {formErrors.aboutus && (
-                <p className="text-red-500">About us is required.</p>
-              )}
             </div>
-            <Button />
-          </form>
-        </div>
-      </div>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };

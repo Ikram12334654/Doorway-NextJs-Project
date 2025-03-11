@@ -1,6 +1,6 @@
-import { logout, setLoggedInFromAnyOtherLocation } from "@/redux/reducers/auth";
-import { clearCurrentDesign } from "@/redux/reducers/design";
-import { clearCurrentUser } from "@/redux/reducers/user";
+import { logout } from "@/redux/reducers/auth";
+import { clearDesign } from "@/redux/reducers/design";
+import { clearUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import { SuccessToastMessage } from "@/utils/toast";
 import { useRouter } from "next/router";
@@ -12,7 +12,7 @@ const Logout: React.FC = () => {
   const state = useSelector((state: RootState) => state.auth);
   const router = useRouter();
 
-  if (!state.loggedInFromAnyOtherLocation) {
+  if (1 === 1) {
     return null;
   }
 
@@ -20,8 +20,8 @@ const Logout: React.FC = () => {
     SuccessToastMessage({
       message: "You have been logged out successfully.",
     });
-    dispatch(clearCurrentUser());
-    dispatch(clearCurrentDesign());
+    dispatch(clearUser());
+    dispatch(clearDesign());
     dispatch(logout());
     router.push("/login");
   };
