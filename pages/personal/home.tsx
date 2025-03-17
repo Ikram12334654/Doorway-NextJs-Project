@@ -1,17 +1,15 @@
-import React from "react";
-import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import SettingsIcon from "@mui/icons-material/Settings";
-import PersonIcon from "@mui/icons-material/Person";
-import HelpIcon from "@mui/icons-material/Help";
-import Link from "next/link";
-import QRCode from "../Component/QRCanvas";
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
-import UserPass from "../Component/UserPass";
-import PassPreview from "@/pages/Component/passPreview";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import PersonIcon from "@mui/icons-material/Person";
+import ShareIcon from "@mui/icons-material/Share";
+import WorkIcon from "@mui/icons-material/Work";
+import Link from "next/link";
 import { useRouter } from "next/router";
+import React from "react";
 import DoorwayDetailsModel from "../Component/Models/DoorwayDetailsModel";
+import QRCode from "../Component/QRCanvas";
+import UserPass from "../Component/UserPass";
 function home() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -25,7 +23,7 @@ function home() {
   return (
     <div className="flex flex-col  w-full ">
       <div className="flex justify-center w-full m-auto">
-        {<PrivateRoutesNavBar />}
+        <PrivateRoutesNavBar />
       </div>
       <div className="pt-6">
         <div className="min-md:grid grid-cols-2 justify-between">
@@ -33,72 +31,7 @@ function home() {
             <UserPass />
           </div>
           <div className="mx-auto min-md:ml-12 min-md:mr-0 max-w-[550px]">
-            <div className="justify-center min-md:justify-start flex items-center gap-[5px] text-[16px] text-[#526B85] mb-[20px] mt-[24px] min-md:mt-[0px]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 16"
-                width="1em"
-                height="1em"
-                fill="currentColor"
-                className="inline-block mx-1"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M8 14.933a1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"
-                ></path>
-              </svg>
-              Manage Nextuf Store's Doorways
-            </div>
-            <div className="my-4">
-              <Link
-                className="border-2 border-gray-300 flex items-center justify-between pl-4 min-sm:pl-6 pr-1.5 py-1.5 rounded text-gray-400 text-sm "
-                href="/organization/doorway&user"
-              >
-                <div className="flex items-center gap-[15px]">
-                  <SupervisorAccountIcon sx={{ width: "1rem", height: 20 }} />
-                  Doorways &amp; Users
-                </div>
-                <div className="ml-1 rounded p-1 min-md:p-2 bg-themeColor">
-                  <KeyboardArrowRightIcon
-                    sx={{ width: 24, height: 24, color: "white" }}
-                  />
-                </div>
-              </Link>
-            </div>
-            <div className="my-4">
-              <Link
-                className="border-2 border-gray-300 flex items-center justify-between pl-4 min-sm:pl-6 pr-1.5 py-1.5 rounded text-gray-400 text-sm "
-                href="/organization/designtemplate"
-              >
-                <div className="flex items-center gap-[15px]">
-                  <AutoAwesomeIcon sx={{ width: "1rem", height: 20 }} />
-                  Design Template
-                </div>
-                <div className="ml-1 rounded p-1 min-md:p-2 bg-themeColor">
-                  <KeyboardArrowRightIcon
-                    sx={{ width: 24, height: 24, color: "white" }}
-                  />
-                </div>
-              </Link>
-            </div>
-            <div className="my-4">
-              <Link
-                className="border-2 border-gray-300 flex items-center justify-between pl-4 min-sm:pl-6 pr-1.5 py-1.5 rounded text-gray-400 text-sm "
-                href="/organization/organizationSetting"
-              >
-                <div className="flex items-center gap-[15px]">
-                  <SettingsIcon sx={{ width: "1rem", height: 20 }} />
-                  Organisation Settings
-                </div>
-                <div className="ml-1 rounded p-1 min-md:p-2 bg-themeColor">
-                  <KeyboardArrowRightIcon
-                    sx={{ width: 24, height: 24, color: "white" }}
-                  />
-                </div>
-              </Link>
-            </div>
-            <hr className="my-4 mt-8" />
-            <div className="mt-[24px] justify-center min-md:justify-start flex items-center gap-[10px] text-[#526B85] mb-[10px]">
+            <div className="mt-[4px] justify-center min-md:justify-start flex items-center gap-[10px] text-[#526B85] mb-[10px]">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
@@ -161,11 +94,43 @@ function home() {
             <div className="my-4">
               <Link
                 className="border-2 border-gray-300 flex items-center justify-between pl-4 min-sm:pl-6 pr-1.5 py-1.5 rounded text-gray-400 text-sm "
+                href="/personal/EditDesignTemplate"
+              >
+                <div className="flex items-center gap-[15px]">
+                  <AutoAwesomeIcon sx={{ width: "1rem", height: 20 }} />
+                  Change Design Template
+                </div>
+                <div className="ml-1 rounded p-1 min-md:p-2 bg-themeColor">
+                  <KeyboardArrowRightIcon
+                    sx={{ width: 24, height: 24, color: "white" }}
+                  />
+                </div>
+              </Link>
+            </div>
+            <div className="my-4">
+              <Link
+                className="border-2 border-gray-300 flex items-center justify-between pl-4 min-sm:pl-6 pr-1.5 py-1.5 rounded text-gray-400 text-sm "
+                href="/register?accountType=organization&step=0"
+              >
+                <div className="flex items-center gap-[15px]">
+                  <WorkIcon sx={{ width: "1rem", height: 20 }} />
+                  Get for your team or company
+                </div>
+                <div className="ml-1 rounded p-1 min-md:p-2 bg-themeColor">
+                  <KeyboardArrowRightIcon
+                    sx={{ width: 24, height: 24, color: "white" }}
+                  />
+                </div>
+              </Link>
+            </div>
+            <div className="my-4">
+              <Link
+                className="border-2 border-gray-300 flex items-center justify-between pl-4 min-sm:pl-6 pr-1.5 py-1.5 rounded text-gray-400 text-sm "
                 href="/doorways"
               >
                 <div className="flex items-center gap-[15px]">
-                  <HelpIcon sx={{ width: "1rem", height: 20 }} />
-                  Get Help
+                  <ShareIcon sx={{ width: "1rem", height: 20 }} />
+                  Share Doorway
                 </div>
                 <div className="ml-1 rounded p-1 min-md:p-2 bg-themeColor">
                   <KeyboardArrowRightIcon

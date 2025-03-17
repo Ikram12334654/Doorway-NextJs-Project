@@ -21,6 +21,37 @@ function Register() {
 
   const [type, setType] = useState(state.account.type || "");
   const router = useRouter();
+
+  // start
+
+  // const { accountType, step } = router.query;
+  // useEffect(() => {
+  //   if (router.isReady) {
+  //     const { accountType: queryAccountType, step: queryStep } = router.query;
+
+  //     const validatedAccountType = Array.isArray(queryAccountType)
+  //       ? queryAccountType[0]
+  //       : queryAccountType || "personal";
+
+  //     const validatedStep = Array.isArray(queryStep)
+  //       ? queryStep[0]
+  //       : queryStep || "1";
+
+  //     dispatch(
+  //       saveAccount({
+  //         type: validatedAccountType,
+  //       })
+  //     );
+  //     dispatch(
+  //       saveUser({
+  //         steps: 2,
+  //       })
+  //     );
+  //   }
+  // }, [router.isReady, router.query, dispatch]);
+
+  // end
+
   const [cancelParam, setCancelParam] = useState<boolean | undefined>(
     undefined
   );

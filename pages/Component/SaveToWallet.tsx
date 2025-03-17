@@ -1,7 +1,10 @@
+import { useRouter } from "next/router";
 import Button from "./button";
 import QRCode from "./QRCanvas";
 
 function SaveToWallet() {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col items-center">
       <div className="block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
@@ -29,7 +32,11 @@ function SaveToWallet() {
       </div>
 
       <div className="w-[170px]">
-        <Button onClick={() => {}} />
+        <Button
+          onClick={() => {
+            router.push("/personal/home");
+          }}
+        />
       </div>
     </div>
   );
