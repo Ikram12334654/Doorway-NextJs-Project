@@ -4,7 +4,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import React from "react";
 import { useSelector } from "react-redux";
 interface QRCodeProps {
-  size?: number; // Optional size prop
+  size?: number;
 }
 const QRCode: React.FC<QRCodeProps> = ({ size = 128 }) => {
   const state = useSelector((state: RootState) => state);
@@ -20,8 +20,8 @@ const QRCode: React.FC<QRCodeProps> = ({ size = 128 }) => {
         emails: state.user.emails,
         phones: state.user.phones,
         jobTitle: state.user.jobTitle,
-        photo: state.user.photo,
-        URLS: state.user.URLS,
+        photo: state.user.profileImage,
+        URLS: state.user.URLs,
         addresses: state.user.addresses,
         personal: state.user.role === 1 ? true : false,
       })}
