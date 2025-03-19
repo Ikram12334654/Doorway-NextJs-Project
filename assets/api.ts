@@ -4,6 +4,7 @@ export const authRoutes = {
   register: "/auth/signUp",
   setupAccount: "/setupAccount",
   setupDesign: "/setupDesign",
+  updateDesign: "/updateDesign",
 };
 
 export default { authRoutes };

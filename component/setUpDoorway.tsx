@@ -1,10 +1,10 @@
 import { RootState } from "@/redux/store";
-import { authRoutes } from "@/utils/routes";
+import { authRoutes } from "../assets/api";
 import Api from "@/utils/service";
 import { ErrorToastMessage } from "@/utils/toast";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import enums from "../../utils/enums";
+import enums from "../utils/enums";
 import Button from "./button";
 import PassPreview from "./passPreview";
 const SetUpDoorway: React.FC = () => {

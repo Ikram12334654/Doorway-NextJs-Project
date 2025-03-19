@@ -10,11 +10,6 @@ const env: EnvConfig = {
   APP_URL: "http://localhost:3000",
 };
 
-if (process.env.NEXT_PUBLIC_ENV === Environment.STAGING) {
-  env.API_URL = "";
-  env.APP_URL = "";
-}
-
 if (process.env.NEXT_PUBLIC_ENV === Environment.PRODUCTION) {
   env.API_URL = "";
   env.APP_URL = "";

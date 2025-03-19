@@ -3,7 +3,7 @@ import type { Config } from "tailwindcss";
 export default {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./component/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./assets/**/*.{js,ts,jsx,tsx}",
   ],
@@ -26,17 +26,18 @@ export default {
       },
       colors: {
         themeColor: "#1ed761",
-        brand: { // This sets the default when you use 'bg-themeColor'
-          50: '#e6fff2',
-          100: '#ccffe6',
-          200: '#99ffcc',
-          300: '#66ffb3',
-          400: '#33ff99',
-          500: '#1ed761', // Base color and default
-          600: '#1ab255',
-          700: '#137a3d',
-          800: '#0d5228',
-          900: '#073916',
+        brand: {
+          // This sets the default when you use 'bg-themeColor'
+          50: "#e6fff2",
+          100: "#ccffe6",
+          200: "#99ffcc",
+          300: "#66ffb3",
+          400: "#33ff99",
+          500: "#1ed761", // Base color and default
+          600: "#1ab255",
+          700: "#137a3d",
+          800: "#0d5228",
+          900: "#073916",
         },
       },
       width: {
@@ -49,9 +50,9 @@ export default {
 
         lg: "2rem",
         md: "1.5rem",
-        base:"1.2rem",
+        base: "1.2rem",
         mde: "1rem",
-        sm: ['0.875rem', '1.25rem'],
+        sm: ["0.875rem", "1.25rem"],
       },
     },
   },

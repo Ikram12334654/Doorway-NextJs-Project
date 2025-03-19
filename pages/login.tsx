@@ -19,9 +19,10 @@ import applelogo from "../public/apple.png";
 import googleLogo from "../public/google.png";
 import linkedInlogo from "../public/linkedin.png";
 import env from "../utils/config";
-import { authRoutes } from "../utils/routes";
+import { authRoutes } from "../assets/api";
 import { ErrorToastMessage, SuccessToastMessage } from "../utils/toast";
-import SocialLoginButton from "./Component/socialLoginButton";
+import SocialLoginButton from "../component/socialLoginButton";
+
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [loading, setLoading] = useState(false);

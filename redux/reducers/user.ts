@@ -7,6 +7,7 @@ interface ContactInfo {
 
 interface UserState {
   _id: string;
+  active: boolean;
   role: number;
   prefix: string;
   suffix: string;
@@ -30,6 +31,7 @@ interface UserState {
 
 const initialState: UserState = {
   _id: "",
+  active: true,
   role: 0,
   prefix: "",
   suffix: "",

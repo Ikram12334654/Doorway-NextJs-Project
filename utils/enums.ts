@@ -1,6 +1,5 @@
 export const Environment = {
   DEVELOPMENT: "development",
-  STAGING: "staging",
   PRODUCTION: "production",
 };
 
@@ -14,6 +13,15 @@ const ACCOUNT_TYPE = {
   ORGANIZATION: "organization",
 };
 
+const LANGUAGES = {
+  ENGLISH: "English",
+  URDU: "Urdu",
+  ESPANIO: "Espanio",
+  ITALIAN: "Italian",
+};
+
+const DEVICES = ["Android", "Apple"];
+
 const ROLES = {
   0: "employee",
   1: "user",
@@ -22,4 +30,11 @@ const ROLES = {
   4: "superAdmin",
 };
 
-export default { Environment, PASS_VIEW, ACCOUNT_TYPE, ROLES };
+export default {
+  Environment,
+  PASS_VIEW,
+  ACCOUNT_TYPE,
+  ROLES,
+  LANGUAGES,
+  DEVICES,
+};

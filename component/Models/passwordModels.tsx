@@ -1,5 +1,5 @@
+import { Field, Formik } from "formik";
 import React, { useEffect, useRef } from "react";
-import { Formik, Form, Field, FormikHelpers } from "formik";
 import * as Yup from "yup";
 
 interface CloseModelProps {
@@ -7,47 +7,39 @@ interface CloseModelProps {
 }
 
 const ChangePasswordModal: React.FC<CloseModelProps> = ({ onClose }) => {
-    const modalRef = useRef<HTMLDivElement>(null);
-  
-    // Handle clicks outside the modal
-    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-          onClose(); // Close the modal if clicked outside
-        }
-      };
-  
-      // Add event listener for clicks
-      document.addEventListener("mousedown", handleClickOutside);
-  
-      // Cleanup the event listener on unmount
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, [onClose]);
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  const handleCancel = () => {
-    onClose();
-    // Close modal logic here
-  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
 
-  const handleUpdatePassword = (
-    values: { currentPassword: string; newPassword: string },
-    actions: FormikHelpers<{ currentPassword: string; newPassword: string }>
-  ) => {
-    console.log("Password updated:", values.newPassword);
-    // Add your update password logic here
-  };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
+
+  const handleUpdatePassword = () => {};
 
   const passwordValidationSchema = Yup.object().shape({
     currentPassword: Yup.string().required("Current Password is required"),
     newPassword: Yup.string()
-      .required("New Password is required")
       .min(8, "Password must be at least 8 characters")
       .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
       .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-      .matches(/\d/, "Password must contain at least one number")
-      .matches(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+      .matches(/[0-9]/, "Password must contain at least one number")
+      .matches(
+        /[@$!%*?&]/,
+        "Password must contain at least one special character (@, $, !, %, *, ?, &)"
+      )
+      .required("Password is required"),
   });
 
   return (
@@ -57,14 +49,21 @@ const ChangePasswordModal: React.FC<CloseModelProps> = ({ onClose }) => {
       aria-modal="true"
     >
       <div className="absolute inset-0 overflow-hidden h-full">
-        <div className="absolute right-0 top-0 w-full max-w-[450px] bg-white shadow-xl h-full" ref={modalRef}>
+        <div
+          className="absolute right-0 top-0 w-full max-w-[450px] bg-white shadow-xl h-full"
+          ref={modalRef}
+        >
           <div className="flex flex-col h-full">
-            {/* Header */}
             <div className="p-[22px] flex gap-[12px] border-b border-b-gray-100 items-center">
               <div className="flex-grow text-gray-950 text-small font-medium">
                 Change Password
               </div>
-              <div className="cursor-pointer" onClick={handleCancel}>
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  onClose();
+                }}
+              >
                 <svg
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +77,6 @@ const ChangePasswordModal: React.FC<CloseModelProps> = ({ onClose }) => {
               </div>
             </div>
 
-            {/* Content */}
             <div className="overflow-y-scroll flex-grow">
               <div className="px-6 py-8 flex flex-col gap-[18px]">
                 <Formik
@@ -88,7 +86,6 @@ const ChangePasswordModal: React.FC<CloseModelProps> = ({ onClose }) => {
                 >
                   {({ values, handleChange, errors, touched }) => (
                     <>
-                      {/* Current Password */}
                       <div className="flex flex-col gap-[4px] flex-1 min-w-0 max-w-full">
                         <div className="flex items-center justify-between">
                           <div style={{ width: "100%" }}>
@@ -111,14 +108,16 @@ const ChangePasswordModal: React.FC<CloseModelProps> = ({ onClose }) => {
                                 />
                               </div>
                             </div>
-                            {touched.currentPassword && errors.currentPassword ? (
-                              <div className="text-red-500 text-tiny">{errors.currentPassword}</div>
+                            {touched.currentPassword &&
+                            errors.currentPassword ? (
+                              <div className="text-red-500 text-tiny">
+                                {errors.currentPassword}
+                              </div>
                             ) : null}
                           </div>
                         </div>
                       </div>
 
-                      {/* New Password */}
                       <div className="flex flex-col gap-[4px] flex-1 min-w-0 max-w-full">
                         <div className="flex items-center justify-between">
                           <div style={{ width: "100%" }}>
@@ -142,26 +141,30 @@ const ChangePasswordModal: React.FC<CloseModelProps> = ({ onClose }) => {
                               </div>
                             </div>
                             {touched.newPassword && errors.newPassword ? (
-                              <div className="text-red-500 text-tiny">{errors.newPassword}</div>
+                              <div className="text-red-500 text-tiny">
+                                {errors.newPassword}
+                              </div>
                             ) : null}
                           </div>
                         </div>
                       </div>
                       <span className="text-tiny font-regular text-gray-500">
-                        Make sure it’s at least 8 characters and includes a special character, a number, an uppercase, and a lowercase letter.
+                        Make sure it’s at least 8 characters and includes a
+                        special character, a number, an uppercase, and a
+                        lowercase letter.
                       </span>
                     </>
                   )}
                 </Formik>
               </div>
             </div>
-
-            {/* Footer */}
             <div className="px-[24px] py-[16px] flex gap-[24px] border-t border-t-gray-100 items-center">
               <div className="flex-grow text-gray-950 text-small font-medium flex justify-end gap-[16px]">
                 <div
                   className="inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-500 ease-in-out px-[15px] py-[7px] border-[1px] text-gray-700 border-gray-100 bg-white hover:bg-gray-50 focus:border-[2px] focus:border-gray-100 cursor-pointer"
-                  onClick={handleCancel}
+                  onClick={() => {
+                    onClose();
+                  }}
                 >
                   <span className="whitespace-nowrap">Cancel</span>
                 </div>

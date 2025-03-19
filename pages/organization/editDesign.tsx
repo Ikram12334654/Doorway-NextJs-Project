@@ -2,7 +2,7 @@ import { saveCurrentDesign } from "@/redux/reducers/design";
 import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
-import { authRoutes } from "@/utils/routes";
+import { authRoutes } from "../../assets/api";
 import { decryptJSON } from "@/utils/security";
 import Api from "@/utils/service";
 import { ErrorToastMessage } from "@/utils/toast";

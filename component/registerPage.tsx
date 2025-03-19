@@ -1,7 +1,7 @@
 import { saveAuth } from "@/redux/reducers/auth";
 import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
-import { authRoutes } from "@/utils/routes";
+import { authRoutes } from "../assets/api";
 import { generateStrongPassword } from "@/utils/security";
 import Api from "@/utils/service";
 import { ErrorToastMessage } from "@/utils/toast";

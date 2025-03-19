@@ -4,7 +4,7 @@ import enums from "@/utils/enums";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import QRImage from "../../public/QrImage.png";
+import QRImage from "../public/QrImage.png";
 import DefaultLogo from "./defaultLogo";
 import QRCode from "./QRCanvas";
 

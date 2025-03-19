@@ -3,13 +3,13 @@ import { saveDesign } from "@/redux/reducers/design";
 import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
-import { authRoutes } from "@/utils/routes";
 import Api from "@/utils/service";
 import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
 import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
+import { authRoutes } from "../assets/api";
 import Button from "./button";
 import PassPreview from "./passPreview";
 
@@ -136,11 +136,13 @@ const CustomizeYourDesign: React.FC = () => {
 
     try {
       setLoading(true);
+
       const authToken = state.auth.accessToken;
-      const role: string = enums.ROLES[1];
 
       const { response, error }: ApiResponse = await Api(
-        "/" + role + authRoutes.setupAccount,
+        "/" +
+          enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
+          authRoutes.setupAccount,
         "post",
         {
           payload: data,
@@ -220,7 +222,7 @@ const CustomizeYourDesign: React.FC = () => {
         validationSchema={validationSchema}
         onSubmit={(values: any, { resetForm }) => {
           handleSubmit({ values });
-          // resetForm();
+          resetForm();
         }}
       >
         {({ isSubmitting, isValid, values, setFieldValue }) => (

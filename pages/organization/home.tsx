@@ -1,17 +1,17 @@
-import React from "react";
-import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import SettingsIcon from "@mui/icons-material/Settings";
-import PersonIcon from "@mui/icons-material/Person";
-import HelpIcon from "@mui/icons-material/Help";
-import Link from "next/link";
-import QRCode from "../Component/QRCanvas";
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
-import UserPass from "../Component/UserPass";
-import PassPreview from "@/pages/Component/passPreview";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import HelpIcon from "@mui/icons-material/Help";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import PersonIcon from "@mui/icons-material/Person";
+import SettingsIcon from "@mui/icons-material/Settings";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import DoorwayDetailsModel from "../Component/Models/DoorwayDetailsModel";
+import React from "react";
+import DoorwayDetailsModel from "../../component/Models/DoorwayDetailsModel";
+import QRCode from "../../component/QRCanvas";
+import UserPass from "../../component/UserPass";
+
 function home() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = React.useState(false);

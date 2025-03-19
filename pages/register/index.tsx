@@ -6,12 +6,12 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import CustomizeYourDesign from "../Component/customizeDoorway";
-import EditYourDesign from "../Component/EditYourDesign";
-import RegisterPage from "../Component/registerPage";
-import SaveToWallet from "../Component/SaveToWallet";
-import SelectRequirements from "../Component/SelectRequirements";
-import SetUpDoorway from "../Component/setUpDoorway";
+import CustomizeYourDesign from "../../component/customizeDoorway";
+import EditYourDesign from "../../component/EditYourDesign";
+import RegisterPage from "../../component/registerPage";
+import SaveToWallet from "../../component/SaveToWallet";
+import SelectRequirements from "../../component/SelectRequirements";
+import SetUpDoorway from "../../component/setUpDoorway";
 import { saveAccount } from "@/redux/reducers/account";
 
 function Register() {

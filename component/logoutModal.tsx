@@ -9,10 +9,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 const Logout: React.FC = () => {
   const dispatch = useDispatch();
-  const state = useSelector((state: RootState) => state.auth);
+  const state = useSelector((state: RootState) => state.user);
   const router = useRouter();
 
-  if (1 === 1) {
+  if (state.active) {
     return null;
   }
 

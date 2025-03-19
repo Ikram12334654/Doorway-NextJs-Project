@@ -1,54 +1,30 @@
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
-import ChangePasswordModal from "@/pages/Component/Models/passwordModels";
+import { saveUser } from "@/redux/reducers/user";
+import { RootState } from "@/redux/store";
+import enums from "@/utils/enums";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import WestIcon from "@mui/icons-material/West";
 import Option from "@mui/joy/Option";
 import Select from "@mui/joy/Select";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import TwoStepVarificationModel from "../Component/Models/TwoStepVarificationModel";
+import { useDispatch, useSelector } from "react-redux";
+import ChangePasswordModal from "../../component/Models/passwordModels";
+import TwoStepVarificationModel from "../../component/Models/TwoStepVarificationModel";
 
 const MyAccount: React.FC = () => {
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const state = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
 
-  const [isModalOpen1, setIsModalOpen1] = React.useState(false);
-  const handleBackClick = () => {
-    router.push("/organization/home");
-  };
-  const toggleModal1 = () => {
-    setIsModalOpen1(!isModalOpen);
-  };
-
-  const closeModal1 = () => {
-    setIsModalOpen1(false);
-  };
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const [selectedDevice, setSelectedDevice] = useState<string>("android");
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("English");
-  const handleChange = (
-    event:
-      | React.MouseEvent<Element>
-      | React.KeyboardEvent<Element>
-      | React.FocusEvent<Element, Element>,
-    value: string | null
-  ) => {
-    if (value) {
-      setSelectedDevice(value); // Update state with the selected value
-    }
-  };
+  const [passwordModal, setPasswordModal] = useState(false);
+  const [authModal, setAuthModal] = useState(false);
+  const [language, setLanguage] = useState(enums.LANGUAGES.ENGLISH || "");
 
   return (
     <div className="flex flex-col w-full">
       <div className="flex justify-center w-full m-auto">
-        {<PrivateRoutesNavBar />}
+        <PrivateRoutesNavBar />
       </div>
       <div className="px-8 min-md:px-[112px] mt-6 mb-16">
         <div>
@@ -57,7 +33,9 @@ const MyAccount: React.FC = () => {
               className="inline-flex items-center rounded-[6px] text-petite font-medium justify-center gap-[6px] text-gray-500 hover:text-brand-500 focus:text-brand-500 cursor-pointer"
               role="button"
               aria-disabled="false"
-              onClick={handleBackClick}
+              onClick={() => {
+                router.back();
+              }}
             >
               <WestIcon fontSize="small" />
               <span className="whitespace-nowrap">Back</span>
@@ -85,14 +63,15 @@ const MyAccount: React.FC = () => {
                   <div
                     className="inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-500 ease-in-out px-[12px] py-[6px] focus:border-[2px] text-white bg-brand-500 hover:bg-brand-400 focus:border-brand-200 cursor-pointer"
                     role="button"
-                    onClick={toggleModal}
+                    onClick={() => {
+                      setPasswordModal(true);
+                    }}
                   >
                     <span className="whitespace-nowrap">Change Password</span>
                   </div>
                 </div>
               </div>
               <div className="flex flex-col min-md:flex-row gap-6">
-                {/* Name Field */}
                 <div className="w-full min-md:max-w-[389px]">
                   <div className="flex flex-col gap-[4px] flex-1 min-w-0 max-w-full">
                     <div className="flex items-center justify-between">
@@ -111,7 +90,9 @@ const MyAccount: React.FC = () => {
                               className="border-box bg-transparent text-petite border-0 ring-transparent outline-none focus:outline-none focus:ring-0 w-full px-[12px] py-[9px] caret-brand placeholder-gray-200"
                               disabled
                               type="text"
-                              value="Sami Ullah"
+                              value={
+                                state.user.firstName + " " + state.user.lastName
+                              }
                             />
                           </div>
                         </div>
@@ -138,7 +119,7 @@ const MyAccount: React.FC = () => {
                               className="border-box bg-transparent text-petite border-0 ring-transparent outline-none focus:outline-none focus:ring-0 w-full px-[12px] py-[9px] caret-brand placeholder-gray-200"
                               disabled
                               type="text"
-                              value="sami_ullah71@outlook.com"
+                              value={state.user.email}
                             />
                           </div>
                         </div>
@@ -151,103 +132,14 @@ const MyAccount: React.FC = () => {
                 <h4 style={{ marginBottom: "8px" }}>Language</h4>
                 <Select
                   placeholder="Select a device type…"
-                  value={selectedLanguage}
-                  //onChange={(e:SelectChangeEvent<string>)=>setSelectedLanguage(e.target.value)}
-                  indicator={<ArrowDropDownIcon />}
-                  sx={{
-                    color: "inherit",
-                    background: "white", // Set white background color
-                    opacity: 1,
-                    width: "100%",
-                    gridArea: "1 / 2",
-                    font: "inherit",
-                    minWidth: 2,
-                    border: "1px solid #d1d5db", // Border color gray-100
-                    borderRadius: "6px", // Rounded corners
-                    outline: 0,
-                    padding: "0.5rem", // Padding for better spacing
-                    "& .MuiSelect-icon": {
-                      color: "inherit",
-                    },
-                    "&:focus-within": {
-                      borderColor: "#1ed761", // Green border color on focus
-                      background: "white", // Keep background white on focus
-                    },
-                    "&:hover": {
-                      backgroundColor: "white", // Change background on hover for the select box itself
-                      color: "black", // Text color changes to black on hover for the select box
-                    },
+                  value={language}
+                  onChange={(e: any) => {
+                    setLanguage(e?.target?.innerText);
                   }}
-                >
-                  <Option
-                    value="English"
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "#ccffe6 !important", // Hover background color for Android option
-                        color: "#1ed761 !important", // Text color for Android option on hover
-                      },
-                      "&.Mui-selected": {
-                        backgroundColor: "transparent !important", // Remove background for selected Apple option
-                        color: "black !important", // Text color for selected Apple option
-                      },
-                      "&.Mui-selected:hover": {
-                        backgroundColor: "#ccffe6 !important", // Background color when selected and hovered
-                        color: "#1ed761 !important", // Text color when selected and hovered
-                      },
-                    }}
-                  >
-                    English
-                  </Option>
-                  <Option
-                    value="Espanio"
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "#ccffe6 !important", // Hover background color for Android option
-                        color: "#1ed761 !important", // Text color for Android option on hover
-                      },
-                      "&.Mui-selected": {
-                        backgroundColor: "transparent !important", // Remove background for selected Apple option
-                        color: "black !important", // Text color for selected Apple option
-                      },
-                      "&.Mui-selected:hover": {
-                        backgroundColor: "#ccffe6 !important", // Background color when selected and hovered
-                        color: "#1ed761 !important", // Text color when selected and hovered
-                      },
-                    }}
-                  >
-                    Espanio
-                  </Option>
-                  <Option
-                    value="Italian"
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "#ccffe6 !important", // Hover background color for Android option
-                        color: "#1ed761 !important", // Text color for Android option on hover
-                      },
-                      "&.Mui-selected": {
-                        backgroundColor: "transparent !important", // Remove background for selected Apple option
-                        color: "black !important", // Text color for selected Apple option
-                      },
-                      "&.Mui-selected:hover": {
-                        backgroundColor: "#ccffe6 !important", // Background color when selected and hovered
-                        color: "#1ed761 !important", // Text color when selected and hovered
-                      },
-                    }}
-                  >
-                    Italian
-                  </Option>
-                </Select>
-              </div>
-              <div style={{ maxWidth: "390px" }}>
-                <h4 style={{ marginBottom: "8px" }}>Device Type</h4>
-                <Select
-                  placeholder="Select a device type…"
-                  value={selectedDevice}
-                  // onChange={handleChange} // Uncomment this when you implement the handleChange
                   indicator={<ArrowDropDownIcon />}
                   sx={{
                     color: "inherit",
-                    background: "white", // Default background for Select
+                    background: "white",
                     opacity: 1,
                     width: "100%",
                     gridArea: "1 / 2",
@@ -261,59 +153,106 @@ const MyAccount: React.FC = () => {
                       color: "inherit",
                     },
                     "&:focus-within": {
-                      borderColor: "#1ed761", // Green border color on focus
-                      background: "white", // Keep background white on focus
+                      borderColor: "#1ed761",
+                      background: "white",
                     },
                     "&:hover": {
-                      backgroundColor: "white", // Change background on hover for the select box itself
-                      color: "black", // Text color changes to black on hover for the select box
+                      backgroundColor: "white",
+                      color: "black",
                     },
                   }}
                 >
-                  <Option
-                    value="android"
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "#ccffe6 !important", // Hover background color for Android option
-                        color: "#1ed761 !important", // Text color for Android option on hover
-                      },
-                      "&.Mui-selected": {
-                        backgroundColor: "transparent !important", // Remove background for selected Apple option
-                        color: "black !important", // Text color for selected Apple option
-                      },
-                      "&.Mui-selected:hover": {
-                        backgroundColor: "#ccffe6 !important", // Background color when selected and hovered
-                        color: "#1ed761 !important", // Text color when selected and hovered
-                      },
-                    }}
-                  >
-                    Android
-                  </Option>
-
-                  <Option
-                    value="apple"
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "#ccffe6 !important", // Hover background color for Apple option
-                        color: "#1ed761 !important", // Text color for Apple option on hover
-                      },
-                      "&.Mui-selected": {
-                        backgroundColor: "transparent !important", // Remove background for selected Apple option
-                        color: "black !important", // Text color for selected Apple option
-                      },
-                      "&.Mui-selected:hover": {
-                        backgroundColor: "#ccffe6 !important", // Background color when selected and hovered
-                        color: "#1ed761 !important", // Text color when selected and hovered
-                      },
-                    }}
-                  >
-                    Apple
-                  </Option>
+                  {Object.values(enums.LANGUAGES).map((e) => {
+                    return (
+                      <Option
+                        value={e}
+                        sx={{
+                          "&:hover": {
+                            backgroundColor: "#ccffe6 !important",
+                            color: "#1ed761 !important",
+                          },
+                          "&.Mui-selected": {
+                            backgroundColor: "transparent !important",
+                            color: "black !important",
+                          },
+                          "&.Mui-selected:hover": {
+                            backgroundColor: "#ccffe6 !important",
+                            color: "#1ed761 !important",
+                          },
+                        }}
+                      >
+                        {e}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              </div>
+              <div style={{ maxWidth: "390px" }}>
+                <h4 style={{ marginBottom: "8px" }}>Device Type</h4>
+                <Select
+                  placeholder="Select a device type…"
+                  value={state.user.passType || enums.PASS_VIEW.APPLE}
+                  indicator={<ArrowDropDownIcon />}
+                  sx={{
+                    color: "inherit",
+                    background: "white",
+                    opacity: 1,
+                    width: "100%",
+                    gridArea: "1 / 2",
+                    font: "inherit",
+                    minWidth: 2,
+                    border: "1px solid #d1d5db",
+                    borderRadius: "6px",
+                    outline: 0,
+                    padding: "0.5rem",
+                    "& .MuiSelect-icon": {
+                      color: "inherit",
+                    },
+                    "&:focus-within": {
+                      borderColor: "#1ed761",
+                      background: "white",
+                    },
+                    "&:hover": {
+                      backgroundColor: "white",
+                      color: "black",
+                    },
+                  }}
+                >
+                  {Object.values(enums.PASS_VIEW).map((e) => {
+                    return (
+                      <Option
+                        value={e}
+                        onClick={(e: any) => {
+                          dispatch(
+                            saveUser({
+                              passType: e?.target?.innerText?.toLowerCase(),
+                            })
+                          );
+                        }}
+                        sx={{
+                          "&:hover": {
+                            backgroundColor: "#ccffe6 !important",
+                            color: "#1ed761 !important",
+                          },
+                          "&.Mui-selected": {
+                            backgroundColor: "transparent !important",
+                            color: "black !important",
+                          },
+                          "&.Mui-selected:hover": {
+                            backgroundColor: "#ccffe6 !important",
+                            color: "#1ed761 !important",
+                          },
+                        }}
+                      >
+                        {e?.charAt(0)?.toUpperCase() +
+                          e?.slice(1)?.toLowerCase()}
+                      </Option>
+                    );
+                  })}
                 </Select>
               </div>
             </div>
             <div className="flex flex-col gap-6">
-              {/* 2FA Header Section */}
               <div className="flex pb-[24px] border-b border-gray-200">
                 <div className="flex-grow flex flex-col gap-[12px]">
                   <div className="flex gap-[12px]">
@@ -329,27 +268,27 @@ const MyAccount: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center">
-                  {/* Setup 2FA Button */}
                   <div
                     className="inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-500 ease-in-out px-[12px] py-[6px] focus:border-[2px] text-white bg-brand-500 hover:bg-brand-400 focus:border-brand-200 cursor-pointer"
                     role="button"
-                    onClick={toggleModal1}
+                    onClick={() => {
+                      setAuthModal(true);
+                    }}
                   >
                     <span className="whitespace-nowrap">Setup 2FA</span>
                   </div>
                 </div>
               </div>
-
-              {/* 2FA Disabled Section */}
               <div className="bg-gray-50 w-full px-6 py-12 rounded-[12px] flex flex-col items-center gap-6">
                 <div className="text-small font-semibold text-gray-950">
                   2FA is not enabled for your account
                 </div>
-                {/* Setup 2FA Button (For Disabled state) */}
                 <div
                   className="inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-500 ease-in-out px-[15px] py-[7px] border-[1px] text-gray-700 border-gray-100 bg-white hover:bg-gray-50 focus:border-[2px] focus:border-gray-100 cursor-pointer"
                   role="button"
-                  onClick={toggleModal1}
+                  onClick={() => {
+                    setAuthModal(true);
+                  }}
                 >
                   <span className="whitespace-nowrap">Setup 2FA</span>
                 </div>
@@ -358,8 +297,20 @@ const MyAccount: React.FC = () => {
           </div>
         </div>
       </div>
-      {isModalOpen && <ChangePasswordModal onClose={closeModal} />}
-      {isModalOpen1 && <TwoStepVarificationModel onClose={closeModal1} />}
+      {passwordModal && (
+        <ChangePasswordModal
+          onClose={() => {
+            setPasswordModal(false);
+          }}
+        />
+      )}
+      {authModal && (
+        <TwoStepVarificationModel
+          onClose={() => {
+            setAuthModal(false);
+          }}
+        />
+      )}
     </div>
   );
 };

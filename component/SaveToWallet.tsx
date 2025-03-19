@@ -1,9 +1,12 @@
 import { useRouter } from "next/router";
 import Button from "./button";
 import QRCode from "./QRCanvas";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 function SaveToWallet() {
   const router = useRouter();
+  const state = useSelector((state: RootState) => state);
 
   return (
     <div className="flex flex-col items-center">
@@ -30,7 +33,6 @@ function SaveToWallet() {
           Download Apple Wallet file
         </a>
       </div>
-
       <div className="w-[170px]">
         <Button
           onClick={() => {

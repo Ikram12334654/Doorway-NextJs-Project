@@ -7,9 +7,12 @@ import WorkIcon from "@mui/icons-material/Work";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import DoorwayDetailsModel from "../Component/Models/DoorwayDetailsModel";
-import QRCode from "../Component/QRCanvas";
-import UserPass from "../Component/UserPass";
+import DoorwayDetailsModel from "../../component/Models/DoorwayDetailsModel";
+import QRCode from "../../component/QRCanvas";
+import UserPass from "../../component/UserPass";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+
 function home() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -20,6 +23,7 @@ function home() {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
   return (
     <div className="flex flex-col  w-full ">
       <div className="flex justify-center w-full m-auto">
@@ -94,7 +98,7 @@ function home() {
             <div className="my-4">
               <Link
                 className="border-2 border-gray-300 flex items-center justify-between pl-4 min-sm:pl-6 pr-1.5 py-1.5 rounded text-gray-400 text-sm "
-                href="/personal/EditDesignTemplate"
+                href="/personal/design"
               >
                 <div className="flex items-center gap-[15px]">
                   <AutoAwesomeIcon sx={{ width: "1rem", height: 20 }} />
