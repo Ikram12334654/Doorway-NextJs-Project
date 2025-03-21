@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import { authRoutes } from "../assets/api";
 import Button from "./button";
-import PassPreview from "./passPreview";
+import UserPass from "./UserPass";
 
 const CustomizeYourDesign: React.FC = () => {
   const state = useSelector((state: RootState) => state);
@@ -230,7 +230,7 @@ const CustomizeYourDesign: React.FC = () => {
             <div className="flex flex-col min-md:flex-row gap-[44px] min-md:gap-[75px] items-center min-md:items-start justify-center p-5">
               <div className={`width:330px`}>
                 <div className="block">
-                  <PassPreview
+                  <UserPass
                     values={{
                       backgroundColor: values.color,
                       jobTitle: values.jobTitle,

@@ -10,8 +10,6 @@ import React from "react";
 import DoorwayDetailsModel from "../../component/Models/DoorwayDetailsModel";
 import QRCode from "../../component/QRCanvas";
 import UserPass from "../../component/UserPass";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 
 function home() {
   const router = useRouter();

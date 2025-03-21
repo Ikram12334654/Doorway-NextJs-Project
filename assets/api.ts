@@ -5,6 +5,8 @@ export const authRoutes = {
   setupAccount: "/setupAccount",
   setupDesign: "/setupDesign",
   updateDesign: "/updateDesign",
+  appleWalletPass: "/pass/applePass",
+  googleWalletPass: "/pass/googlePass",
 };
 
 export default { authRoutes };

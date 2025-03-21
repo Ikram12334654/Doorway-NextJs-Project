@@ -1,4 +1,4 @@
-import { logout } from "@/redux/reducers/auth";
+import { logout } from "@/redux/reducers/pass";
 import { clearDesign } from "@/redux/reducers/design";
 import { clearUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";

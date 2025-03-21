@@ -1,4 +1,3 @@
-import { saveAuth } from "@/redux/reducers/auth";
 import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import { authRoutes } from "../assets/api";
@@ -10,6 +9,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import Button from "./button";
+import { saveAuth } from "@/redux/reducers/auth";
 
 const RegisterPage: React.FC = () => {
   const state = useSelector((state: RootState) => state);

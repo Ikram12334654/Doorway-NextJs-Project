@@ -1,6 +1,6 @@
-import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
+import { invertHexColor } from "@/utils/security";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,8 @@ import DefaultLogo from "./defaultLogo";
 import QRCode from "./QRCanvas";
 
 interface formValues {
+  prefix?: string;
+  suffix?: string;
   jobTitle?: string;
   organizationName?: string;
   organizationURL?: string;
@@ -29,6 +31,8 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
   );
 
   const data = {
+    prefix: "",
+    suffix: "",
     jobTitle:
       values?.jobTitle?.toUpperCase() || state.user.jobTitle || "DESIGNATION",
     organizationName:
@@ -57,7 +61,7 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
                 <div
                   className="visible w-[330px] shadow-lg text-white rounded-2xl"
                   style={{
-                    backgroundColor: data.backgroundColor,
+                    backgroundColor: data?.backgroundColor,
                   }}
                 >
                   <div className="flex flex-col h-full justify-between pb-6">
@@ -70,7 +74,9 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
                             className="w-[40px] h-auto m-auto"
                           />
                         ) : (
-                          <DefaultLogo />
+                          <DefaultLogo
+                            color={invertHexColor(data?.backgroundColor)}
+                          />
                         )}
                       </span>
                     </div>
@@ -84,7 +90,13 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
                               className="max-w-full h-auto m-auto"
                             />
                           ) : (
-                            "Doorway"
+                            <span
+                              style={{
+                                color: invertHexColor(data?.backgroundColor),
+                              }}
+                            >
+                              Doorway
+                            </span>
                           )}
                         </div>
                       </span>
@@ -93,13 +105,17 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
                       <div className="px-6">
                         <p
                           className="text-mde uppercase"
-                          style={{ color: "rgb(255, 255, 255)" }}
+                          style={{
+                            color: invertHexColor(data?.backgroundColor),
+                          }}
                         >
                           {data?.jobTitle}
                         </p>
                         <p
                           className="text-mde font-extralight"
-                          style={{ color: "rgb(255, 255, 255)" }}
+                          style={{
+                            color: invertHexColor(data?.backgroundColor),
+                          }}
                         >
                           {data.firstName + " " + data.lastName || ""}
                         </p>
@@ -107,7 +123,7 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
                     </div>
                     <div className="bg-white mx-auto rounded-md card-qrcode max-w-[138px] py-2 px-2 flex justify-center items-center">
                       {state.user ? (
-                        <QRCode />
+                        <QRCode data={data} />
                       ) : (
                         <Image
                           src={QRImage}
@@ -139,7 +155,9 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
                             className="w-[40px] h-auto m-auto"
                           />
                         ) : (
-                          <DefaultLogo />
+                          <DefaultLogo
+                            color={invertHexColor(data?.backgroundColor)}
+                          />
                         )}
                       </span>
                     </div>
@@ -148,13 +166,17 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
                       <div className="px-6">
                         <p
                           className="mt-[24px] text-lg leading-[40px] font-normal font-[700]"
-                          style={{ color: "rgb(255, 255, 255)" }}
+                          style={{
+                            color: invertHexColor(data?.backgroundColor),
+                          }}
                         >
                           {state.user.firstName + " " + state.user.lastName}
                         </p>
                         <p
                           className="mt-[16px] text-mde font-normal"
-                          style={{ color: "rgb(255, 255, 255)" }}
+                          style={{
+                            color: invertHexColor(data?.backgroundColor),
+                          }}
                         >
                           {data?.jobTitle}
                         </p>
@@ -162,7 +184,7 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
                     </div>
                     <div className="bg-white mx-auto rounded-md card-qrcode max-w-[138px] py-2 px-2 flex justify-center items-center">
                       {state.user ? (
-                        <QRCode />
+                        <QRCode data={data} />
                       ) : (
                         <Image
                           src={QRImage}
@@ -176,7 +198,13 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
                       <span className="flex items-center  w-full block aspect-[3/1]">
                         <div className="mx-auto w-max text-[2.5rem] border-white text-center">
                           {!data.stripImage ? (
-                            "Doorway"
+                            <span
+                              style={{
+                                color: invertHexColor(data?.backgroundColor),
+                              }}
+                            >
+                              Doorway
+                            </span>
                           ) : (
                             <img
                               src={data?.stripImage}

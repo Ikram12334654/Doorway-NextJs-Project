@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, Method } from "axios";
 import env from "./config";
 
-const BASE_URL = `${env.API_URL}`;
+export const BASE_URL = `${env.API_URL}`;
 
 interface ApiOptions {
   payload?: any;

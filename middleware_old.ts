@@ -1,73 +1,53 @@
-// import { NextResponse } from "next/server";
-// import type { NextRequest } from "next/server";
-// import enums from "./utils/enums";
-// import env from "./utils/config";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import enums from "./utils/enums";
 
-// const publicRoutes = ["/login", "/register"];
+const routes = {
+  public: ["/login", "/register"],
+  personal: "/personal/home",
+  organization: "/organization/home",
+};
 
-// const personalRoutes = [
-//   "/personal/home",
-//   "/personal/design",
-//   "/personal/account",
-// ];
+export function middleware(req: NextRequest) {
+  const userRole = req.cookies.get("userRole")?.value;
+  const accountType = req.cookies.get("accountType")?.value;
+  const accessToken = req.cookies.get("accessToken")?.value;
+  const refreshToken = req.cookies.get("refreshToken")?.value;
 
-// const organizationRoutes = [
-//   "/organization/home",
-//   "/organization/design",
-//   "/organization/account",
-// ];
+  const url = req.nextUrl.clone();
+  const normalizedPath = url.pathname.endsWith("/")
+    ? url.pathname.slice(0, -1)
+    : url.pathname;
 
-// export function middleware(req: NextRequest) {
-//   const token = req.cookies.get("accessToken")?.value || "samiullah";
-//   const accountType =
-//     req.cookies.get("accountType")?.value || enums.ACCOUNT_TYPE.PERSONAL;
-//   const steps = parseInt(req.cookies.get("steps")?.value || "0", 10) || 3;
-//   const url = req.nextUrl.clone();
+  if (
+    url.pathname.startsWith("/_next") ||
+    url.pathname.startsWith("/api") ||
+    url.pathname.includes(".")
+  ) {
+    return NextResponse.next();
+  }
 
-//   const normalizedPath = url.pathname.endsWith("/")
-//     ? url.pathname.slice(0, -1)
-//     : url.pathname;
+  if (!accessToken && !refreshToken) {
+    if (!routes.public.includes(normalizedPath)) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    return NextResponse.next();
+  }
 
-//   if (
-//     url.pathname.startsWith("/_next") ||
-//     url.pathname.startsWith("/api") ||
-//     url.pathname.includes(".")
-//   ) {
-//     return NextResponse.next();
-//   }
+  if (routes.public.includes(normalizedPath)) {
+    return NextResponse.redirect(new URL(routes.personal, req.url));
+  }
 
-//   if (publicRoutes.includes(normalizedPath)) {
-//     return NextResponse.next();
-//   }
+  if (normalizedPath === "/home") {
+    switch (userRole) {
+      case enums.ROLES[1]:
+        return NextResponse.redirect(new URL(routes.personal, req.url));
+      case enums.ROLES[2]:
+        return NextResponse.redirect(new URL(routes.organization, req.url));
+      default:
+        return NextResponse.redirect(new URL("/login", req.url));
+    }
+  }
 
-//   const baseUrl = env.APP_URL;
-
-//   const redirectTo = (path: string) => {
-//     const absoluteUrl = new URL(path, baseUrl).toString();
-//     return NextResponse.redirect(absoluteUrl);
-//   };
-
-//   if (!token) {
-//     return redirectTo("/login");
-//   }
-
-//   if (accountType === enums.ACCOUNT_TYPE.PERSONAL) {
-//     if (steps < 2) {
-//       return redirectTo("/register");
-//     }
-//     if (!normalizedPath.startsWith("/personal")) {
-//       return redirectTo("/personal/home");
-//     }
-//   }
-
-//   if (accountType === enums.ACCOUNT_TYPE.ORGANIZATION) {
-//     if (steps < 2) {
-//       return redirectTo("/register");
-//     }
-//     if (!normalizedPath.startsWith("/organization")) {
-//       return redirectTo("/organization/home");
-//     }
-//   }
-
-//   return NextResponse.next();
-// }
+  return NextResponse.next();
+}

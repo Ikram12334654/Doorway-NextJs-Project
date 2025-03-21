@@ -1,70 +1,64 @@
 interface VFCProps {
-  prefix?: string;
-  suffix?: string;
-  firstName?: string;
-  lastName?: string;
-  organizationName?: string;
-  emails?: { type?: string; value: string }[];
-  phones?: { type?: string; value: string }[];
-  jobTitle?: string;
-  photo?: string;
-  URLS?: { type?: string; value: string }[];
-  addresses?: { type?: string; value: string }[];
-  personal?: boolean;
+  data?: any;
 }
 
-export const vcfText = ({
-  prefix = "",
-  suffix = "",
-  firstName = "",
-  lastName = "",
-  organizationName = "",
-  emails = [],
-  phones = [],
-  jobTitle = "",
-  photo = "",
-  URLS = [],
-  addresses = [],
-  personal = false,
-}: VFCProps): string => {
+interface EProps {
+  type?: string;
+  value?: string;
+}
+
+export const vcfText = ({ data }: VFCProps): string => {
+  const getName = (): string => {
+    const nameParts = [data?.firstName, data?.lastName].filter(Boolean);
+    return nameParts.join(" ").trim();
+  };
+
   const getFullName = (): string => {
-    const nameParts = [prefix, firstName, lastName, suffix].filter(Boolean);
+    const nameParts = [
+      data?.prefix,
+      data?.firstName,
+      data?.lastName,
+      data?.suffix,
+    ].filter(Boolean);
     return nameParts.join(" ").trim();
   };
 
   const formatPhones = (): string => {
-    // return phones.map((phone) => `TEL;TYPE=WORK:${phone}`).join("\n");
-    return "";
+    return data?.phones
+      .map((e: EProps) => `TEL;TYPE=${e?.type}:${e?.value}`)
+      .join("\n");
   };
 
   const formatEmails = (): string => {
-    return emails
-      .map((data) => `EMAIL;TYPE=${data?.type || "WORK"}:${data?.value}`)
+    return data?.emails
+      .map((e: EProps) => `EMAIL;TYPE=${e?.type}:${e?.value}`)
       .join("\n");
   };
 
   const formatURLs = (): string => {
-    // return URLS.map((url) => `X-SOCIALPROFILE;TYPE=WORK:${url}`).join("\n");
-    return "";
+    return data?.URLS.map(
+      (e: EProps) => `X-SOCIALPROFILE;TYPE=${e?.type}:${e?.value}`
+    ).join("\n");
   };
 
   const formatAddresses = (): string => {
-    // return addresses.map((address) => `ADR;TYPE=WORK:${address}`).join("\n");
-    return "";
+    return data?.addresses
+      .map((e: EProps) => `ADR;TYPE=${e?.type}:${e?.value}`)
+      .join("\n");
   };
 
   let vcfString = `BEGIN:VCARD
-VERSION:3.0
+VERSION:4.0
+N:${getName()};;;
 FN:${getFullName()}
-ORG:${organizationName}
-TITLE:${jobTitle}
-PHOTO;VALUE=URL:${photo}
+ORG:${data?.organizationName}
+TITLE:${data?.jobTitle}
 ${formatEmails()}
 ${formatPhones()}
 ${formatURLs()}
 ${formatAddresses()}`;
 
-  if (personal) {
+  if (data?.personal) {
     vcfString += `\nNOTE:Saved via Doorway: https://www.doorway.io`;
   }
 

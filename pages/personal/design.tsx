@@ -60,13 +60,13 @@ const EditDesignTemplate: React.FC = () => {
   };
 
   const colors = [
-    "#22242c",
-    "#a5abff",
-    "#f2f5f5",
+    "#22242C",
+    "#A5ABFF",
+    "#F2F5F5",
     "#FF0000",
-    "#1ed761",
-    "#1b4446",
-    "#2e2e2e",
+    "#1ED761",
+    "#1B4446",
+    "#2E2E2E",
   ];
 
   return (

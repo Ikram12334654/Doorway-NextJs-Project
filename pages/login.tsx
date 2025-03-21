@@ -1,9 +1,7 @@
 import LoadingSpinner from "@/assets/LoadingSpinner";
 import { clearAccount, saveAccount } from "@/redux/reducers/account";
-import { logout, saveAuth } from "@/redux/reducers/auth";
-import { clearDesign, saveDesign } from "@/redux/reducers/design";
+import { saveDesign } from "@/redux/reducers/design";
 import { clearUser, saveUser } from "@/redux/reducers/user";
-import { RootState } from "@/redux/store";
 import Api from "@/utils/service";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Image from "next/image";
@@ -11,17 +9,18 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import * as Yup from "yup";
+import { authRoutes } from "../assets/api";
 import AuthNavbar from "../assets/authNavbar";
 import { DoorwayImages } from "../assets/style";
+import SocialLoginButton from "../component/socialLoginButton";
 import applelogo from "../public/apple.png";
 import googleLogo from "../public/google.png";
 import linkedInlogo from "../public/linkedin.png";
 import env from "../utils/config";
-import { authRoutes } from "../assets/api";
 import { ErrorToastMessage, SuccessToastMessage } from "../utils/toast";
-import SocialLoginButton from "../component/socialLoginButton";
+import { saveAuth } from "@/redux/reducers/auth";
 
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
@@ -59,6 +58,11 @@ function Login() {
     setShowPassword(!showPassword);
   };
 
+  useEffect(() => {
+    dispatch(clearUser());
+    dispatch(clearAccount());
+  }, []);
+
   interface FormValues {
     email: string;
     password: string;
@@ -70,15 +74,7 @@ function Login() {
   }
 
   const router = useRouter();
-  const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(clearUser());
-    dispatch(clearAccount());
-    dispatch(clearDesign());
-    dispatch(logout());
-  }, []);
 
   const handleRoute = ({ response }: any) => {
     setLoading(false);

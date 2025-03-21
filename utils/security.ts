@@ -1,23 +1,6 @@
-const CryptoJS = require("crypto-js");
-
-const secretKey =
-  "b3K8zD1g5LpQ7sX0YwUqJfM9nJLpQ7sX0YwUK8zD1g5LpQ7sX0YwUqJfM9nJLpQ7sX0";
-
-export const decryptJSON = (encryptedData: any) => {
-  const [salt, encrypted] = encryptedData?.split(":");
-  const key = CryptoJS?.PBKDF2(secretKey, CryptoJS?.enc?.Base64?.parse(salt), {
-    keySize: 256 / 32,
-    iterations: 1000,
-  });
-  const bytes = CryptoJS?.AES?.decrypt(encrypted, key?.toString());
-  const decrypted = bytes?.toString(CryptoJS?.enc?.Utf8);
-
-  try {
-    return JSON?.parse(decrypted);
-  } catch (error) {
-    return null;
-  }
-};
+import { authRoutes } from "@/assets/api";
+import { BASE_URL } from "./service";
+import { SuccessToastMessage } from "./toast";
 
 export const generateStrongPassword = () => {
   const length = 12;
@@ -44,4 +27,101 @@ export const generateStrongPassword = () => {
     .join("");
 
   return password;
+};
+
+export const invertHexColor = (hex: string) => {
+  hex = hex.replace(/^#/, "");
+
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
+
+  let brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  return brightness < 128 ? "#FFFFFF" : "#000000";
+};
+
+interface applePass {
+  _id: string;
+  accountId: string;
+  onChanged: (value: boolean) => void;
+  onSuccess: (file: any) => void;
+}
+
+export const createApplePass = async ({
+  _id,
+  accountId,
+  onChanged,
+  onSuccess,
+}: applePass) => {
+  try {
+    onChanged(true);
+
+    const url =
+      BASE_URL +
+      authRoutes.appleWalletPass +
+      "?_id=" +
+      _id +
+      "&accountId=" +
+      accountId;
+
+    const response = await fetch(url, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        Accept: "application/vnd.apple.pkpass",
+        "Content-Type": "application/vnd.apple.pkpass",
+      },
+    });
+
+    onChanged(false);
+
+    if (response) {
+      SuccessToastMessage({ message: "Apple Pass Created Success" });
+
+      const buffer = await response.arrayBuffer();
+
+      const file = createFileLink({
+        fileBuffer: buffer || new ArrayBuffer(0),
+      });
+
+      onSuccess(file);
+    }
+  } catch (error) {
+    onChanged(false);
+  }
+};
+
+interface pkPassFile {
+  fileBuffer: ArrayBuffer;
+}
+
+export const createFileLink = ({ fileBuffer }: pkPassFile) => {
+  try {
+    if (!fileBuffer) {
+      console.error("No pass buffer found.");
+      return;
+    }
+
+    const blob = new Blob([fileBuffer], {
+      type: "application/vnd.apple.pkpass",
+    });
+
+    const fileName = `${Date.now()}.pkpass`;
+    const file = new File([blob], fileName, {
+      type: "application/vnd.apple.pkpass",
+    });
+
+    const url = URL.createObjectURL(file);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = file.name;
+    document.body.appendChild(a);
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    return file;
+  } catch (error) {
+    return;
+  }
 };
