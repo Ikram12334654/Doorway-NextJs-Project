@@ -1,7 +1,7 @@
 import fs from "fs";
-import { IncomingMessage } from "http";
-import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
+import { IncomingForm, File } from "formidable";
+import { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {
   api: {
@@ -17,49 +17,45 @@ export default async function handler(
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const boundary = req.headers["content-type"]?.split("boundary=")[1];
-  if (!boundary)
-    return res
-      .status(400)
-      .json({ message: "No boundary in content-type header" });
-
-  const chunks: Buffer[] = [];
-  for await (const chunk of req as IncomingMessage) {
-    chunks.push(Buffer.from(chunk));
+  const uploadDir = path.join(process.cwd(), "public", "download");
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
   }
 
-  const buffer = Buffer.concat(chunks);
-  const parts = buffer.toString().split(`--${boundary}`);
+  const form = new IncomingForm({
+    uploadDir,
+    keepExtensions: true,
+    multiples: false,
+  });
 
-  const filePart = parts.find(
-    (part) =>
-      part.includes("Content-Disposition: form-data;") &&
-      part.includes("filename=")
-  );
+  form.parse(req, (err: any, fields: any, files: any) => {
+    if (err) {
+      return res.status(500).json({ message: "Form parse error" });
+    }
 
-  if (!filePart) {
-    return res.status(400).json({ message: "No file found in upload" });
-  }
+    const fileArray = files.file as File[];
+    const file = Array.isArray(fileArray) ? fileArray[0] : fileArray;
 
-  const filenameMatch = filePart.match(/filename="(.+?)"/);
-  const filename = filenameMatch ? filenameMatch[1] : "upload.pkpass";
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
 
-  const fileDataStart = filePart.indexOf("\r\n\r\n") + 4;
-  const fileDataEnd = filePart.lastIndexOf("\r\n");
-  const fileContent = filePart.substring(fileDataStart, fileDataEnd);
+    if (file.mimetype !== "application/vnd.apple.pkpass") {
+      return res.status(400).json({ message: "Only .pkpass files allowed" });
+    }
 
-  const fileBuffer = Buffer.from(fileContent, "binary");
+    const customName = fields.name[0] || "upload";
+    const finalFileName = `${customName}.pkpass`;
 
-  const downloadDir = path.join(process.cwd(), "public", "download");
-  if (!fs.existsSync(downloadDir)) {
-    fs.mkdirSync(downloadDir, { recursive: true });
-  }
+    console.log("finalFileName--->", finalFileName);
 
-  const savePath = path.join(downloadDir, filename);
-  fs.writeFileSync(savePath, fileBuffer);
+    const finalPath = path.join(uploadDir, finalFileName);
 
-  return res.status(200).json({
-    message: "File uploaded successfully",
-    path: `/download/${filename}`,
+    fs.renameSync(file.filepath, finalPath);
+
+    return res.status(200).json({
+      message: "File uploaded successfully",
+      path: `/download/${finalFileName}`,
+    });
   });
 }

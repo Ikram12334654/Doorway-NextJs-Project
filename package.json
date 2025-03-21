@@ -21,6 +21,7 @@
     "cropperjs": "^1.6.2",
     "crypto-js": "^4.2.0",
     "firebase": "^11.1.0",
+    "formidable": "^3.5.2",
     "formik": "^2.4.6",
     "framer-motion": "^12.5.0",
     "lodash.debounce": "^4.0.8",

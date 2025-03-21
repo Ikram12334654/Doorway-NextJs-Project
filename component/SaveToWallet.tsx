@@ -1,32 +1,34 @@
 import { RootState } from "@/redux/store";
 import { createApplePass } from "@/utils/security";
+import { ErrorToastMessage } from "@/utils/toast";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Button from "./button";
 import QRCode from "./QRCanvas";
-import { useRouter } from "next/router";
-import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
 
 function SaveToWallet() {
   const router = useRouter();
   const state = useSelector((state: RootState) => state);
   const [loading, setLoading] = useState(false);
-  const [token, setToken] = useState("");
 
   const uploadFileToDownload = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
+    try {
+      if (file.type !== "application/vnd.apple.pkpass") {
+        ErrorToastMessage({ message: "Only .pkpass files are allowed" });
+        return;
+      }
 
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("name", state.user._id);
 
-    const data = await res.json();
-    if (res.ok) {
-      SuccessToastMessage({ message: "Uploaded" });
-    } else {
-      ErrorToastMessage({ message: "Error Uploading" });
+      await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+    } catch (error) {
+      return;
     }
   };
 
@@ -40,13 +42,14 @@ function SaveToWallet() {
           setLoading(value);
         },
         onSuccess(file) {
+          console.log("call");
           uploadFileToDownload(file);
         },
       });
     }
   }, []);
 
-  const qrDownloadUrl = `http://192.168.2.194:3000/download/${token}`;
+  const qrDownloadUrl = `http://192.168.2.194:3000/download/${state?.user?._id}.pkpass`;
 
   return (
     <div className="flex flex-col items-center">

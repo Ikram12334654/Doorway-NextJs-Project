@@ -3,12 +3,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export interface PassState {
   googlePass?: string;
-  applePass?: ArrayBuffer;
+  applePass?: string;
 }
 
 const initialState: PassState = {
   googlePass: "",
-  applePass: undefined,
+  applePass: "",
 };
 
 export const PassSlice = createSlice({
