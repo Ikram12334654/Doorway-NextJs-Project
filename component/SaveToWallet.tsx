@@ -35,21 +35,18 @@ function SaveToWallet() {
   useEffect(() => {
     if (!state.pass.applePass) {
       createApplePass({
-        _id: state.user._id,
-        // accountId: state.account._id,
-        accountId: "dc6ef274-a88a-44bf-ac25-47515c65f568",
+        accessToken: state.auth.accessToken,
         onChanged(value) {
           setLoading(value);
         },
         onSuccess(file) {
-          console.log("call");
           uploadFileToDownload(file);
         },
       });
     }
   }, []);
 
-  const qrDownloadUrl = `http://192.168.2.194:3000/download/${state?.user?._id}.pkpass`;
+  const qrDownloadUrl = `http://192.168.0.119:3000/download/${state?.user?._id}.pkpass`;
 
   return (
     <div className="flex flex-col items-center">
@@ -80,7 +77,18 @@ function SaveToWallet() {
       <div className="w-[170px]">
         <Button
           onClick={() => {
-            router.push("/personal/home");
+            // router.push("/personal/home");
+
+            createApplePass({
+              accessToken: state.auth.accessToken,
+              onChanged(value) {
+                setLoading(value);
+              },
+              onSuccess(file) {
+                console.log("file---->", file);
+                uploadFileToDownload(file);
+              },
+            });
           }}
         />
       </div>

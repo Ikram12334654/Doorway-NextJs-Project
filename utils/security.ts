@@ -42,28 +42,20 @@ export const invertHexColor = (hex: string) => {
 };
 
 interface applePass {
-  _id: string;
-  accountId: string;
+  accessToken: string;
   onChanged: (value: boolean) => void;
   onSuccess: (file: any) => void;
 }
 
 export const createApplePass = async ({
-  _id,
-  accountId,
+  accessToken,
   onChanged,
   onSuccess,
 }: applePass) => {
   try {
     onChanged(true);
 
-    const url =
-      BASE_URL +
-      authRoutes.appleWalletPass +
-      "?_id=" +
-      _id +
-      "&accountId=" +
-      accountId;
+    const url = BASE_URL + authRoutes.appleWalletPass;
 
     const response = await fetch(url, {
       method: "GET",
@@ -71,6 +63,7 @@ export const createApplePass = async ({
       headers: {
         Accept: "application/vnd.apple.pkpass",
         "Content-Type": "application/vnd.apple.pkpass",
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
