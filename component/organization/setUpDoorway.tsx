@@ -1,13 +1,14 @@
 import { RootState } from "@/redux/store";
-import { authRoutes } from "../assets/api";
 import Api from "@/utils/service";
 import { ErrorToastMessage } from "@/utils/toast";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import enums from "../utils/enums";
-import Button from "./button";
-import PassPreview from "./passPreview";
-const SetUpDoorway: React.FC = () => {
+import { authRoutes } from "@/assets/api";
+import enums from "@/utils/enums";
+import UserPass from "../UserPass";
+import Button from "../button";
+
+const SetupDoorwayOrganization: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
@@ -120,7 +121,7 @@ const SetUpDoorway: React.FC = () => {
       <div className="flex flex-col min-md:flex-row gap-[44px] min-md:gap-[75px] items-center min-md:items-start justify-center p-5">
         <div className={`width:330px`}>
           <div className="block">
-            <PassPreview values={formData} />
+            <UserPass values={formData} />
           </div>
         </div>
         <div className="w-[330px] flex flex-col gap-[42px]">
@@ -181,4 +182,4 @@ const SetUpDoorway: React.FC = () => {
   );
 };
 
-export default SetUpDoorway;
+export default SetupDoorwayOrganization;

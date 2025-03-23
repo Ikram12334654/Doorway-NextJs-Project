@@ -1,5 +1,6 @@
 import LoadingSpinner from "@/assets/LoadingSpinner";
 import { clearAccount, saveAccount } from "@/redux/reducers/account";
+import { saveAuth } from "@/redux/reducers/auth";
 import { saveDesign } from "@/redux/reducers/design";
 import { clearUser, saveUser } from "@/redux/reducers/user";
 import Api from "@/utils/service";
@@ -20,7 +21,6 @@ import googleLogo from "../public/google.png";
 import linkedInlogo from "../public/linkedin.png";
 import env from "../utils/config";
 import { ErrorToastMessage, SuccessToastMessage } from "../utils/toast";
-import { saveAuth } from "@/redux/reducers/auth";
 
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
@@ -79,7 +79,7 @@ function Login() {
   const handleRoute = ({ response }: any) => {
     setLoading(false);
     SuccessToastMessage({ message: response?.message });
-    router.push("/register");
+    router.push("/signUp");
   };
 
   const loginWithGoogle = async () => {
@@ -195,7 +195,7 @@ function Login() {
 
                     <div className="flex flex-row justify-between aling-center color-themeColor mt-3  mb-3 text-sm text-themeColor">
                       <Link href="/forgotPassword">Forgot password ?</Link>
-                      <Link href="/register">Sign Up</Link>
+                      <Link href="/signUp">Sign Up</Link>
                     </div>
                   </div>
                 )}

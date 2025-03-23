@@ -1,6 +1,8 @@
+import { authRoutes } from "@/assets/api";
+import Button from "@/component/button";
+import { saveAuth } from "@/redux/reducers/auth";
 import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
-import { authRoutes } from "../assets/api";
 import { generateStrongPassword } from "@/utils/security";
 import Api from "@/utils/service";
 import { ErrorToastMessage } from "@/utils/toast";
@@ -8,10 +10,8 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
-import Button from "./button";
-import { saveAuth } from "@/redux/reducers/auth";
 
-const RegisterPage: React.FC = () => {
+const Registration: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -266,4 +266,4 @@ const RegisterPage: React.FC = () => {
   );
 };
 
-export default RegisterPage;
+export default Registration;

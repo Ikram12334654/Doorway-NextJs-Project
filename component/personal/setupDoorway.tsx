@@ -9,11 +9,11 @@ import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
-import { authRoutes } from "../assets/api";
-import Button from "./button";
-import UserPass from "./UserPass";
+import { authRoutes } from "../../assets/api";
+import Button from "../button";
+import UserPass from "../UserPass";
 
-const CustomizeYourDesign: React.FC = () => {
+const SetupDoorwayPersonal: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -548,4 +548,4 @@ const CustomizeYourDesign: React.FC = () => {
   );
 };
 
-export default CustomizeYourDesign;
+export default SetupDoorwayPersonal;

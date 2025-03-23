@@ -5,7 +5,7 @@ import { useState } from "react";
 import * as Yup from "yup";
 import AuthNavbar from "../assets/authNavbar";
 import { DoorwayImages } from "../assets/style";
-import Button from "./Component/button";
+import Button from "@/component/button";
 
 function ForgotPassword() {
   const [loading, setLoading] = useState(false);

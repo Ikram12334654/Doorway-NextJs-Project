@@ -96,7 +96,7 @@ const PrivateRoutesNavBar: React.FC = () => {
             {showOption && (
               <div className="absolute z-50 top-[45px] left-1/2 transform -translate-x-1/2 px-2 py-3 bg-white border border-gray-50 rounded-regular opacity-100 scale-95 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:scale-100">
                 <div className="w-fit min-md:w-[200px] flex flex-col gap-3 text-center">
-                  <Link href="/organization/account">
+                  <Link href="/account">
                     <div className="inline-flex justify-center gap-6 px-[16px] py-[8px] text-petite font-semibold bg-brand-50 text-brand-500 rounded-[6px] hover:bg-brand-100 cursor-pointer">
                       My Account
                     </div>

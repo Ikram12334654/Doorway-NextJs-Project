@@ -4,8 +4,8 @@ import { ErrorToastMessage } from "@/utils/toast";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import Button from "./button";
-import QRCode from "./QRCanvas";
+import Button from "../button";
+import QRCode from "../QRCanvas";
 
 function SaveToWallet() {
   const router = useRouter();

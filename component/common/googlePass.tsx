@@ -1,8 +1,8 @@
 import Image from "next/image";
 import React from "react";
 import QRImage from "../../public/QrImage.png";
-import DefaultLogo from "./defaultLogo";
-import QRCode from "./QRCanvas";
+import DefaultLogo from "../defaultLogo";
+import QRCode from "../QRCanvas";
 
 const GooglePass: React.FC<{ values?: any }> = ({ values }) => {
   return (

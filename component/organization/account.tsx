@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ChangePasswordModal from "../../component/Models/passwordModels";
 import TwoStepVarificationModel from "../../component/Models/TwoStepVarificationModel";
 
-const MyAccount: React.FC = () => {
+const OrganizationAccount: React.FC = () => {
   const router = useRouter();
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
@@ -315,4 +315,4 @@ const MyAccount: React.FC = () => {
   );
 };
 
-export default MyAccount;
+export default OrganizationAccount;
