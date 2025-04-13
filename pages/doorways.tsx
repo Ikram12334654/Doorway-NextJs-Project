@@ -1,10 +1,11 @@
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
+import AddNewDoorwayModel from "@/component/Models/AddNewDoorway";
+import DoorwayDetailsModel from "@/component/Models/DoorwayDetailsModel";
+import UserProfile from "@/component/Models/useSidebarModel";
 import WestIcon from "@mui/icons-material/West";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import AddNewDoorwayModel from "../Component/Models/AddNewDoorway";
-import DoorwayDetailsModel from "../Component/Models/DoorwayDetailsModel";
-import UserProfile from "../Component/Models/useSidebarModel";
+
 interface Doorway {
   id: number;
   name: string;
@@ -15,7 +16,7 @@ interface Doorway {
   design: string;
 }
 
-const DoorwayandUser: React.FC = () => {
+const Doorways: React.FC = () => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState("Users");
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,7 +24,7 @@ const DoorwayandUser: React.FC = () => {
   const [editDoorway, setEditDoorway] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showFilterDoorway, setShowFilterDoorway] = useState(false);
-  const [userId, setUserId] = useState(""); // Replace with dynamic userId
+  const [userId, setUserId] = useState("");
   const [doorways, setDoorways] = useState<Doorway[]>([
     {
       id: 1,
@@ -43,16 +44,13 @@ const DoorwayandUser: React.FC = () => {
       jobTitle: "Developer",
       design: "1",
     },
-  ]); // State to hold doorways data
+  ]);
   const [selectedList, setSelectedList] = useState<Doorway[]>([]);
-  console.log("THIS IS ", selectedList);
-  // Handle checkbox change
+
   const handleCheckboxChange = (doorway: Doorway, isChecked: boolean) => {
     if (isChecked) {
-      // Add to selected list
       setSelectedList((prev) => [...prev, doorway]);
     } else {
-      // Remove from selected list
       setSelectedList((prev) =>
         prev.filter((item) => item.name !== doorway.name)
       );
@@ -94,16 +92,12 @@ const DoorwayandUser: React.FC = () => {
 
   const handleSelectAllChange = (isChecked: boolean) => {
     if (isChecked) {
-      // Store full doorway objects
       setSelectedList(doorways);
     } else {
-      // Clear selection
       setSelectedList([]);
     }
   };
   const fetchDoorways = async (userId: string) => {
-    //const res = await fetch(`https://api.example.com/doorways?userId=${userId}`);
-    //const data = await res.json();
     const doorway: Doorway[] = [
       {
         id: 1,
@@ -160,14 +154,12 @@ const DoorwayandUser: React.FC = () => {
   const closeModalEditDoorway = () => {
     setEditDoorway(false);
   };
-  // Filter function for search
+
   const filteredUsers = users.filter((user) => {
-    // Filter by search term
     const searchMatch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Filter by selected filters
     const roleMatch = selectedFilters.role.length
       ? selectedFilters.role.includes(user.role)
       : true;
@@ -182,12 +174,10 @@ const DoorwayandUser: React.FC = () => {
   });
 
   const filteredDoorways = doorways.filter((doorway) => {
-    // Filter by search term
     const searchMatch = doorway.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
 
-    // Filter by selected filters
     const downloadStatus = selectedFiltersDoorway.downloadStatus.length
       ? selectedFiltersDoorway.downloadStatus.includes(doorway.status)
       : true;
@@ -213,21 +203,19 @@ const DoorwayandUser: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Navbar */}
       <div className="flex justify-center w-full m-auto">
         <PrivateRoutesNavBar />
       </div>
       <div className="px-8 min-md:px-[112px] mt-6 mb-16">
         <div className="flex flex-col gap-[32px]">
           <button
-            onClick={() => router.push("/organization/home")}
+            onClick={() => router.push("/home")}
             className="inline-flex items-center text-gray-500 hover:text-brand-500"
           >
             <WestIcon fontSize="small" />
             <span className="ml-1">Back</span>
           </button>
 
-          {/* Tabs */}
           <div className="flex flex-col min-md:flex-row justify-between items-center min-md:border-b-[1px] border-gray-100 w-full">
             <div className="flex gap-[32px]">
               {["Doorways", "Users"].map((tab) => (
@@ -246,7 +234,6 @@ const DoorwayandUser: React.FC = () => {
             </div>
             {selectedTab === "Doorways" && (
               <div className="min-md:p-0 pt-[32px] flex gap-[24px] min-md:items-center w-full justify-center min-md:w-fit">
-                {/* Hidden on small screens, visible on large screens */}
                 <div className="hidden min-lg:flex gap-[24px]">
                   <div
                     className="inline-flex items-center rounded-[6px] text-petite font-medium justify-center gap-[6px] text-gray-500 hover:text-brand-500 focus:text-brand-500 cursor-pointer"
@@ -284,8 +271,6 @@ const DoorwayandUser: React.FC = () => {
                     <span className="whitespace-nowrap">Bulk Manage</span>
                   </div>
                 </div>
-
-                {/* New Doorway Button */}
                 <div
                   className="inline-flex rounded-[6px] text-petite font-semibold justify-center gap-[6px] transition-all duration-500 ease-in-out px-[16px] py-[8px] focus:border-[2px] text-white bg-brand-500 hover:bg-brand-400 focus:border-brand-200 cursor-pointer"
                   role="button"
@@ -313,7 +298,6 @@ const DoorwayandUser: React.FC = () => {
               <div className="flex flex-col gap-[16px]">
                 <div className="min-md:flex items-center">
                   <div className="flex flex-col min-md:flex-row items-center gap-4">
-                    {/* Search Box */}
                     <div className="w-full min-md:w-[280px] flex items-center focus:border-themeColor  border rounded-md p-2 border-gray-300">
                       <input
                         type="text"
@@ -323,8 +307,6 @@ const DoorwayandUser: React.FC = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
                     </div>
-
-                    {/* Filter Button */}
                     <button
                       className="flex items-center gap-2 px-4 py-2 rounded-md bg-brand-500 text-white hover:bg-brand-600"
                       onClick={() => setShowFilterDoorway(!showFilterDoorway)}
@@ -413,9 +395,7 @@ const DoorwayandUser: React.FC = () => {
                           Filters Applied
                         </span>
                       </div>
-
                       <div className="flex gap-[24px] mb-[24px] min-xl:flex-row flex-col">
-                        {/* Download Status Filter */}
                         <div className="w-full border border-gray-100 rounded-[6px] p-[16px] flex flex-col gap-[12px]">
                           <div className="flex justify-between items-center">
                             <span className="text-petite font-regular text-gray-950">
@@ -667,10 +647,8 @@ const DoorwayandUser: React.FC = () => {
               </div>
             </div>
           )}
-          {/* Search & Filter */}
           {selectedTab === "Users" && (
             <div className="flex flex-col min-md:flex-row items-center gap-4">
-              {/* Search Box */}
               <div className="w-full min-md:w-[280px] flex items-center focus:border-themeColor  border rounded-md p-2 border-gray-300">
                 <input
                   type="text"
@@ -680,8 +658,6 @@ const DoorwayandUser: React.FC = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-
-              {/* Filter Button */}
               <button
                 className="flex items-center gap-2 px-4 py-2 rounded-md bg-brand-500 text-white hover:bg-brand-600"
                 onClick={() => setShowFilter(!showFilter)}
@@ -710,10 +686,7 @@ const DoorwayandUser: React.FC = () => {
                     Filters Applied
                   </span>
                 </div>
-
-                {/* Filter Sections */}
                 <div className="flex gap-[24px] mb-[24px] min-xl:flex-row flex-col">
-                  {/* Role Filter */}
                   <div className="w-full border border-gray-100 rounded-[6px] p-[16px] flex flex-col gap-[12px]">
                     <div className="flex justify-between items-center">
                       <span className="text-petite font-regular text-gray-950">
@@ -743,8 +716,6 @@ const DoorwayandUser: React.FC = () => {
                       ))}
                     </div>
                   </div>
-
-                  {/* 2FA Status Filter */}
                   <div className="w-full border border-gray-100 rounded-[6px] p-[16px] flex flex-col gap-[12px]">
                     <div className="flex justify-between items-center">
                       <span className="text-petite font-regular text-gray-950">
@@ -771,8 +742,6 @@ const DoorwayandUser: React.FC = () => {
                       </span>
                     </label>
                   </div>
-
-                  {/* Doorways Filter */}
                   <div className="w-full border border-gray-100 rounded-[6px] p-[16px] flex flex-col gap-[12px]">
                     <div className="flex justify-between items-center">
                       <span className="text-petite font-regular text-gray-950">
@@ -796,8 +765,6 @@ const DoorwayandUser: React.FC = () => {
                     </label>
                   </div>
                 </div>
-
-                {/* Actions */}
                 <div className="flex justify-end gap-[24px]">
                   <button
                     className="text-gray-500 hover:text-brand-500"
@@ -821,7 +788,6 @@ const DoorwayandUser: React.FC = () => {
               </div>
             </div>
           )}
-          {/* Table Section */}
           {selectedTab === "Users" && (
             <div className="overflow-y-auto overflow-x-auto">
               <table className="w-full">
@@ -909,4 +875,4 @@ const DoorwayandUser: React.FC = () => {
   );
 };
 
-export default DoorwayandUser;
+export default Doorways;

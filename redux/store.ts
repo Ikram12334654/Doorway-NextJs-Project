@@ -3,9 +3,10 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import accountSlice from "./reducers/account";
 import designSlice from "./reducers/design";
-import passSlice from "./reducers/pass";
 import authSlice from "./reducers/auth";
 import userSlice from "./reducers/user";
+import subscriptionSlice from "./reducers/subscription";
+import permissionSlice from "./reducers/permission";
 
 const persistConfig = {
   key: "root",
@@ -15,9 +16,10 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authSlice,
   user: userSlice,
-  pass: passSlice,
   account: accountSlice,
   design: designSlice,
+  permission: permissionSlice,
+  subscription: subscriptionSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

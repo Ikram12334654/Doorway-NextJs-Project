@@ -1,45 +1,37 @@
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
+import SearchIcon from "@mui/icons-material/Search";
+import WestIcon from "@mui/icons-material/West";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import WestIcon from "@mui/icons-material/West";
-import SearchIcon from "@mui/icons-material/Search";
-import EditDesignTemplate from "./editDesign";
 
-const DesignTemplate: React.FC = () => {
+const OrganizationDesign: React.FC = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDesign, setSelectedDesign] = useState("Default");
 
-  // Design Templates Data
   const Designs = [
     { Template: "Default" },
     { Template: "Special" },
     { Template: "Premium" },
   ];
 
-  // Filter designs based on search input
   const filteredDesigns = Designs.filter((design) =>
     design.Template.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="flex flex-col w-full">
-      {/* Navbar */}
       <div className="flex justify-center w-full m-auto">
         <PrivateRoutesNavBar />
       </div>
-
       <div className="flex flex-col items-start gap-4 mb-6 px-8 min-md:px-[112px] mt-6 mb-16">
-        {/* Back Button */}
         <button
-          onClick={() => router.push("/organization/home")}
+          onClick={() => router.push("/home")}
           className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
         >
           <WestIcon fontSize="small" />
           <span className="ml-1">Back</span>
         </button>
-
-        {/* Header Section */}
         <div className="flex pb-6 border-b border-gray-200 justify-between items-center w-full">
           <div className="flex gap-3 items-center">
             <span className="text-lg font-semibold text-gray-950">
@@ -53,8 +45,6 @@ const DesignTemplate: React.FC = () => {
             New Design Template
           </button>
         </div>
-
-        {/* Search Bar */}
         <div className="w-full min-md:w-72 mt-4">
           <div className="flex items-center border rounded-md border-gray-200 bg-white focus-within:border-brand p-2">
             <SearchIcon fontSize="small" className="text-gray-500" />
@@ -67,8 +57,6 @@ const DesignTemplate: React.FC = () => {
             />
           </div>
         </div>
-
-        {/* Table */}
         <div className="overflow-auto mt-4 w-full">
           <table className="w-full border-collapse">
             <thead>
@@ -87,12 +75,9 @@ const DesignTemplate: React.FC = () => {
                     className="h-11 cursor-pointer hover:bg-brand-50 group"
                     onClick={() => setSelectedDesign(design.Template)}
                   >
-                    {/* Template Name */}
                     <td className="py-2 px-3 text-gray-900">
                       {design.Template}
                     </td>
-
-                    {/* Default Icon */}
                     <td className="py-2 px-3">
                       {selectedDesign === design.Template && (
                         <svg
@@ -107,14 +92,12 @@ const DesignTemplate: React.FC = () => {
                         </svg>
                       )}
                     </td>
-
-                    {/* Quick Actions */}
                     <td className="py-2 px-3">
                       <span className="text-sm text-gray-500 flex gap-3 invisible group-hover:visible">
                         <button
                           className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
                           onClick={() =>
-                            router.push("/organization/EditDesignTemplate")
+                            router.push("/organization/EditOrganizationDesign")
                           }
                         >
                           Edit
@@ -138,4 +121,4 @@ const DesignTemplate: React.FC = () => {
   );
 };
 
-export default DesignTemplate;
+export default OrganizationDesign;

@@ -36,7 +36,7 @@ export const vcfText = ({ data }: VFCProps): string => {
   };
 
   const formatURLs = (): string => {
-    return data?.URLS.map(
+    return data?.URLS?.map(
       (e: EProps) => `X-SOCIALPROFILE;TYPE=${e?.type}:${e?.value}`
     ).join("\n");
   };

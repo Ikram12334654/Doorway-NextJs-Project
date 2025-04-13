@@ -1,22 +1,30 @@
+import { authRoutes } from "@/assets/api";
+import LoadingSpinner from "@/assets/LoadingSpinner";
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
+import { saveAccount } from "@/redux/reducers/account";
+import { RootState } from "@/redux/store";
+import enums from "@/utils/enums";
+import Api from "@/utils/service";
+import { ErrorToastMessage } from "@/utils/toast";
+import WestIcon from "@mui/icons-material/West";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import WestIcon from "@mui/icons-material/West";
-import UserPermissions from "../Component/Models/permissioin";
-import UrlEditor from "../Component/Models/urlEdittor";
-import DoorwayPanel from "../Component/Models/multipleDoorways";
-
-interface SettingCard {
-  id: number;
-  title: string;
-  actionType: "edit" | "toggle";
-  icon: JSX.Element;
-}
+import { useDispatch, useSelector } from "react-redux";
+import CompanyURL from "../Models/companyURL";
+import DoorwayPanel from "../Models/multipleDoorways";
+import PermissionModel from "../Models/permissionModel";
 
 const OrganizationSetting: React.FC = () => {
+  const state = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
   const router = useRouter();
-  const [autoResendInvites, setAutoResendInvites] = useState(false);
-  const settingsCards: SettingCard[] = [
+  const [loading, setLoading] = useState(false);
+  const [modal, setModal] = useState<{ id: number | null; isModal: boolean }>({
+    id: null,
+    isModal: false,
+  });
+
+  const settingsCards = [
     {
       id: 1,
       title: "User Permissions",
@@ -86,14 +94,46 @@ const OrganizationSetting: React.FC = () => {
       ),
     },
   ];
+
+  interface ApiResponse<T = any> {
+    data?: T;
+    [key: string]: any;
+  }
+
+  const handleSubmit = async (status: boolean) => {
+    try {
+      setLoading(true);
+      const authToken = state.auth.accessToken;
+
+      const { response, error }: ApiResponse = await Api(
+        "/" +
+          enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
+          authRoutes.updateAutoResendInvites,
+        "put",
+        {
+          payload: {
+            status: status,
+          },
+        },
+        authToken
+      );
+
+      setLoading(false);
+
+      if (response) {
+        dispatch(saveAccount({ autoResendInvites: status }));
+      } else if (error) {
+        ErrorToastMessage({ message: error?.message });
+      }
+    } catch (e) {
+      setLoading(false);
+    }
+  };
+
   const OrganizationData = [
     { name: "Sami Ullah", role: "Admin", email: "sami_ullah71@outlook.com" },
     { name: "Ayesha Khan", role: "Admin", email: "ayesha.khan@example.com" },
   ];
-  const [modal, setModal] = useState<{ id: number | null; isModal: boolean }>({
-    id: null,
-    isModal: false,
-  });
 
   const openModal = (modalId: number) => {
     setModal({ id: modalId, isModal: true });
@@ -105,15 +145,12 @@ const OrganizationSetting: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Navbar */}
       <div className="flex justify-center w-full m-auto">
         <PrivateRoutesNavBar />
       </div>
-
       <div className="px-8 min-md:px-[112px] mt-6 mb-16">
-        {/* Back Button */}
         <button
-          onClick={() => router.push("/organization/home")}
+          onClick={() => router.push("/home")}
           className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
         >
           <WestIcon fontSize="small" />
@@ -121,10 +158,9 @@ const OrganizationSetting: React.FC = () => {
         </button>
         <div className="flex flex-col min-md:flex-row justify-between items-start min-md:border-b-[1px] border-gray-200 w-full">
           <div className="text-lg font-semibold pb-[24px]">
-            Organisation Settings
+            Organization Settings
           </div>
         </div>
-        {/* Header Section */}
         <div className="flex mt-[80px] flex-col gap-[70px]">
           <div className="flex flex-col gap-6">
             <div className="flex pb-6 border-b border-gray-100">
@@ -150,7 +186,6 @@ const OrganizationSetting: React.FC = () => {
                 </button>
               </div>
             </div>
-
             <div className="flex flex-col gap-4">
               <div className="overflow-auto">
                 <table className="w-full">
@@ -211,7 +246,6 @@ const OrganizationSetting: React.FC = () => {
             </div>
           </div>
           <div className="flex flex-col gap-6">
-            {/* Header */}
             <div className="flex pb-[24px] border-b border-gray-100">
               <div className="flex-grow flex flex-col gap-[12px]">
                 <div className="flex gap-[12px]">
@@ -226,64 +260,66 @@ const OrganizationSetting: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex items-center">{/* Empty on purpose */}</div>
             </div>
-
-            {/* Cards Grid */}
-            <div className="flex flex-col min-md:flex-row min-md:flex-wrap gap-[20px]">
-              {settingsCards.map((card) => (
-                <div
-                  key={card.id}
-                  className="rounded-lg p-6 flex flex-col"
-                  style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0px 0px 12px" }}
-                >
-                  <div className="card-content flex">
-                    <div className="flex flex-row w-full min-md:w-[350px] justify-between">
-                      <div className="flex gap-3">
-                        <div className="rounded-md bg-brand-50 text-brand-700 p-2">
-                          {card.icon}
-                        </div>
-                        <div className="flex items-center text-petite font-semibold">
-                          {card.title}
-                        </div>
-                      </div>
-                      <div className="flex items-center text-gray text-petite font-medium cursor-pointer">
-                        {card.actionType === "edit" ? (
-                          <div
-                            className="flex items-center"
-                            role="button"
-                            onClick={() => openModal(card.id)}
-                          >
-                            Edit
+            <div className="flex flex-col min-md:flex-row min-md:flex-wrap justify-center items-center gap-[20px]">
+              {settingsCards.map((card, index) =>
+                loading && index === 3 ? (
+                  <LoadingSpinner />
+                ) : (
+                  <div
+                    key={card.id}
+                    className="rounded-lg p-6 flex flex-col"
+                    style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0px 0px 12px" }}
+                  >
+                    <div className="card-content flex">
+                      <div className="flex flex-row w-full min-md:w-[350px] justify-between">
+                        <div className="flex gap-3">
+                          <div className="rounded-md bg-brand-50 text-brand-700 p-2">
+                            {card.icon}
                           </div>
-                        ) : (
-                          // Render a toggle switch for "Automatically Resend Invites"
-                          <label className="relative inline-flex items-center cursor-pointer outline-none border-none">
-                            <input
-                              type="checkbox"
-                              checked={autoResendInvites}
-                              onChange={() =>
-                                setAutoResendInvites(!autoResendInvites)
-                              }
-                              className="sr-only peer"
-                            />
-                            <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4    peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white  after:border after:rounded-full after:h-5 after:w-5 after:transition-all  peer-checked:bg-brand-500 focus:outline-none focus:border-none" />
-                          </label>
-                        )}
+                          <div className="flex items-center text-petite font-semibold">
+                            {card.title}
+                          </div>
+                        </div>
+                        <div className="flex items-center text-gray text-petite font-medium cursor-pointer">
+                          {card.actionType === "edit" ? (
+                            <div
+                              className="flex items-center"
+                              role="button"
+                              onClick={() => openModal(card.id)}
+                            >
+                              Edit
+                            </div>
+                          ) : (
+                            <label className="relative inline-flex items-center cursor-pointer outline-none border-none">
+                              <input
+                                type="checkbox"
+                                checked={state.account.autoResendInvites}
+                                onChange={(e) => {
+                                  handleSubmit(
+                                    !state.account.autoResendInvites
+                                  );
+                                }}
+                                className="sr-only peer"
+                              />
+                              <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4    peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white  after:border after:rounded-full after:h-5 after:w-5 after:transition-all  peer-checked:bg-brand-500 focus:outline-none focus:border-none" />
+                            </label>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
         </div>
       </div>
       {modal.id === 1 && modal.isModal === true && (
-        <UserPermissions onClose={closeModal} />
+        <PermissionModel onClose={closeModal} />
       )}
       {modal.id === 2 && modal.isModal === true && (
-        <UrlEditor onClose={closeModal} />
+        <CompanyURL onClose={closeModal} />
       )}
       {modal.id === 3 && modal.isModal === true && (
         <DoorwayPanel onClose={closeModal} />

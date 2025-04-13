@@ -10,9 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 function SignUp() {
   const state = useSelector((state: RootState) => state);
-
   const dispatch = useDispatch();
-
   const [type, setType] = useState(state.account.type || "");
 
   return (

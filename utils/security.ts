@@ -1,6 +1,5 @@
 import { authRoutes } from "@/assets/api";
 import { BASE_URL } from "./service";
-import { SuccessToastMessage } from "./toast";
 
 export const generateStrongPassword = () => {
   const length = 12;
@@ -27,6 +26,10 @@ export const generateStrongPassword = () => {
     .join("");
 
   return password;
+};
+
+export const generateApplePassUrl = (_id: string) => {
+  return `http://192.168.2.190:3000/download/${_id}.pkpass`;
 };
 
 export const invertHexColor = (hex: string) => {
@@ -70,8 +73,6 @@ export const createApplePass = async ({
     onChanged(false);
 
     if (response) {
-      SuccessToastMessage({ message: "Apple Pass Created Success" });
-
       const buffer = await response.arrayBuffer();
 
       const file = createFileLink({
@@ -117,4 +118,23 @@ export const createFileLink = ({ fileBuffer }: pkPassFile) => {
   } catch (error) {
     return;
   }
+};
+
+export const base64ToBlob = (base64Data: string, contentType: string): Blob => {
+  const byteCharacters = atob(base64Data.split(",")[1]);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+    const slice = byteCharacters.slice(offset, offset + 512);
+    const byteNumbers = new Array(slice.length);
+
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: contentType });
 };

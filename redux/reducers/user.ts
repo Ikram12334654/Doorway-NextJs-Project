@@ -10,8 +10,9 @@ interface UserState {
   active: boolean;
   role: number;
   prefix: string;
-  suffix: string;
+  sufix: string;
   profileImage: string;
+  doorwayName: string;
   jobTitle: string;
   passType: string;
   passStatus: string;
@@ -20,13 +21,12 @@ interface UserState {
   email: string;
   steps: number;
   aboutUs: string;
+  googleWalletUrl: string;
   emails: ContactInfo[];
   phones: ContactInfo[];
-  URLs: ContactInfo[];
+  urls: ContactInfo[];
   addresses: ContactInfo[];
   country: string;
-  accountType?: string;
-  organizationName?: string;
 }
 
 const initialState: UserState = {
@@ -34,8 +34,9 @@ const initialState: UserState = {
   active: true,
   role: 0,
   prefix: "",
-  suffix: "",
+  sufix: "",
   profileImage: "",
+  doorwayName: "",
   jobTitle: "",
   passType: "",
   passStatus: "",
@@ -44,9 +45,10 @@ const initialState: UserState = {
   email: "",
   steps: 0,
   aboutUs: "",
+  googleWalletUrl: "",
   emails: [],
   phones: [],
-  URLs: [],
+  urls: [],
   addresses: [],
   country: "",
 };

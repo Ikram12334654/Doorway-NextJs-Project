@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import Registration from "../common/registration";
 import EditDesignOrganization from "./EditDesign";
 import SelectRequirements from "./SelectRequirements";
-import SetupDoorwayOrganization from "./setupDoorway";
+import SetupDoorwayOrganization from "./setUpDoorway";
 
 const steps = [
   {

@@ -1,12 +1,11 @@
+import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
-import enums from "@/utils/enums";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CircularProgressWithLabel } from "./CircularProgress";
 import { DoorwayImages } from "./style";
-import { saveUser } from "@/redux/reducers/user";
 
 const PrivateRoutesNavBar: React.FC = () => {
   const [showOption, setShowOption] = useState(false);
@@ -38,7 +37,7 @@ const PrivateRoutesNavBar: React.FC = () => {
   return (
     <div className="w-full border-b border-b-gray-100 px-8 min-md:px-[112px] flex h-[70px] items-center">
       <div>
-        <Link href="/organization/home">
+        <Link href="/home">
           <Image
             src={DoorwayImages?.logo || "/default-logo.png"}
             alt="Logo"
@@ -50,19 +49,17 @@ const PrivateRoutesNavBar: React.FC = () => {
       <div className="flex-grow flex items-center justify-end">
         <div className="flex gap-8 items-center">
           <div className="hidden min-md:flex items-center gap-8">
-            {state.account.type !== enums.ACCOUNT_TYPE.PERSONAL && (
-              <div className="flex gap-4 items-center">
-                <div className="flex flex-col whitespace-nowrap">
-                  <span className="text-gray-500 text-tiny font-regular hover:underline cursor-pointer">
-                    <Link href="/organization/home">Doorways</Link>
-                  </span>
-                  <span className="font-semibold text-tiny text-gray-950">
-                    Using 20 of 100
-                  </span>
-                </div>
-                <CircularProgressWithLabel value={50} />
+            <div className="flex gap-4 items-center">
+              <div className="flex flex-col whitespace-nowrap">
+                <span className="text-gray-500 text-tiny font-regular hover:underline cursor-pointer">
+                  <Link href="/doorways">Doorways</Link>
+                </span>
+                <span className="font-semibold text-tiny text-gray-950">
+                  Using 30 of 100
+                </span>
               </div>
-            )}
+              <CircularProgressWithLabel value={30} />
+            </div>
             <div className="h-8 border-r border-r-gray-100"></div>
           </div>
 

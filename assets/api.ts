@@ -7,6 +7,13 @@ export const authRoutes = {
   updateDesign: "/updateDesign",
   appleWalletPass: "/pass/applePass",
   googleWalletPass: "/pass/googlePass",
+  updatePassword: "/updatePassword",
+  updateDeviceType: "/updateDeviceType",
+  updatePersonal: "/updatePersonal",
+  updateURLs: "/updateURLs",
+  updateMultipleDoorways: "/updateMultipleDoorways",
+  updateAutoResendInvites: "/updateAutoResendInvites",
+  updateUserPermissions: "/updateUserPermissions",
 };
 
 export default { authRoutes };

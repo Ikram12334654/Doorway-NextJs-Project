@@ -1,7 +1,11 @@
+import { authRoutes } from "@/assets/api";
+import LoadingSpinner from "@/assets/LoadingSpinner";
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
 import { saveUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
+import Api from "@/utils/service";
+import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import WestIcon from "@mui/icons-material/West";
 import Option from "@mui/joy/Option";
@@ -11,12 +15,8 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ChangePasswordModal from "../../component/Models/passwordModels";
 import TwoStepVarificationModel from "../../component/Models/TwoStepVarificationModel";
-import Api from "@/utils/service";
-import { authRoutes } from "@/assets/api";
-import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
-import LoadingSpinner from "@/assets/LoadingSpinner";
 
-const OrganizationAccount: React.FC = () => {
+const PersonalAccount: React.FC = () => {
   const router = useRouter();
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
@@ -362,4 +362,4 @@ const OrganizationAccount: React.FC = () => {
   );
 };
 
-export default OrganizationAccount;
+export default PersonalAccount;

@@ -13,7 +13,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UserPass from "../../component/UserPass";
 
-const EditDesignTemplate: React.FC = () => {
+const PersonalDesign: React.FC = () => {
   const router = useRouter();
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
@@ -137,4 +137,4 @@ const EditDesignTemplate: React.FC = () => {
   );
 };
 
-export default EditDesignTemplate;
+export default PersonalDesign;

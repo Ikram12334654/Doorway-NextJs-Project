@@ -7,7 +7,7 @@ import { Formik, Field, Form, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/router";
-// Define form values type
+
 interface FormValues {
   newPassword: string;
   confirmPassword: string;
@@ -34,7 +34,7 @@ function NewPassword() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  // Handle form submission
+
   const handleSubmit = async (
     values: FormValues,
     { setSubmitting }: FormikHelpers<FormValues>
@@ -45,8 +45,8 @@ function NewPassword() {
       console.log("Password Updated:", values);
       setLoading(false);
       setSubmitting(false);
-      router.push("/login"); // Navigate to the login page
-    }, 1000); // Simulate 1-second delay
+      router.push("/login");
+    }, 1000);
   };
 
   return (

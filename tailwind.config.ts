@@ -27,13 +27,12 @@ export default {
       colors: {
         themeColor: "#1ed761",
         brand: {
-          // This sets the default when you use 'bg-themeColor'
           50: "#e6fff2",
           100: "#ccffe6",
           200: "#99ffcc",
           300: "#66ffb3",
           400: "#33ff99",
-          500: "#1ed761", // Base color and default
+          500: "#1ed761",
           600: "#1ab255",
           700: "#137a3d",
           800: "#0d5228",

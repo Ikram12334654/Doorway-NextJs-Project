@@ -161,7 +161,7 @@ const SetupDoorwayPersonal: React.FC = () => {
             creator: state.user._id,
             type: enums.ACCOUNT_TYPE.PERSONAL,
             organizationName: values.organization,
-            organizationURL: values.orgUrl,
+            organizationURL: [{ type: "work", value: values.orgUrl }],
           })
         );
 
@@ -190,7 +190,7 @@ const SetupDoorwayPersonal: React.FC = () => {
               })),
             }),
             ...(filteredUrls.length && {
-              URLs: filteredUrls.map((e: any) => ({
+              urls: filteredUrls.map((e: any) => ({
                 type: e?.type,
                 value: e?.value,
               })),

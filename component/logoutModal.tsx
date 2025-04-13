@@ -1,5 +1,8 @@
-import { logout } from "@/redux/reducers/pass";
+import { clearAccount } from "@/redux/reducers/account";
+import { logout } from "@/redux/reducers/auth";
 import { clearDesign } from "@/redux/reducers/design";
+import { clearPermission } from "@/redux/reducers/permission";
+import { clearSubscription } from "@/redux/reducers/subscription";
 import { clearUser } from "@/redux/reducers/user";
 import { RootState } from "@/redux/store";
 import { SuccessToastMessage } from "@/utils/toast";
@@ -22,6 +25,9 @@ const Logout: React.FC = () => {
     });
     dispatch(clearUser());
     dispatch(clearDesign());
+    dispatch(clearAccount());
+    dispatch(clearSubscription());
+    dispatch(clearPermission());
     dispatch(logout());
     router.push("/login");
   };

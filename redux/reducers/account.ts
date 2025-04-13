@@ -1,19 +1,27 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+interface ContactInfo {
+  type: string;
+  value: string;
+}
 interface AccountState {
   _id: string;
   creator: string;
   type: string;
+  maxDoorway: number;
   organizationName: string;
-  organizationURL: string;
+  organizationURL: ContactInfo[];
+  autoResendInvites: boolean;
 }
 
 const initialState: AccountState = {
   _id: "",
   creator: "",
   type: "",
+  maxDoorway: 0,
   organizationName: "",
-  organizationURL: "",
+  organizationURL: [],
+  autoResendInvites: false,
 };
 
 const accountSlice = createSlice({

@@ -1,9 +1,11 @@
 import { RootState } from "@/redux/store";
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import PaymentModel from "../Models/paymentModel";
 
 const SelectRequirements: React.FC = () => {
   const state = useSelector((state: RootState) => state);
+  const [model, setModel] = useState(false);
 
   return (
     <div className="flex flex-col items-center p-10">
@@ -11,7 +13,6 @@ const SelectRequirements: React.FC = () => {
         <div className="text-[25px] min-md:text-[50px]  font-bold">
           Select your requirements
         </div>
-
         <div className="text-[16px] min-md:text-[25px] font-normal mb-[38px] min-md:mb-[29px]">
           Get started instantly in Core or Business Tiers, or speak to the
           Doorway team about a custom enterprise plan. In any case,
@@ -72,7 +73,9 @@ const SelectRequirements: React.FC = () => {
       <div className="flex flex-col min-md:flex-row gap-[20px] items-center min-md:items-stretch min-md:justify-center">
         <div
           className="group border  border-[#BEBEBE] border-opacity-40 hover:border-themeColor hover:cursor-pointer w-[269px] flex flex-col justify-start rounded-[10px] py-[24px] relative min-md:min-h-[546px] transition-all"
-          onClick={() => {}}
+          onClick={() => {
+            setModel(true);
+          }}
         >
           <div className="flex flex-col items-center">
             <div className="text-[#061C33] text-center font-inter text-[30px] font-bold leading-snug">
@@ -196,6 +199,13 @@ const SelectRequirements: React.FC = () => {
           </div>
         </div>
       </div>
+      {model && (
+        <PaymentModel
+          onClose={() => {
+            setModel(false);
+          }}
+        />
+      )}
     </div>
   );
 };

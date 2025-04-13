@@ -5,4 +5,5 @@ export const DoorwayImages = {
 };
 export const color = {
   themeColor: "#1ed761",
+  redColor: "#FF0000B3",
 };

@@ -47,8 +47,6 @@ export default async function handler(
     const customName = fields.name[0] || "upload";
     const finalFileName = `${customName}.pkpass`;
 
-    console.log("finalFileName--->", finalFileName);
-
     const finalPath = path.join(uploadDir, finalFileName);
 
     fs.renameSync(file.filepath, finalPath);

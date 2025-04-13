@@ -30,6 +30,20 @@ const ROLES = {
   4: "superAdmin",
 };
 
+const MAXDOORWAYS = [1, 2, 3, 4, 5];
+
+const PERMISSIONS = [
+  { id: "prefix", label: "Prefix" },
+  { id: "sufix", label: "Suffix" },
+  { id: "firstName", label: "First Name" },
+  { id: "lastName", label: "Last Name" },
+  { id: "organizationName", label: "Company" },
+  { id: "jobTitle", label: "Job Title" },
+  { id: "phones", label: "Phone Number" },
+  { id: "emails", label: "Emails" },
+  { id: "urls", label: "URLs" },
+];
+
 export default {
   Environment,
   PASS_VIEW,
@@ -37,4 +51,6 @@ export default {
   ROLES,
   LANGUAGES,
   DEVICES,
+  MAXDOORWAYS,
+  PERMISSIONS,
 };

@@ -1,6 +1,7 @@
 import Logout from "@/component/logoutModal";
 import { saveAccount } from "@/redux/reducers/account";
 import { saveDesign } from "@/redux/reducers/design";
+import { savePermission } from "@/redux/reducers/permission";
 import { saveUser } from "@/redux/reducers/user";
 import { persistor, RootState, store } from "@/redux/store";
 import "@/styles/globals.css";
@@ -25,6 +26,10 @@ const AppInner = ({ Component, pageProps }: AppProps) => {
 
     SOCKET.on(`design-${state.account._id}`, (e) => {
       dispatch(saveDesign(e?.design));
+    });
+
+    SOCKET.on(`permission-${state.account._id}`, (e) => {
+      dispatch(savePermission(e?.permission));
     });
 
     SOCKET.on(`subscription-${state.account._id}`, (e) => {});

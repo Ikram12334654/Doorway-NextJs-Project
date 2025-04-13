@@ -1,6 +1,7 @@
 import React from "react";
-import DefaultLogo from "./defaultLogo";
-import QRCode from "./QRCanvas";
+import DefaultLogo from "../defaultLogo";
+import QRCode from "../QRCanvas";
+import { invertHexColor } from "@/utils/security";
 
 const ApplePass: React.FC<{ values?: any }> = ({ values }) => {
   return (
@@ -21,7 +22,7 @@ const ApplePass: React.FC<{ values?: any }> = ({ values }) => {
                   className="w-[40px] h-auto m-auto"
                 />
               ) : (
-                <DefaultLogo />
+                <DefaultLogo color={invertHexColor(values?.backgroundColor)} />
               )}
             </span>
           </div>
@@ -35,7 +36,13 @@ const ApplePass: React.FC<{ values?: any }> = ({ values }) => {
                     className="max-w-full h-auto m-auto"
                   />
                 ) : (
-                  "Doorway"
+                  <span
+                    style={{
+                      color: invertHexColor(values?.backgroundColor),
+                    }}
+                  >
+                    {values?.organizationName}
+                  </span>
                 )}
               </div>
             </span>
@@ -44,19 +51,29 @@ const ApplePass: React.FC<{ values?: any }> = ({ values }) => {
             <div className="px-6">
               <p
                 className="text-mde uppercase"
-                style={{ color: "rgb(255, 255, 255)" }}
+                style={{
+                  color: invertHexColor(values?.backgroundColor),
+                }}
               >
                 {values?.jobTitle}
               </p>
               <p
                 className="text-mde font-extralight"
-                style={{ color: "rgb(255, 255, 255)" }}
+                style={{
+                  color: invertHexColor(values?.backgroundColor),
+                }}
               >
-                {values?.firstName + " " + values?.lastName || ""}
+                {`${values?.prefix}${values?.prefix && "."}` +
+                  " " +
+                  values?.firstName +
+                  " " +
+                  values?.lastName +
+                  " " +
+                  values?.suffix || ""}
               </p>
             </div>
           </div>
-          <div className="bg-white mx-auto rounded-md card-qrcode max-w-[138px] py-2 px-2 flex justify-center items-center">
+          <div className="mx-auto rounded-md card-qrcode max-w-[138px] py-2 px-2 flex justify-center items-center">
             <QRCode />
           </div>
         </div>

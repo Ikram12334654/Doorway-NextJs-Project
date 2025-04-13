@@ -21,6 +21,7 @@ import googleLogo from "../public/google.png";
 import linkedInlogo from "../public/linkedin.png";
 import env from "../utils/config";
 import { ErrorToastMessage, SuccessToastMessage } from "../utils/toast";
+import { savePermission } from "@/redux/reducers/permission";
 
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
@@ -297,6 +298,7 @@ function Login() {
                   onClick: () => {},
                 }}
               />
+
               <SocialLoginButton
                 loading={socialLoginState.linkedIn}
                 values={{
