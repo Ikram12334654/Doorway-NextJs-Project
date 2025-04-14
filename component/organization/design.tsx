@@ -1,22 +1,29 @@
+import LoadingSpinner from "@/assets/LoadingSpinner";
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
+import { RootState } from "@/redux/store";
 import SearchIcon from "@mui/icons-material/Search";
 import WestIcon from "@mui/icons-material/West";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 const OrganizationDesign: React.FC = () => {
+  const state = useSelector((state: RootState) => state);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDesign, setSelectedDesign] = useState("Default");
+  const [loading, setLoading] = useState(false);
+  const [designs, setDesigns] = useState([
+    {
+      _id: state.design._id,
+      name: "Default Design",
+      backgroundColor: "",
+      logoImage: "",
+      stripImage: "",
+    },
+  ]);
 
-  const Designs = [
-    { Template: "Default" },
-    { Template: "Special" },
-    { Template: "Premium" },
-  ];
-
-  const filteredDesigns = Designs.filter((design) =>
-    design.Template.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredDesigns = designs.filter((design: any) =>
+    design.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -38,7 +45,7 @@ const OrganizationDesign: React.FC = () => {
               Design Templates
             </span>
             <span className="px-2 py-1 bg-gray-50 border-gray-100 text-gray-500 border text-sm font-medium rounded">
-              {Designs.length} Design Templates Created
+              {designs.length}/5 Design Templates Created
             </span>
           </div>
           <button className="px-4 py-2 text-white bg-brand-100 hover:bg-brand-500 rounded-md text-sm font-semibold">
@@ -66,20 +73,27 @@ const OrganizationDesign: React.FC = () => {
                 <th className="py-3 px-3">Quick Actions</th>
               </tr>
             </thead>
-
             <tbody>
-              {filteredDesigns.length > 0 ? (
-                filteredDesigns.map((design, index) => (
+              {loading ? (
+                <>
+                  <tr>
+                    <td colSpan={4}>
+                      <div className="py-4 w-full flex justify-center">
+                        <LoadingSpinner />
+                      </div>
+                    </td>
+                  </tr>
+                </>
+              ) : filteredDesigns.length > 0 ? (
+                filteredDesigns.map((design, index): any => (
                   <tr
                     key={index}
                     className="h-11 cursor-pointer hover:bg-brand-50 group"
-                    onClick={() => setSelectedDesign(design.Template)}
+                    onClick={() => {}}
                   >
-                    <td className="py-2 px-3 text-gray-900">
-                      {design.Template}
-                    </td>
+                    <td className="py-2 px-3 text-gray-900">{design.name}</td>
                     <td className="py-2 px-3">
-                      {selectedDesign === design.Template && (
+                      {design._id === state.design._id && (
                         <svg
                           viewBox="0 0 24 24"
                           xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +111,16 @@ const OrganizationDesign: React.FC = () => {
                         <button
                           className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
                           onClick={() =>
-                            router.push("/organization/EditOrganizationDesign")
+                            router.push({
+                              pathname: "/editDesign",
+                              query: {
+                                _id: design?._id,
+                                name: design?.name,
+                                color: design?.backgroundColor,
+                                logoUrl: design?.logoImage,
+                                stripUrl: design?.stripImage,
+                              },
+                            })
                           }
                         >
                           Edit

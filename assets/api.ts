@@ -14,6 +14,7 @@ export const authRoutes = {
   updateMultipleDoorways: "/updateMultipleDoorways",
   updateAutoResendInvites: "/updateAutoResendInvites",
   updateUserPermissions: "/updateUserPermissions",
+  getAccountAdmins: "/getAccountAdmins",
 };
 
 export default { authRoutes };

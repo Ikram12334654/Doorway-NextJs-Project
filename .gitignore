@@ -38,3 +38,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Ignore all files in public/download but keep the folder and subfolders
+/public/download/*
+!/public/download/.gitkeep
+!public/download/**/

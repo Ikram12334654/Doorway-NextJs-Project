@@ -26,7 +26,6 @@ import { savePermission } from "@/redux/reducers/permission";
 function Login() {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [socialLoginState, setSocialLoginState] = useState({
     google: false,
@@ -159,12 +158,11 @@ function Login() {
             }}
             validationSchema={validationSchema}
             onSubmit={(values, { resetForm }) => {
-              setIsDisabled(true);
               handleSubmit({ values });
               resetForm();
             }}
           >
-            {({ setFieldValue }) => (
+            {({ setFieldValue, dirty }) => (
               <Form className="w-full">
                 {loading && (
                   <div className=" flex item-center aling-center justify-center mt-5 mb-5">
@@ -185,7 +183,6 @@ function Login() {
                       className="w-full p-2 border rounded-[6px]  min-h-[40px]  md:max-h-[35px] focus:outline-none mb- focus"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setFieldValue("email", e.target.value);
-                        setIsDisabled(false);
                       }}
                     />
                     <ErrorMessage
@@ -266,8 +263,8 @@ function Login() {
                 {!showPasswordField && !loading && (
                   <button
                     className={`w-full p-2 text-center aling-center text-white rounded-[6px]  min-h-[40px] sm:min-h-[30px] md:min-h-[36px]
-                    ${isDisabled ? "bg-gray-400" : "bg-themeColor"}`}
-                    disabled={isDisabled}
+                    ${!dirty ? "bg-gray-400" : "bg-themeColor"}`}
+                    disabled={!dirty}
                     onClick={handleNext}
                   >
                     Next

@@ -1,4 +1,4 @@
-import Logout from "@/component/logoutModal";
+import Logout from "@/component/Models/logoutModal";
 import { saveAccount } from "@/redux/reducers/account";
 import { saveDesign } from "@/redux/reducers/design";
 import { savePermission } from "@/redux/reducers/permission";

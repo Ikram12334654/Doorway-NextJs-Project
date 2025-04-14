@@ -9,7 +9,6 @@ import Button from "@/component/button";
 
 function ForgotPassword() {
   const [loading, setLoading] = useState(false);
-  const [disable, setDisable] = useState(true);
 
   const initialValues = {
     email: "",
@@ -49,12 +48,11 @@ function ForgotPassword() {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values: any, { resetForm }) => {
-              setDisable(true);
               handleSubmit({ values });
               resetForm();
             }}
           >
-            {({ isSubmitting, isValid, values, setFieldValue }) => (
+            {({ isSubmitting, isValid, values, setFieldValue, dirty }) => (
               <Form className="w-full">
                 {loading && (
                   <div className="flex item-center  justify-center flex-col mt-5 mb-5">
@@ -81,7 +79,6 @@ function ForgotPassword() {
                       className="w-full p-2 border border-black rounded-[6px] max-h-[40px] focus:outline-none mb- focus"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setFieldValue("email", e.target.value);
-                        setDisable(false);
                       }}
                     />
                     <ErrorMessage
@@ -96,7 +93,7 @@ function ForgotPassword() {
                   <Button
                     title="Request Password reset"
                     loading={loading}
-                    disabled={disable || !isValid || isSubmitting}
+                    disabled={!dirty || !isValid || isSubmitting}
                   />
                 )}
               </Form>

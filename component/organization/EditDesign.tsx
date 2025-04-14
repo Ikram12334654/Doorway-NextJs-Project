@@ -168,7 +168,7 @@ const EditDesignOrganization: React.FC = () => {
           </div>
           <div className="grow flex flex-col gap-[7px]">
             <label className="text-[#304861] text-[15px] font-[500]">
-              Strip Image
+              Strip Image*
             </label>
             <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px]">
               <div className="flex items-center justify-between w-full py-3">

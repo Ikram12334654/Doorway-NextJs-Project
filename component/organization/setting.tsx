@@ -8,21 +8,26 @@ import Api from "@/utils/service";
 import { ErrorToastMessage } from "@/utils/toast";
 import WestIcon from "@mui/icons-material/West";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CompanyURL from "../Models/companyURL";
 import DoorwayPanel from "../Models/multipleDoorways";
 import PermissionModel from "../Models/permissionModel";
+import RemoveAdminModel from "../Models/removeAdminModel";
 
 const OrganizationSetting: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [adminModel, setAdminModel] = useState(false);
+  const [selected, setSelected] = useState({ _id: "", name: "" });
   const [modal, setModal] = useState<{ id: number | null; isModal: boolean }>({
     id: null,
     isModal: false,
   });
+  const [loading, setLoading] = useState(false);
+  const [waiting, setWaiting] = useState(false);
+  const [admins, setAdmins] = useState([]);
 
   const settingsCards = [
     {
@@ -130,10 +135,35 @@ const OrganizationSetting: React.FC = () => {
     }
   };
 
-  const OrganizationData = [
-    { name: "Sami Ullah", role: "Admin", email: "sami_ullah71@outlook.com" },
-    { name: "Ayesha Khan", role: "Admin", email: "ayesha.khan@example.com" },
-  ];
+  const handleGetAccountAdmins = async () => {
+    try {
+      setWaiting(true);
+      const authToken = state.auth.accessToken;
+
+      const { response, error }: ApiResponse = await Api(
+        "/" +
+          enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
+          authRoutes.getAccountAdmins,
+        "get",
+        {},
+        authToken
+      );
+
+      setWaiting(false);
+
+      if (response) {
+        setAdmins(response?.data);
+      } else if (error) {
+        ErrorToastMessage({ message: error?.message });
+      }
+    } catch (e) {
+      setWaiting(false);
+    }
+  };
+
+  useEffect(() => {
+    handleGetAccountAdmins();
+  }, []);
 
   const openModal = (modalId: number) => {
     setModal({ id: modalId, isModal: true });
@@ -141,6 +171,11 @@ const OrganizationSetting: React.FC = () => {
 
   const closeModal = () => {
     setModal({ id: null, isModal: false });
+  };
+
+  const handleAdminModel = ({ _id, name }: any) => {
+    setSelected({ name: name, _id: _id });
+    setAdminModel(true);
   };
 
   return (
@@ -170,7 +205,7 @@ const OrganizationSetting: React.FC = () => {
                     Admins
                   </span>
                   <div className="text-[11px] font-semibold py-1 px-3 rounded-md text-[#4c4c4c] bg-[#BEBEBE] flex items-center">
-                    <span>{`${OrganizationData.length}/3 Admins Created`}</span>
+                    <span>{`${admins.length}/3 Admins Created`}</span>
                   </div>
                 </div>
                 <div>
@@ -181,7 +216,12 @@ const OrganizationSetting: React.FC = () => {
               </div>
 
               <div className="flex items-center">
-                <button className="inline-flex rounded-md text-sm font-semibold justify-center gap-1.5 px-3 py-1.5 text-white bg-brand-100 cursor-pointer">
+                <button
+                  disabled={waiting}
+                  className={`${
+                    !waiting && "bg-themeColor"
+                  } inline-flex rounded-md text-sm font-semibold justify-center gap-1.5 px-3 py-1.5 text-white bg-brand-100 cursor-pointer`}
+                >
                   Add Admins
                 </button>
               </div>
@@ -206,24 +246,41 @@ const OrganizationSetting: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {OrganizationData.length > 0 ? (
-                      OrganizationData.map((admin, index) => (
+                    {waiting ? (
+                      <tr>
+                        <td colSpan={4}>
+                          <div className="py-4 w-full flex justify-center">
+                            <LoadingSpinner />
+                          </div>
+                        </td>
+                      </tr>
+                    ) : admins.length > 0 ? (
+                      admins.map((admin: any, index) => (
                         <tr
                           key={index}
                           className="h-11 hover:bg-brand-50 group cursor-pointer"
                         >
                           <td className="px-2 truncate text-sm font-medium text-gray-950">
-                            {admin.name}
+                            {admin?.firstName + " " + admin?.lastName}
                           </td>
                           <td className="px-2 truncate text-sm text-gray-500">
-                            {admin.role}
+                            Admin
                           </td>
                           <td className="px-2 truncate text-sm text-gray-500">
-                            {admin.email}
+                            {admin?.email}
                           </td>
                           <td className="px-2">
                             <div className="text-sm text-gray-500 flex gap-3 invisible group-hover:visible">
-                              <button className="text-gray-500 hover:text-brand-500 font-medium">
+                              <button
+                                onClick={() => {
+                                  handleAdminModel({
+                                    _id: admin?._id,
+                                    name:
+                                      admin?.firstName + " " + admin?.lastName,
+                                  });
+                                }}
+                                className="text-gray-500 hover:text-brand-500 font-medium"
+                              >
                                 Remove
                               </button>
                             </div>
@@ -323,6 +380,17 @@ const OrganizationSetting: React.FC = () => {
       )}
       {modal.id === 3 && modal.isModal === true && (
         <DoorwayPanel onClose={closeModal} />
+      )}
+
+      {adminModel === true && (
+        <RemoveAdminModel
+          _id={selected?._id}
+          name={selected?.name}
+          onCancel={() => {
+            setAdminModel(false);
+          }}
+          onSubmit={() => {}}
+        />
       )}
     </div>
   );
