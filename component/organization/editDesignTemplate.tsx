@@ -1,27 +1,38 @@
+import { authRoutes } from "@/assets/api";
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
-import { ErrorToastMessage } from "@/utils/toast";
+import { saveDesign } from "@/redux/reducers/design";
+import { RootState } from "@/redux/store";
+import enums from "@/utils/enums";
+import { base64ToBlob } from "@/utils/security";
+import Api from "@/utils/service";
+import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
 import WestIcon from "@mui/icons-material/West";
 import "cropperjs/dist/cropper.css";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Cropper, { ReactCropperElement } from "react-cropper";
+import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import Button from "../button";
 import UserPass from "../UserPass";
 
 interface EditDesignTemplateOrganizationProps {
   _id: any;
-  name: any;
+  templateName: any;
   color: any;
   logoUrl: any;
   stripUrl: any;
+  checkBox: any;
 }
 
 const EditDesignTemplateOrganization: React.FC<
   EditDesignTemplateOrganizationProps
-> = ({ _id, name, color, logoUrl, stripUrl }) => {
+> = ({ _id, templateName, color, logoUrl, stripUrl, checkBox }) => {
+  const state = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState(color || "#21242b");
   const [stripImageData, setStripImageData] = useState({
     file: null as File | null,
@@ -38,11 +49,12 @@ const EditDesignTemplateOrganization: React.FC<
   const maxSize = 1 * 1024 * 1024; // 1 MB
 
   const initialValues = {
-    templateName: name || "",
+    name: templateName || "",
+    defaultDesign: Boolean(checkBox) || false,
   };
 
   const validationSchema = Yup.object({
-    templateName: Yup.string()
+    name: Yup.string()
       .required("Template Name is required")
       .matches(/^[A-Za-z\s]+$/, "Only alphabets are allowed"),
   });
@@ -82,37 +94,56 @@ const EditDesignTemplateOrganization: React.FC<
     }
   };
 
-  const loadImageFromUrl = async (
-    url: string,
-    fileName: string,
-    updateFn: (
-      data: Partial<{ file: File | null; preview: string; cropped: string }>
-    ) => void
-  ) => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const file = new File([blob], fileName, { type: blob.type });
-      const preview = URL.createObjectURL(blob);
+  interface ApiResponse<T = any> {
+    data?: T;
+    [key: string]: any;
+  }
 
-      updateFn({
-        file,
-        preview,
-        cropped: url,
-      });
+  const handleSubmit = async ({ values }: any) => {
+    const { name, defaultDesign } = values;
+
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      const authToken = state.auth.accessToken;
+
+      formData.append("_id", _id);
+      formData.append("name", name);
+      formData.append("defaultDesign", defaultDesign);
+      formData.append("backgroundColor", backgroundColor);
+      if (logoImageData?.cropped) {
+        const logoBlob = base64ToBlob(logoImageData.cropped, "image/png");
+        formData.append("logoImage", logoBlob, "logoImage.png");
+      }
+
+      if (stripImageData?.cropped) {
+        const stripBlob = base64ToBlob(stripImageData.cropped, "image/png");
+        formData.append("stripImage", stripBlob, "stripImage.png");
+      }
+
+      const { response, error }: ApiResponse = await Api(
+        "/" +
+          enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
+          authRoutes.updateDesign,
+        "put",
+        {
+          payload: formData,
+        },
+        authToken
+      );
+      setLoading(false);
+
+      if (response) {
+        dispatch(saveDesign(response?.data));
+        router.back();
+        SuccessToastMessage({ message: response?.message });
+      } else if (error) {
+        ErrorToastMessage({ message: error?.message });
+      }
     } catch (error) {
-      return;
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (logoUrl) {
-      loadImageFromUrl(logoUrl, "logo.png", updateLogoImage);
-    }
-    if (stripUrl) {
-      loadImageFromUrl(stripUrl, "strip.png", updateStripImage);
-    }
-  }, [logoUrl, stripUrl]);
 
   return (
     <div className="flex flex-col items-center">
@@ -121,7 +152,7 @@ const EditDesignTemplateOrganization: React.FC<
       </div>
       <div className="flex items-start gap-4 mb-6 w-[90%] m-auto mt-2 ">
         <button
-          onClick={() => router.push("/design")}
+          onClick={() => router.back()}
           className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
         >
           <WestIcon fontSize="small" />
@@ -142,238 +173,267 @@ const EditDesignTemplateOrganization: React.FC<
             <UserPass
               values={{
                 backgroundColor,
-                stripImage: stripImageData.cropped,
-                logoImage: logoImageData.cropped,
+                stripImage: !stripImageData.cropped
+                  ? stripUrl
+                  : stripImageData.cropped,
+                logoImage: !logoImageData.cropped
+                  ? logoUrl
+                  : logoImageData.cropped,
               }}
             />
           </div>
         </div>
-
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={(values: any, { resetForm }) => {
-            resetForm();
+            handleSubmit({ values });
           }}
         >
-          {({ isSubmitting, isValid, values, setFieldValue }) => (
+          {({ isSubmitting, isValid, values, setFieldValue, dirty }) => (
             <Form>
               <div className="w-[330px] flex flex-col gap-[42px]">
-                <form onSubmit={() => {}} className="flex flex-col gap-[25px]">
-                  <div className="grow flex flex-col gap-[7px]">
-                    <label className="text-[#304861] text-[15px] font-[500]">
-                      Template Name*
-                    </label>
-                    <Field
-                      type="text"
-                      name="templateName"
-                      placeholder="Enter Template Name"
-                      className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px] focus:outline-none text-[16px]"
-                    />
-                    <ErrorMessage
-                      name="templateName"
-                      component="div"
-                      className="text-red-500 text-sm"
-                    />
-                  </div>
-                  <div className="grow flex flex-col gap-[7px]">
-                    <label className="text-[#304861] text-[15px] font-[500]">
-                      Color*
-                    </label>
-                    <div
-                      className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px] flex items-center"
-                      onClick={() => document.getElementById("color")?.click()}
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center">
-                          <span
-                            className="w-[18px] h-[18px] inline-block mr-[8px] rounded-sm"
-                            style={{ background: backgroundColor }}
-                          ></span>
-                          {backgroundColor}
-                        </div>
+                <div className="grow flex flex-col gap-[7px]">
+                  <label className="text-[#304861] text-[15px] font-[500]">
+                    Template Name*
+                  </label>
+                  <Field
+                    type="text"
+                    name="name"
+                    placeholder="Enter Template Name"
+                    className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px] focus:outline-none text-[16px]"
+                  />
+                  <ErrorMessage
+                    name="name"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <label className="flex items-center text-mde text-slate-700">
+                  <Field
+                    type="checkbox"
+                    name="defaultDesign"
+                    className="mr-2 text-electricGreen"
+                  />
+                  <span
+                    className={`text-[12px] ${
+                      values?.defaultDesign ? "font-[500]" : "font-[400]"
+                    } ${
+                      values?.defaultDesign
+                        ? "text-[#1ed761]"
+                        : "text-[#000000]"
+                    }`}
+                  >
+                    Default
+                  </span>
+                </label>
+                <div className="grow flex flex-col gap-[7px]">
+                  <label className="text-[#304861] text-[15px] font-[500]">
+                    Color*
+                  </label>
+                  <div
+                    className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px] flex items-center"
+                    onClick={() => document.getElementById("color")?.click()}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center">
+                        <span
+                          className="w-[18px] h-[18px] inline-block mr-[8px] rounded-sm"
+                          style={{ background: backgroundColor }}
+                        ></span>
+                        {backgroundColor}
                       </div>
+                    </div>
+                  </div>
+                  <input
+                    id="color"
+                    type="color"
+                    value={backgroundColor}
+                    onChange={(e) => setBackgroundColor(e.target.value)}
+                    style={{
+                      position: "absolute",
+                      opacity: 0,
+                      pointerEvents: "none",
+                    }}
+                  />
+                </div>
+                <div className="grow flex flex-col gap-[7px]">
+                  <label className="text-[#304861] text-[15px] font-[500]">
+                    Strip Image
+                  </label>
+                  <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px]">
+                    <div className="flex items-center justify-between w-full py-3">
+                      {!stripImageData.file ? (
+                        <label
+                          htmlFor="stripeImage"
+                          className="text-[#BEBEBE] cursor-pointer w-full"
+                        >
+                          .png or .jpeg files only
+                        </label>
+                      ) : (
+                        <>
+                          <span className="truncate">
+                            {stripImageData.file.name}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateStripImage({
+                                file: null,
+                                preview: "",
+                                cropped: "",
+                              })
+                            }
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                              className="w-4 h-4 text-black"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </>
+                      )}
                     </div>
                     <input
-                      id="color"
-                      type="color"
-                      value={backgroundColor}
-                      onChange={(e) => setBackgroundColor(e.target.value)}
-                      style={{
-                        position: "absolute",
-                        opacity: 0,
-                        pointerEvents: "none",
-                      }}
+                      type="file"
+                      accept="image/png, image/jpg , image/jpeg , image/JPG"
+                      id="stripeImage"
+                      hidden
+                      disabled={!!stripImageData.file}
+                      onChange={(e) =>
+                        handleFileChange(e, (file, url) =>
+                          updateStripImage({ file, preview: url })
+                        )
+                      }
                     />
-                  </div>
-                  <div className="grow flex flex-col gap-[7px]">
-                    <label className="text-[#304861] text-[15px] font-[500]">
-                      Strip Image
-                    </label>
-                    <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px]">
-                      <div className="flex items-center justify-between w-full py-3">
-                        {!stripImageData.file ? (
-                          <label
-                            htmlFor="stripeImage"
-                            className="text-[#BEBEBE] cursor-pointer w-full"
-                          >
-                            .png or .jpeg files only
-                          </label>
-                        ) : (
-                          <>
-                            <span className="truncate">
-                              {stripImageData.file.name}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                updateStripImage({
-                                  file: null,
-                                  preview: "",
-                                  cropped: "",
-                                })
-                              }
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth="2"
-                                stroke="currentColor"
-                                className="w-4 h-4 text-black"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                            </button>
-                          </>
-                        )}
+                    {stripImageData.preview && (
+                      <div className="mb-4">
+                        <Cropper
+                          src={stripImageData.preview}
+                          ref={stripeImageCropperRef}
+                          style={{
+                            width: "96%",
+                            height: "auto",
+                            margin: "auto",
+                          }}
+                          aspectRatio={2}
+                          guides={false}
+                          scalable={true}
+                          viewMode={1}
+                          cropBoxResizable={true}
+                          crop={() =>
+                            handleCropImage(stripeImageCropperRef, (url) =>
+                              updateStripImage({ cropped: url })
+                            )
+                          }
+                        />
                       </div>
-                      <input
-                        type="file"
-                        accept="image/png, image/jpg , image/jpeg , image/JPG"
-                        id="stripeImage"
-                        hidden
-                        disabled={!!stripImageData.file}
-                        onChange={(e) =>
-                          handleFileChange(e, (file, url) =>
-                            updateStripImage({ file, preview: url })
-                          )
-                        }
-                      />
-                      {stripImageData.preview && (
-                        <div className="mb-4">
-                          <Cropper
-                            src={stripImageData.preview}
-                            ref={stripeImageCropperRef}
-                            style={{
-                              width: "96%",
-                              height: "auto",
-                              margin: "auto",
-                            }}
-                            aspectRatio={2}
-                            guides={false}
-                            scalable={true}
-                            viewMode={1}
-                            cropBoxResizable={true}
-                            crop={() =>
-                              handleCropImage(stripeImageCropperRef, (url) =>
-                                updateStripImage({ cropped: url })
-                              )
+                    )}
+                  </div>
+                </div>
+                <div className="grow flex flex-col gap-[7px]">
+                  <label className="text-[#304861] text-[15px] font-[500]">
+                    Top Left Logo
+                  </label>
+                  <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px]">
+                    <div className="flex items-center justify-between w-full py-3">
+                      {!logoImageData.file ? (
+                        <label
+                          htmlFor="topLeftLogoInput"
+                          className="text-[#BEBEBE] cursor-pointer w-full"
+                        >
+                          .png or .jpeg files only
+                        </label>
+                      ) : (
+                        <>
+                          <span className="truncate">
+                            {logoImageData.file.name}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateLogoImage({
+                                file: null,
+                                preview: "",
+                                cropped: "",
+                              })
                             }
-                          />
-                        </div>
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                              className="w-4 h-4 text-black"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </>
                       )}
                     </div>
-                  </div>
-                  <div className="grow flex flex-col gap-[7px]">
-                    <label className="text-[#304861] text-[15px] font-[500]">
-                      Top Left Logo
-                    </label>
-                    <div className="bg-[#F2F5F5] rounded-[5px] min-h-[55px] px-[11px]">
-                      <div className="flex items-center justify-between w-full py-3">
-                        {!logoImageData.file ? (
-                          <label
-                            htmlFor="topLeftLogoInput"
-                            className="text-[#BEBEBE] cursor-pointer w-full"
-                          >
-                            .png or .jpeg files only
-                          </label>
-                        ) : (
-                          <>
-                            <span className="truncate">
-                              {logoImageData.file.name}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                updateLogoImage({
-                                  file: null,
-                                  preview: "",
-                                  cropped: "",
-                                })
-                              }
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth="2"
-                                stroke="currentColor"
-                                className="w-4 h-4 text-black"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                            </button>
-                          </>
-                        )}
+                    <input
+                      type="file"
+                      accept="image/png, image/jpg , image/jpeg , image/JPG"
+                      id="topLeftLogoInput"
+                      hidden
+                      disabled={!!logoImageData.file}
+                      onChange={(e) =>
+                        handleFileChange(e, (file, url) =>
+                          updateLogoImage({ file, preview: url })
+                        )
+                      }
+                    />
+                    {logoImageData.preview && (
+                      <div className="mb-4">
+                        <Cropper
+                          src={logoImageData.preview}
+                          ref={logoImageCropperRef}
+                          style={{
+                            width: "96%",
+                            height: "auto",
+                            margin: "auto",
+                          }}
+                          aspectRatio={1}
+                          guides={false}
+                          scalable={true}
+                          viewMode={1}
+                          cropBoxResizable={true}
+                          crop={() =>
+                            handleCropImage(logoImageCropperRef, (url) =>
+                              updateLogoImage({ cropped: url })
+                            )
+                          }
+                        />
                       </div>
-                      <input
-                        type="file"
-                        accept="image/png, image/jpg , image/jpeg , image/JPG"
-                        id="topLeftLogoInput"
-                        hidden
-                        disabled={!!logoImageData.file}
-                        onChange={(e) =>
-                          handleFileChange(e, (file, url) =>
-                            updateLogoImage({ file, preview: url })
-                          )
-                        }
-                      />
-                      {logoImageData.preview && (
-                        <div className="mb-4">
-                          <Cropper
-                            src={logoImageData.preview}
-                            ref={logoImageCropperRef}
-                            style={{
-                              width: "96%",
-                              height: "auto",
-                              margin: "auto",
-                            }}
-                            aspectRatio={1}
-                            guides={false}
-                            scalable={true}
-                            viewMode={1}
-                            cropBoxResizable={true}
-                            crop={() =>
-                              handleCropImage(logoImageCropperRef, (url) =>
-                                updateLogoImage({ cropped: url })
-                              )
-                            }
-                          />
-                        </div>
-                      )}
-                    </div>
+                    )}
                   </div>
-                  <Button loading={false} disabled={false} />
-                </form>
+                </div>
+                <Button
+                  title="Update"
+                  loading={loading}
+                  disabled={false}
+                  // disabled={
+                  //   !isValid ||
+                  //   (logoImageData.file && !stripImageData.file) ||
+                  //   (stripImageData.file && !logoImageData.file) ||
+                  //   (!dirty && !logoImageData.file && !stripImageData.file)
+                  // }
+                />
               </div>
             </Form>
           )}

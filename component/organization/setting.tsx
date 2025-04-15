@@ -185,7 +185,7 @@ const OrganizationSetting: React.FC = () => {
       </div>
       <div className="px-8 min-md:px-[112px] mt-6 mb-16">
         <button
-          onClick={() => router.push("/home")}
+          onClick={() => router.back()}
           className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
         >
           <WestIcon fontSize="small" />
@@ -248,7 +248,7 @@ const OrganizationSetting: React.FC = () => {
                   <tbody>
                     {waiting ? (
                       <tr>
-                        <td colSpan={4}>
+                        <td colSpan={3}>
                           <div className="py-4 w-full flex justify-center">
                             <LoadingSpinner />
                           </div>
@@ -290,10 +290,10 @@ const OrganizationSetting: React.FC = () => {
                     ) : (
                       <tr>
                         <td
-                          colSpan={4}
+                          colSpan={3}
                           className="text-center py-4 text-gray-500"
                         >
-                          No admins available.
+                          No results found
                         </td>
                       </tr>
                     )}

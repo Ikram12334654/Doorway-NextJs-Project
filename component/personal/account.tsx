@@ -78,9 +78,7 @@ const PersonalAccount: React.FC = () => {
               className="inline-flex items-center rounded-[6px] text-petite font-medium justify-center gap-[6px] text-gray-500 hover:text-brand-500 focus:text-brand-500 cursor-pointer"
               role="button"
               aria-disabled="false"
-              onClick={() => {
-                router.back();
-              }}
+              onClick={() => router.back()}
             >
               <WestIcon fontSize="small" />
               <span className="whitespace-nowrap">Back</span>

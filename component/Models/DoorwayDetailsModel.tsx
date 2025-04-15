@@ -6,10 +6,12 @@ import Api from "@/utils/service";
 import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
 import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import Button from "../button";
 import FieldTypeSelection from "../common/FieldTypeSelection";
+import { saveUser } from "@/redux/reducers/user";
+import { saveAccount } from "@/redux/reducers/account";
 
 interface CloseModelProps {
   onClose: () => void;
@@ -40,7 +42,7 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({
   }, [onClose]);
 
   const state = useSelector((state: RootState) => state);
-
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
   const initialValues = {
@@ -133,24 +135,26 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({
 
       const authToken = state.auth.accessToken;
 
+      const data = {
+        doorwayName: values?.doorwayName,
+        prefix: values?.prefix,
+        sufix: values?.sufix,
+        firstName: values?.firstName,
+        lastName: values?.lastName,
+        jobTitle: values?.jobTitle,
+        company: values?.company,
+        emails: values?.emails,
+        phones: values?.phones,
+        urls: values?.urls,
+      };
+
       const { response, error }: ApiResponse = await Api(
         "/" +
           enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
           authRoutes.updatePersonal,
         "put",
         {
-          payload: {
-            doorwayName: values?.doorwayName,
-            prefix: values?.prefix,
-            sufix: values?.sufix,
-            firstName: values?.firstName,
-            lastName: values?.lastName,
-            jobTitle: values?.jobTitle,
-            company: values?.company,
-            emails: values?.emails,
-            phones: values?.phones,
-            urls: values?.urls,
-          },
+          payload: data,
         },
         authToken
       );
@@ -159,6 +163,9 @@ const DoorwayDetailsModel: React.FC<CloseModelProps> = ({
       onClose();
 
       if (response) {
+        dispatch(saveUser(data));
+        data?.company &&
+          dispatch(saveAccount({ organizationName: data?.company }));
         SuccessToastMessage({ message: response?.message });
       } else if (error) {
         ErrorToastMessage({ message: error?.message });

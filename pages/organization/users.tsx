@@ -220,7 +220,7 @@ const DoorwayandUser: React.FC = () => {
       <div className="px-8 min-md:px-[112px] mt-6 mb-16">
         <div className="flex flex-col gap-[32px]">
           <button
-            onClick={() => router.push("/organization/home")}
+            onClick={() => router.back()}
             className="inline-flex items-center text-gray-500 hover:text-brand-500"
           >
             <WestIcon fontSize="small" />

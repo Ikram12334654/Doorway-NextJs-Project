@@ -1,10 +1,14 @@
+import { authRoutes } from "@/assets/api";
 import LoadingSpinner from "@/assets/LoadingSpinner";
 import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
 import { RootState } from "@/redux/store";
+import enums from "@/utils/enums";
+import Api from "@/utils/service";
+import { ErrorToastMessage } from "@/utils/toast";
 import SearchIcon from "@mui/icons-material/Search";
 import WestIcon from "@mui/icons-material/West";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 const OrganizationDesign: React.FC = () => {
@@ -12,19 +16,46 @@ const OrganizationDesign: React.FC = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
-  const [designs, setDesigns] = useState([
-    {
-      _id: state.design._id,
-      name: "Default Design",
-      backgroundColor: "",
-      logoImage: "",
-      stripImage: "",
-    },
-  ]);
+  const [designs, setDesigns] = useState([]);
 
   const filteredDesigns = designs.filter((design: any) =>
     design.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  interface ApiResponse<T = any> {
+    data?: T;
+    [key: string]: any;
+  }
+
+  const handleGetAccountAdmins = async () => {
+    try {
+      setLoading(true);
+      const authToken = state.auth.accessToken;
+
+      const { response, error }: ApiResponse = await Api(
+        "/" +
+          enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
+          authRoutes.getAccountDesigns,
+        "get",
+        {},
+        authToken
+      );
+
+      setLoading(false);
+
+      if (response) {
+        setDesigns(response?.data);
+      } else if (error) {
+        ErrorToastMessage({ message: error?.message });
+      }
+    } catch (e) {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleGetAccountAdmins();
+  }, []);
 
   return (
     <div className="flex flex-col w-full">
@@ -33,7 +64,7 @@ const OrganizationDesign: React.FC = () => {
       </div>
       <div className="flex flex-col items-start gap-4 mb-6 px-8 min-md:px-[112px] mt-6 mb-16">
         <button
-          onClick={() => router.push("/home")}
+          onClick={() => router.back()}
           className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
         >
           <WestIcon fontSize="small" />
@@ -45,10 +76,15 @@ const OrganizationDesign: React.FC = () => {
               Design Templates
             </span>
             <span className="px-2 py-1 bg-gray-50 border-gray-100 text-gray-500 border text-sm font-medium rounded">
-              {designs.length}/5 Design Templates Created
+              {designs?.length}/5 Design Templates Created
             </span>
           </div>
-          <button className="px-4 py-2 text-white bg-brand-100 hover:bg-brand-500 rounded-md text-sm font-semibold">
+          <button
+            disabled={loading}
+            className={`${
+              !loading && "bg-themeColor"
+            } px-4 py-2 text-white bg-brand-100 hover:bg-brand-500 rounded-md text-sm font-semibold`}
+          >
             New Design Template
           </button>
         </div>
@@ -77,7 +113,7 @@ const OrganizationDesign: React.FC = () => {
               {loading ? (
                 <>
                   <tr>
-                    <td colSpan={4}>
+                    <td colSpan={2}>
                       <div className="py-4 w-full flex justify-center">
                         <LoadingSpinner />
                       </div>
@@ -85,15 +121,15 @@ const OrganizationDesign: React.FC = () => {
                   </tr>
                 </>
               ) : filteredDesigns.length > 0 ? (
-                filteredDesigns.map((design, index): any => (
+                filteredDesigns.map((design: any, index) => (
                   <tr
                     key={index}
                     className="h-11 cursor-pointer hover:bg-brand-50 group"
                     onClick={() => {}}
                   >
-                    <td className="py-2 px-3 text-gray-900">{design.name}</td>
+                    <td className="py-2 px-3 text-gray-900">{design?.name}</td>
                     <td className="py-2 px-3">
-                      {design._id === state.design._id && (
+                      {design?._id === state.design._id && (
                         <svg
                           viewBox="0 0 24 24"
                           xmlns="http://www.w3.org/2000/svg"
@@ -115,8 +151,9 @@ const OrganizationDesign: React.FC = () => {
                               pathname: "/editDesign",
                               query: {
                                 _id: design?._id,
-                                name: design?.name,
+                                templateName: design?.name,
                                 color: design?.backgroundColor,
+                                checkBox: design?._id === state.design._id,
                                 logoUrl: design?.logoImage,
                                 stripUrl: design?.stripImage,
                               },
@@ -131,7 +168,7 @@ const OrganizationDesign: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="text-center py-4 text-gray-500">
+                  <td colSpan={2} className="text-center py-4 text-gray-500">
                     No results found
                   </td>
                 </tr>

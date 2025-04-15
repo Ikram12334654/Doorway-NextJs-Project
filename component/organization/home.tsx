@@ -6,6 +6,7 @@ import HelpIcon from "@mui/icons-material/Help";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
+import DevicesIcon from "@mui/icons-material/Devices";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import Link from "next/link";
 import React from "react";
@@ -102,6 +103,22 @@ const OrganizationHome: React.FC<OrganizationHomeProps> = ({
                 <div className="flex items-center gap-[15px]">
                   <SettingsIcon sx={{ width: "1rem", height: 20 }} />
                   Organisation Settings
+                </div>
+                <div className="ml-1 rounded p-1 min-md:p-2 bg-themeColor">
+                  <KeyboardArrowRightIcon
+                    sx={{ width: 24, height: 24, color: "white" }}
+                  />
+                </div>
+              </Link>
+            </div>
+            <div className="my-4">
+              <Link
+                className="border-2 border-gray-300 flex items-center justify-between pl-4 min-sm:pl-6 pr-1.5 py-1.5 rounded text-gray-400 text-sm "
+                href="/loginActivity"
+              >
+                <div className="flex items-center gap-[15px]">
+                  <DevicesIcon sx={{ width: "1rem", height: 20 }} />
+                  Login Activity
                 </div>
                 <div className="ml-1 rounded p-1 min-md:p-2 bg-themeColor">
                   <KeyboardArrowRightIcon

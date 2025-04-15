@@ -41,7 +41,6 @@ const Registration: React.FC = () => {
         "Password must contain at least one special character (@, $, !, %, *, ?, &)"
       )
       .required("Password is required"),
-
     terms: Yup.boolean().oneOf(
       [true],
       "You must accept the Terms & Privacy Policy"

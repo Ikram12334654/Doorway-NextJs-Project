@@ -12,15 +12,17 @@ interface EditDesignProps {
 const EditDesign: React.FC<EditDesignProps> = () => {
   const router = useRouter();
   const state = useSelector((state: RootState) => state);
-  const { _id, name, color, logoUrl, stripUrl } = router.query;
+  const { _id, templateName, color, logoUrl, stripUrl, checkBox } =
+    router.query;
 
   return (
     <>
       {state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION && (
         <EditDesignTemplateOrganization
           _id={_id}
-          name={name}
+          templateName={templateName}
           color={color}
+          checkBox={checkBox}
           logoUrl={logoUrl}
           stripUrl={stripUrl}
         />

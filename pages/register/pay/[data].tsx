@@ -1,9 +1,9 @@
 import { RootState } from "@/redux/store";
 import { stat } from "fs";
 import { useRouter } from "next/router";
- import React, { useState } from "react";
- import { useSelector } from "react-redux";
- import "react-phone-input-2/lib/style.css";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import "react-phone-input-2/lib/style.css";
 import { dividerClasses } from "@mui/material";
 function Payment() {
   const state = useSelector((state: RootState) => state);
