@@ -22,7 +22,7 @@ const EditDesign: React.FC<EditDesignProps> = () => {
           _id={_id}
           templateName={templateName}
           color={color}
-          checkBox={checkBox}
+          checkBox={checkBox === "true" ? true : false}
           logoUrl={logoUrl}
           stripUrl={stripUrl}
         />

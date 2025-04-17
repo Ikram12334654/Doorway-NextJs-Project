@@ -19,23 +19,43 @@ const QRCode: React.FC<QRCodeProps> = ({ data, size = 128, url, loading }) => {
     firstName: data?.firstName || state.user.firstName,
     lastName: data?.lastName || state.user.lastName,
     organizationName: data?.organizationName || state.account.organizationName,
-    emails: state.user.emails?.map((e) => ({
-      type: e?.type || "WORK",
-      value: e?.value || "",
-    })),
-    phones: state.user.phones?.map((e) => ({
-      type: e?.type || "WORK",
-      value: e?.value || "",
-    })),
+    emails:
+      data?.emails?.map((e: any) => ({
+        type: e?.type || "WORK",
+        value: e?.value || "",
+      })) ||
+      state.user.emails?.map((e) => ({
+        type: e?.type || "WORK",
+        value: e?.value || "",
+      })),
+    phones:
+      data?.phones?.map((e: any) => ({
+        type: e?.type || "WORK",
+        value: e?.value || "",
+      })) ||
+      state.user.phones?.map((e) => ({
+        type: e?.type || "WORK",
+        value: e?.value || "",
+      })),
     jobTitle: data?.jobTitle || state.user.jobTitle,
-    URLS: state.user.urls?.map((e) => ({
-      type: e?.type || "WORK",
-      value: e?.value || "",
-    })),
-    addresses: state.user.addresses?.map((e) => ({
-      type: e?.type || "WORK",
-      value: e?.value || "",
-    })),
+    URLS:
+      data?.urls?.map((e: any) => ({
+        type: e?.type || "WORK",
+        value: e?.value || "",
+      })) ||
+      state.user.urls?.map((e) => ({
+        type: e?.type || "WORK",
+        value: e?.value || "",
+      })),
+    addresses:
+      data?.addresses?.map((e: any) => ({
+        type: e?.type || "WORK",
+        value: e?.value || "",
+      })) ||
+      state.user.addresses?.map((e) => ({
+        type: e?.type || "WORK",
+        value: e?.value || "",
+      })),
     personal: state.user.role === 1 ? true : false,
   };
 

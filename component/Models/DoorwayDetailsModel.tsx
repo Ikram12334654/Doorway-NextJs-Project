@@ -18,10 +18,7 @@ interface CloseModelProps {
   extra?: boolean;
 }
 
-const DoorwayDetailsModel: React.FC<CloseModelProps> = ({
-  onClose,
-  extra = false,
-}) => {
+const DoorwayDetailsModel: React.FC<CloseModelProps> = ({ onClose }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

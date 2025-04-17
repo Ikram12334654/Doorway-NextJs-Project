@@ -17,23 +17,12 @@ import * as Yup from "yup";
 import Button from "../button";
 import UserPass from "../UserPass";
 
-interface EditDesignTemplateOrganizationProps {
-  _id: any;
-  templateName: any;
-  color: any;
-  logoUrl: any;
-  stripUrl: any;
-  checkBox: any;
-}
-
-const EditDesignTemplateOrganization: React.FC<
-  EditDesignTemplateOrganizationProps
-> = ({ _id, templateName, color, logoUrl, stripUrl, checkBox }) => {
+const NewDesignTemplateOrganization: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [backgroundColor, setBackgroundColor] = useState(color || "#21242b");
+  const [backgroundColor, setBackgroundColor] = useState("#21242b");
   const [stripImageData, setStripImageData] = useState({
     file: null as File | null,
     preview: "",
@@ -49,8 +38,8 @@ const EditDesignTemplateOrganization: React.FC<
   const maxSize = 1 * 1024 * 1024; // 1 MB
 
   const initialValues = {
-    name: templateName || "",
-    defaultDesign: Boolean(checkBox) || false,
+    name: "",
+    defaultDesign: false,
   };
 
   const validationSchema = Yup.object({
@@ -110,25 +99,20 @@ const EditDesignTemplateOrganization: React.FC<
       const formData = new FormData();
       const authToken = state.auth.accessToken;
 
-      formData.append("_id", _id);
+      const stripBlob = base64ToBlob(stripImageData.cropped, "image/png");
+      const logoBlob = base64ToBlob(logoImageData.cropped, "image/png");
+
       formData.append("name", name);
       formData.append("defaultDesign", defaultDesign);
       formData.append("backgroundColor", backgroundColor);
-      if (logoImageData?.cropped) {
-        const logoBlob = base64ToBlob(logoImageData.cropped, "image/png");
-        formData.append("logoImage", logoBlob, "logoImage.png");
-      }
-
-      if (stripImageData?.cropped) {
-        const stripBlob = base64ToBlob(stripImageData.cropped, "image/png");
-        formData.append("stripImage", stripBlob, "stripImage.png");
-      }
+      formData.append("logoImage", logoBlob, "logoImage.png");
+      formData.append("stripImage", stripBlob, "stripImage.png");
 
       const { response, error }: ApiResponse = await Api(
         "/" +
           enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
-          authRoutes.updateDesign,
-        "put",
+          authRoutes.createDesign,
+        "post",
         {
           payload: formData,
         },
@@ -137,10 +121,7 @@ const EditDesignTemplateOrganization: React.FC<
       setLoading(false);
 
       if (response) {
-        const isDefault = defaultDesign === true || defaultDesign === "true";
-        if (isDefault) {
-          dispatch(saveDesign(response?.data));
-        }
+        defaultDesign && dispatch(saveDesign(response?.data));
         router.back();
         SuccessToastMessage({ message: response?.message });
       } else if (error) {
@@ -166,7 +147,7 @@ const EditDesignTemplateOrganization: React.FC<
         </button>
       </div>
       <div className="min-md:block text-[25px] min-md:text-[50px] heading-[58px] font-[600] mb-[8px]  text-center max-w-[920px] mx-auto">
-        Edit your design
+        Create new design
       </div>
       <div className="min-md:block text-[16px] heading-[25px] min-md:mb-[38px] font-[400] text-center max-w-[287px] min-md:max-w-[70%]">
         Voila! We’ve made a sample design. You can edit your Doorway design
@@ -179,12 +160,8 @@ const EditDesignTemplateOrganization: React.FC<
             <UserPass
               values={{
                 backgroundColor,
-                stripImage: !stripImageData.cropped
-                  ? stripUrl
-                  : stripImageData.cropped,
-                logoImage: !logoImageData.cropped
-                  ? logoUrl
-                  : logoImageData.cropped,
+                stripImage: stripImageData.cropped,
+                logoImage: logoImageData.cropped,
               }}
             />
           </div>
@@ -192,7 +169,7 @@ const EditDesignTemplateOrganization: React.FC<
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(values: any, { resetForm }) => {
+          onSubmit={(values: any) => {
             handleSubmit({ values });
           }}
         >
@@ -429,17 +406,7 @@ const EditDesignTemplateOrganization: React.FC<
                     )}
                   </div>
                 </div>
-                <Button
-                  title="Update"
-                  loading={loading}
-                  disabled={false}
-                  // disabled={
-                  //   !isValid ||
-                  //   (logoImageData.file && !stripImageData.file) ||
-                  //   (stripImageData.file && !logoImageData.file) ||
-                  //   (!dirty && !logoImageData.file && !stripImageData.file)
-                  // }
-                />
+                <Button title="Create" loading={loading} disabled={false} />
               </div>
             </Form>
           )}
@@ -449,4 +416,4 @@ const EditDesignTemplateOrganization: React.FC<
   );
 };
 
-export default EditDesignTemplateOrganization;
+export default NewDesignTemplateOrganization;

@@ -49,7 +49,7 @@ const GooglePass: React.FC<{ values?: any }> = ({ values }) => {
             </div>
           </div>
           <div className="mx-auto rounded-md card-qrcode max-w-[138px] py-2 px-2 flex justify-center items-center">
-            <QRCode />
+            <QRCode data={values} />
           </div>
           <div className="items-center justify-center overflow-hidden flex aspect-[1033/407] mt-[15px] rounded-b-[30px]">
             <span className="flex items-center w-full block aspect-[3/1]">

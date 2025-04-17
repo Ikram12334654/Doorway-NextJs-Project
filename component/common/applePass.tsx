@@ -1,7 +1,7 @@
+import { invertHexColor } from "@/utils/security";
 import React from "react";
 import DefaultLogo from "../defaultLogo";
 import QRCode from "../QRCanvas";
-import { invertHexColor } from "@/utils/security";
 
 const ApplePass: React.FC<{ values?: any }> = ({ values }) => {
   return (
@@ -74,7 +74,7 @@ const ApplePass: React.FC<{ values?: any }> = ({ values }) => {
             </div>
           </div>
           <div className="mx-auto rounded-md card-qrcode max-w-[138px] py-2 px-2 flex justify-center items-center">
-            <QRCode />
+            <QRCode data={values} />
           </div>
         </div>
       </div>

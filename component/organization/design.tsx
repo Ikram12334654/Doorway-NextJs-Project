@@ -4,16 +4,29 @@ import PrivateRoutesNavBar from "@/assets/privateRoutesNavBar";
 import { RootState } from "@/redux/store";
 import enums from "@/utils/enums";
 import Api from "@/utils/service";
-import { ErrorToastMessage } from "@/utils/toast";
+import { ErrorToastMessage, SuccessToastMessage } from "@/utils/toast";
 import SearchIcon from "@mui/icons-material/Search";
 import WestIcon from "@mui/icons-material/West";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import DeleteDesignModel from "../Models/deleteDesignModel";
+import LoadingModel from "../Models/loadingModel";
+import ViewDesignModel from "../Models/viewDesignModel";
 
 const OrganizationDesign: React.FC = () => {
   const state = useSelector((state: RootState) => state);
   const router = useRouter();
+  const [deleteModel, setDeleteModel] = useState(false);
+  const [viewModel, setViewModel] = useState(false);
+  const [selected, setSelected] = useState({ _id: "", name: "" });
+  const [viewDetails, setViewDetails] = useState({
+    backgroundColor: "",
+    stripImage: "",
+    logoImage: "",
+  });
+
+  const [waiting, setWaiting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [designs, setDesigns] = useState([]);
@@ -53,9 +66,61 @@ const OrganizationDesign: React.FC = () => {
     }
   };
 
+  const handleDeleteDesign = async ({ _id }: any) => {
+    try {
+      setDeleteModel(false);
+      setWaiting(true);
+
+      const authToken = state.auth.accessToken;
+
+      const { response, error }: ApiResponse = await Api(
+        "/" +
+          enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
+          authRoutes.deleteDesign +
+          "/" +
+          _id,
+        "delete",
+        {},
+        authToken
+      );
+
+      setWaiting(false);
+
+      if (response) {
+        setDesigns((prevDesigns: any) =>
+          prevDesigns.filter((design: any) => design?._id !== _id)
+        );
+        SuccessToastMessage({ message: response?.message });
+      } else if (error) {
+        ErrorToastMessage({ message: error?.message });
+      }
+    } catch (e) {
+      setWaiting(true);
+      setDeleteModel(false);
+    }
+  };
+
   useEffect(() => {
     handleGetAccountAdmins();
   }, []);
+
+  const handleDeleteModel = ({ _id, name }: any) => {
+    setSelected({ name: name, _id: _id });
+    setDeleteModel(true);
+  };
+
+  const handleDesignModel = ({
+    backgroundColor,
+    logoImage,
+    stripImage,
+  }: any) => {
+    setViewDetails({
+      backgroundColor: backgroundColor,
+      logoImage: logoImage,
+      stripImage: stripImage,
+    });
+    setViewModel(true);
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -81,6 +146,7 @@ const OrganizationDesign: React.FC = () => {
           </div>
           <button
             disabled={loading}
+            onClick={() => router.push("/newDesign")}
             className={`${
               !loading && "bg-themeColor"
             } px-4 py-2 text-white bg-brand-100 hover:bg-brand-500 rounded-md text-sm font-semibold`}
@@ -143,26 +209,57 @@ const OrganizationDesign: React.FC = () => {
                       )}
                     </td>
                     <td className="py-2 px-3">
-                      <span className="text-sm text-gray-500 flex gap-3 invisible group-hover:visible">
-                        <button
-                          className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
-                          onClick={() =>
-                            router.push({
-                              pathname: "/editDesign",
-                              query: {
-                                _id: design?._id,
-                                templateName: design?.name,
-                                color: design?.backgroundColor,
-                                checkBox: design?._id === state.design._id,
-                                logoUrl: design?.logoImage,
-                                stripUrl: design?.stripImage,
-                              },
-                            })
-                          }
-                        >
-                          Edit
-                        </button>
-                      </span>
+                      <td className="py-2 px-3">
+                        <div className="flex gap-3 invisible group-hover:visible">
+                          <button
+                            className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
+                            onClick={() =>
+                              router.push({
+                                pathname: "/editDesign",
+                                query: {
+                                  _id: design?._id,
+                                  templateName: design?.name,
+                                  color: design?.backgroundColor,
+                                  checkBox: design?._id === state.design._id,
+                                  logoUrl: design?.logoImage,
+                                  stripUrl: design?.stripImage,
+                                },
+                              })
+                            }
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
+                            onClick={() => {
+                              handleDesignModel({
+                                backgroundColor: design?.backgroundColor,
+                                logoImage: design?.logoImage,
+                                stripImage: design?.stripImage,
+                              });
+                            }}
+                          >
+                            View
+                          </button>
+                          <button
+                            className="inline-flex items-center rounded-md text-gray-500 hover:text-brand-500 cursor-pointer"
+                            onClick={() => {
+                              if (design?._id === state.design._id) {
+                                ErrorToastMessage({
+                                  message: "cannot remove default design",
+                                });
+                              } else {
+                                handleDeleteModel({
+                                  _id: design?._id,
+                                  name: design?.name,
+                                });
+                              }
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
                     </td>
                   </tr>
                 ))
@@ -177,6 +274,27 @@ const OrganizationDesign: React.FC = () => {
           </table>
         </div>
       </div>
+      {deleteModel && (
+        <DeleteDesignModel
+          _id={selected?._id}
+          name={selected?.name}
+          onCancel={() => setDeleteModel(false)}
+          onSubmit={() => {
+            handleDeleteDesign({ _id: selected?._id });
+          }}
+        />
+      )}
+      {viewModel && (
+        <ViewDesignModel
+          onClose={() => setViewModel(false)}
+          values={{
+            backgroundColor: viewDetails?.backgroundColor,
+            stripImage: viewDetails?.stripImage,
+            logoImage: viewDetails?.logoImage,
+          }}
+        />
+      )}
+      {waiting && <LoadingModel />}
     </div>
   );
 };

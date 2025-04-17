@@ -273,11 +273,20 @@ const OrganizationSetting: React.FC = () => {
                             <div className="text-sm text-gray-500 flex gap-3 invisible group-hover:visible">
                               <button
                                 onClick={() => {
-                                  handleAdminModel({
-                                    _id: admin?._id,
-                                    name:
-                                      admin?.firstName + " " + admin?.lastName,
-                                  });
+                                  if (admin?._id !== state.user._id) {
+                                    ErrorToastMessage({
+                                      message:
+                                        "cannot remove your account from admin",
+                                    });
+                                  } else {
+                                    handleAdminModel({
+                                      _id: admin?._id,
+                                      name:
+                                        admin?.firstName +
+                                        " " +
+                                        admin?.lastName,
+                                    });
+                                  }
                                 }}
                                 className="text-gray-500 hover:text-brand-500 font-medium"
                               >
@@ -382,7 +391,7 @@ const OrganizationSetting: React.FC = () => {
         <DoorwayPanel onClose={closeModal} />
       )}
 
-      {adminModel === true && (
+      {adminModel && (
         <RemoveAdminModel
           _id={selected?._id}
           name={selected?.name}

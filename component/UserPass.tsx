@@ -5,6 +5,10 @@ import { useSelector } from "react-redux";
 import ApplePass from "./common/applePass";
 import GooglePass from "./common/googlePass";
 
+interface ContactInfo {
+  type: string;
+  value: string;
+}
 interface formValues {
   prefix?: string;
   sufix?: string;
@@ -17,13 +21,17 @@ interface formValues {
   firstName?: string;
   lastName?: string;
   passType?: string;
+  emails?: ContactInfo[];
+  phones?: ContactInfo[];
+  urls?: ContactInfo[];
+  addresses?: ContactInfo[];
 }
 
 const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
   const state = useSelector((state: RootState) => state);
 
-  const [passType, setPassType] = useState(
-    state.user.passType || enums.PASS_VIEW.APPLE
+  const [type, setType] = useState(
+    values?.passType || state.user.passType || enums.PASS_VIEW.APPLE
   );
 
   const data = {
@@ -43,10 +51,50 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
     logoImage: values?.logoImage || state.design.logoImage || "",
     firstName: values?.firstName || state.user.firstName || "",
     lastName: values?.lastName || state.user.lastName || "",
+    emails:
+      values?.emails?.map((e) => ({
+        type: e?.type,
+        value: e?.value,
+      })) ||
+      state.user.emails.map((e) => ({
+        type: e?.type,
+        value: e?.value,
+      })) ||
+      [],
+    phones:
+      values?.phones?.map((e) => ({
+        type: e?.type,
+        value: e?.value,
+      })) ||
+      state.user.phones.map((e) => ({
+        type: e?.type,
+        value: e?.value,
+      })) ||
+      [],
+    urls:
+      values?.urls?.map((e) => ({
+        type: e?.type,
+        value: e?.value,
+      })) ||
+      state.user.urls.map((e) => ({
+        type: e?.type,
+        value: e?.value,
+      })) ||
+      [],
+    addresses:
+      values?.addresses?.map((e) => ({
+        type: e?.type,
+        value: e?.value,
+      })) ||
+      state.user.addresses.map((e) => ({
+        type: e?.type,
+        value: e?.value,
+      })) ||
+      [],
   };
 
   useEffect(() => {
-    setPassType(state.user.passType || enums.PASS_VIEW.APPLE);
+    setType(values?.passType || state.user.passType || enums.PASS_VIEW.APPLE);
   }, [state.user.passType]);
 
   return (
@@ -54,10 +102,8 @@ const UserPass: React.FC<{ values?: formValues }> = ({ values }) => {
       <div className="flex flex-col min-md:flex-row gap-[44px] min-md:gap-[75px] items-center min-md:items-start justify-center p-5">
         <div className={"width: 360px max-width: 100% min-width: 300px"}>
           <div className="block">
-            {passType === enums.PASS_VIEW.APPLE && <ApplePass values={data} />}
-            {passType === enums.PASS_VIEW.ANDROID && (
-              <GooglePass values={data} />
-            )}
+            {type === enums.PASS_VIEW.APPLE && <ApplePass values={data} />}
+            {type === enums.PASS_VIEW.ANDROID && <GooglePass values={data} />}
           </div>
         </div>
       </div>

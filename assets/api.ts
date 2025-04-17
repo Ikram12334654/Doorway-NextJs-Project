@@ -5,6 +5,8 @@ export const authRoutes = {
   setupAccount: "/setupAccount",
   setupDesign: "/setupDesign",
   updateDesign: "/updateDesign",
+  createDesign: "/createDesign",
+  deleteDesign: "/deleteDesign",
   appleWalletPass: "/pass/applePass",
   googleWalletPass: "/pass/googlePass",
   updatePassword: "/updatePassword",
