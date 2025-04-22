@@ -21,6 +21,7 @@ export default {
         "2xl": "1599px",
         "min-sm": "300px",
         "min-md": "499px",
+        "min-mde" : "649px",
         "min-lg": "769px",
         "min-xl": "1045px",
       },

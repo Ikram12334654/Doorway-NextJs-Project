@@ -1,30 +1,45 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import TwoStepVarificationEmailModel from './2stepVerficationEmailModel';
 interface CloseModelProps {
   onClose: () => void;
 }
+
 const TwoStepVarificationModel: React.FC<CloseModelProps> = ({ onClose }) => {
-    const modalRef = useRef<HTMLDivElement>(null);
-  
-    // Handle clicks outside the modal
-    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-          onClose(); // Close the modal if clicked outside
-        }
-      };
-  
-      // Add event listener for clicks
-      document.addEventListener("mousedown", handleClickOutside);
-  
-      // Cleanup the event listener on unmount
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, [onClose]);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+  const [modal, setModal] = useState<{ id: number | null; isModal: boolean }>({
+    id: null,
+    isModal: false,
+  });
+  // Handle clicks outside the modal
+  // useEffect(() => {
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+  //       onClose(); // Close the modal if clicked outside
+  //     }
+  //   };
+
+  //   // Add event listener for clicks
+  //   if(modal.id===null && modal.isModal===false){
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   }
+  //   // Cleanup the event listener on unmount
+  //   return () => {
+  //     if(modal.id===null && modal.isModal===false){
+  //     document.removeEventListener("mousedown", handleClickOutside);}
+  //   };
+  // }, [onClose]);
   const handleCancel = () => {
     onClose();
     // Close modal logic here
   };
+  const openModal = (modalId: number) => {
+    setModal({ id: modalId, isModal: true });
+  };
+  const closeModal = () => {
+    setModal({ id: null, isModal: false });
+  };
+
   return (
     <div
       className="fixed top-0 bottom-0 inset-0 border bg-[#23272E33] z-[2000]"
@@ -62,7 +77,7 @@ const TwoStepVarificationModel: React.FC<CloseModelProps> = ({ onClose }) => {
                     className="rounded-lg p-6 flex flex-col cursor-pointer"
                     style={{ boxShadow: 'rgba(0, 0, 0, 0.1) 0px 0px 12px' }}
                   >
-                    <div className="card-content flex">
+                    <div className="card-content flex" onClick={()=>openModal(1)}>
                       <div className="flex flex-row w-full md:w-[350px] justify-between">
                         <div className="flex gap-3">
                           <div className="rounded-md bg-brand-50 text-brand-700 p-2">
@@ -91,7 +106,7 @@ const TwoStepVarificationModel: React.FC<CloseModelProps> = ({ onClose }) => {
                     className="rounded-lg p-6 flex flex-col cursor-pointer"
                     style={{ boxShadow: 'rgba(0, 0, 0, 0.1) 0px 0px 12px' }}
                   >
-                    <div className="card-content flex">
+                    <div className="card-content flex" onClick={()=>openModal(2)}>
                       <div className="flex flex-row w-full md:w-[350px] justify-between">
                         <div className="flex gap-3">
                           <div className="rounded-md bg-brand-50 text-brand-700 p-2">
@@ -119,11 +134,15 @@ const TwoStepVarificationModel: React.FC<CloseModelProps> = ({ onClose }) => {
                 </div>
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
+      {modal.id === 1 && modal.isModal === true && (
+        <TwoStepVarificationEmailModel onClose={closeModal} type='email' />
+      )}
+      {modal.id === 2 && modal.isModal === true && (
+        <TwoStepVarificationEmailModel onClose={closeModal} type='QrCode' />
+      )}
     </div>
   )
 }

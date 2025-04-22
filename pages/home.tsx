@@ -87,24 +87,24 @@ function Home() {
     }
   };
 
-  useEffect(() => {
-    if (state.user.passType === enums.PASS_VIEW.APPLE) {
-      checkAppleWalletFile(state.user._id);
-    } else if (state.user.passType === enums.PASS_VIEW.ANDROID) {
-      if (!state.user.googleWalletUrl) {
-        generateGooglePassUrl();
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (state.user.passType === enums.PASS_VIEW.APPLE) {
+  //     checkAppleWalletFile(state.user._id);
+  //   } else if (state.user.passType === enums.PASS_VIEW.ANDROID) {
+  //     if (!state.user.googleWalletUrl) {
+  //       generateGooglePassUrl();
+  //     }
+  //   }
+  // }, []);
 
   return (
     <>
-      {state.account.type === enums.ACCOUNT_TYPE.PERSONAL && (
+      {/* {state.account.type === enums.ACCOUNT_TYPE.PERSONAL && (
         <PersonalHome loading={loading} qrDownloadUrl={qrDownloadUrl} />
-      )}
-      {state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION && (
+      )} */}
+      {/* {state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION && ( */}
         <OrganizationHome loading={loading} qrDownloadUrl={qrDownloadUrl} />
-      )}
+      {/* )} */}
     </>
   );
 }

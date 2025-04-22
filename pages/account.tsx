@@ -9,12 +9,12 @@ function Account() {
 
   return (
     <>
-      {state.account.type === enums.ACCOUNT_TYPE.PERSONAL && (
+      {/* {state.account.type === enums.ACCOUNT_TYPE.PERSONAL && (
         <PersonalAccount />
       )}
-      {state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION && (
+      {state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION && ( */}
         <OrganizationAccount />
-      )}
+      {/* )} */}
     </>
   );
 }

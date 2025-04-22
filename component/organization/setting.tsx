@@ -14,8 +14,28 @@ import CompanyURL from "../Models/companyURL";
 import DoorwayPanel from "../Models/multipleDoorways";
 import PermissionModel from "../Models/permissionModel";
 import RemoveAdminModel from "../Models/removeAdminModel";
+import { number } from "yup";
+import { CircularProgressWithLabel } from "@/assets/CircularProgress";
+import AddNewDoorwayModel from "../Models/AddNewDoorway";
 
 const OrganizationSetting: React.FC = () => {
+  const data = {
+    doorways: {
+      current: 4,
+      total: 100,
+      percentage: 4,
+    },
+    bill: {
+      amount: "$300",
+    },
+    nextPaymentDue: {
+      date: "Apr 30, 2025",
+    },
+    paymentInfo: {
+      cardType: "Visa",
+      lastFour: "9746",
+    },
+  };
   const state = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -112,8 +132,8 @@ const OrganizationSetting: React.FC = () => {
 
       const { response, error }: ApiResponse = await Api(
         "/" +
-          enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
-          authRoutes.updateAutoResendInvites,
+        enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
+        authRoutes.updateAutoResendInvites,
         "put",
         {
           payload: {
@@ -142,8 +162,8 @@ const OrganizationSetting: React.FC = () => {
 
       const { response, error }: ApiResponse = await Api(
         "/" +
-          enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
-          authRoutes.getAccountAdmins,
+        enums.ROLES[state.user.role as keyof typeof enums.ROLES] +
+        authRoutes.getAccountAdmins,
         "get",
         {},
         authToken
@@ -218,9 +238,9 @@ const OrganizationSetting: React.FC = () => {
               <div className="flex items-center">
                 <button
                   disabled={waiting}
-                  className={`${
-                    !waiting && "bg-themeColor"
-                  } inline-flex rounded-md text-sm font-semibold justify-center gap-1.5 px-3 py-1.5 text-white bg-brand-100 cursor-pointer`}
+                  onClick={()=>openModal(4)}
+                  className={`${!waiting && "bg-themeColor"
+                    } inline-flex rounded-md text-sm font-semibold justify-center gap-1.5 px-3 py-1.5 text-white bg-brand-100 cursor-pointer`}
                 >
                   Add Admins
                 </button>
@@ -379,6 +399,89 @@ const OrganizationSetting: React.FC = () => {
               )}
             </div>
           </div>
+          <div className="flex flex-col min-mde:flex-row justify-start gap-4">
+            <div
+              className="rounded-[6px] p-6 flex flex-col"
+              style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0px 0px 12px" }}
+            >
+              <div className="card-content flex">
+                <div className="flex flex-col min-mde:flex-row w-full">
+                  <div className="flex flex-col min-mde:flex-row gap-4 pl-2 pb-4 min-mde:pb-0 border-b min-mde:border-b-0 min-mde:border-r border-gray-100 min-mde:pr-6">
+                    <div className="flex flex-col justify-between min-mde:justify-start">
+                      <div>
+                        <span className="text-gray-500 text-petite">Doorways</span>
+                      </div>
+                      <div>
+                        <span className="text-medium">
+                          {data.doorways.current}
+                          <span className="mx-1">of</span>
+                          100
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <CircularProgressWithLabel value={data.doorways.current} />
+                    </div>
+                  </div>
+                  <div className="py-4 min-mde:py-0 border-b min-mde:border-b-0 min-mde:border-r border-gray-100 min-mde:px-6">
+                    <div className="flex flex-col min-mde:w-[220px] w-full">
+                      <div>
+                        <span className="text-gray-500 text-petite">Current monthly bill</span>
+                      </div>
+                      <div>
+                        <span className="text-medium">{data.bill.amount}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col min-mde:w-[220px] w-full pt-4 min-mde:pt-0 min-mde:pl-6">
+                    <div>
+                      <span className="text-gray-500 text-petite">Next payment due</span>
+                    </div>
+                    <div>
+                      <span className="text-medium">{data.nextPaymentDue.date}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className="rounded-[6px] p-6 flex flex-col"
+              style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0px 0px 12px" }}
+            >
+              <div className="card-content flex">
+                <div className="flex flex-col min-mde:min-w-[336px] w-full justify-between">
+                  <div className="flex flex-col mr-4">
+                    <div>
+                      <span className="text-gray-500 text-petite">Payment information</span>
+                    </div>
+                    <div className="flex flex-row justify-between gap-6 mt-2">
+                      <div className="flex flex-row items-center">
+                        <svg
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          fill="currentColor"
+                          className="remixicon text-2xl"
+                        >
+                          <path d="M12.001 6.65407C13.5816 7.89878 14.5965 9.82972 14.5965 11.9977C14.5965 14.1657 13.5816 16.0966 12.001 17.3413C10.4204 16.0966 9.40547 14.1657 9.40547 11.9977C9.40547 9.82972 10.4204 7.89878 12.001 6.65407ZM11.1316 6.0717C9.46024 7.50229 8.40098 9.62742 8.40098 12C8.40098 14.371 9.45891 16.4949 11.1285 17.9255C10.1444 18.4795 9.00847 18.7955 7.79873 18.7955C4.04443 18.7955 1.00098 15.752 1.00098 11.9977C1.00098 8.24341 4.04443 5.19995 7.79873 5.19995C9.00976 5.19995 10.1468 5.51663 11.1316 6.0717ZM12.8735 17.9255C14.543 16.4949 15.601 14.371 15.601 12C15.601 9.62742 14.5417 7.50229 12.8703 6.0717C13.8551 5.51663 14.9922 5.19995 16.2032 5.19995C19.9575 5.19995 23.001 8.24341 23.001 11.9977C23.001 15.752 19.9575 18.7955 16.2032 18.7955C14.9935 18.7955 13.8576 18.4795 12.8735 17.9255Z" />
+                        </svg>
+                        <span className="text-petite ml-2">
+                          {data.paymentInfo.cardType} ending in {data.paymentInfo.lastFour}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col items-center">
+                        <div className="inline-flex items-center rounded-[6px] text-petite font-medium justify-center gap-[6px] text-gray-500 hover:text-brand-500 focus:text-brand-500 cursor-pointer">
+                          <span className="whitespace-nowrap hover:text-themeColor" onClick={()=>{router.push("/organization/subscription")}}>Manage Subscription</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       {modal.id === 1 && modal.isModal === true && (
@@ -390,6 +493,9 @@ const OrganizationSetting: React.FC = () => {
       {modal.id === 3 && modal.isModal === true && (
         <DoorwayPanel onClose={closeModal} />
       )}
+      {modal.id === 4 && modal.isModal === true && (
+        <AddNewDoorwayModel onClose={closeModal} />
+      )}
 
       {adminModel && (
         <RemoveAdminModel
@@ -398,7 +504,7 @@ const OrganizationSetting: React.FC = () => {
           onCancel={() => {
             setAdminModel(false);
           }}
-          onSubmit={() => {}}
+          onSubmit={() => { }}
         />
       )}
     </div>

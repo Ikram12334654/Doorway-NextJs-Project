@@ -8,9 +8,9 @@ function Settings() {
 
   return (
     <>
-      {state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION && (
+      {/* {state.account.type === enums.ACCOUNT_TYPE.ORGANIZATION && ( */}
         <OrganizationSetting />
-      )}
+      {/* )} */}
     </>
   );
 }
